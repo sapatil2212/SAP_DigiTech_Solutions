@@ -232,7 +232,7 @@ const faqs = [
   },
 ];
 
-export function ServicesPage() {
+function ServicesPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>("all");
   const [openFaq, setOpenFaq] = useState<number | null>(0);

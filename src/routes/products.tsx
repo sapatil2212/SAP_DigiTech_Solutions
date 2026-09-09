@@ -438,7 +438,7 @@ function ChatNexGenSimulator() {
 /* -------------------------------------------------------------------------- */
 /*                               Main Page Route                              */
 /* -------------------------------------------------------------------------- */
-export function ProductsPage() {
+function ProductsPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const products = [

@@ -9,7 +9,7 @@ import {
 
 export const Route = createFileRoute("/about")({ component: AboutPage });
 
-export function AboutPage() {
+function AboutPage() {
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const pillars = [
