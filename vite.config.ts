@@ -7,14 +7,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  // Deploy to Vercel with SSR + Serverless Functions support
+  // Deploy to VPS (node-server) or Vercel with SSR support
   nitro: {
-    preset: "vercel",
-    vercel: {
-      functions: {
-        maxDuration: 30,
-      },
-    },
+    preset: process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "node-server"),
     compatibilityDate: "2025-01-01",
     node: true,
     // Disable code-splitting to fix Rolldown __commonJSMin helper bug
