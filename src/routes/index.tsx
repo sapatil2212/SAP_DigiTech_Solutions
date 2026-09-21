@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AiSolutions } from "@/components/AiSolutions";
 import { motion, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { useEffect, useRef, useState } from "react";
@@ -50,7 +50,15 @@ import {
   ExternalLink,
   Award,
   Megaphone,
+  FileText,
+  Calendar,
 } from "lucide-react";
+import {
+  getMegaMenuCategories,
+  loadAndSyncCustomProducts,
+  type MegaMenuItem,
+  type MegaMenuCategory,
+} from "@/lib/productData";
 
 export const Route = createFileRoute("/")({
   component: Landing,
@@ -61,12 +69,46 @@ export const Route = createFileRoute("/")({
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [productsOpen, setProductsOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const menuContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const [categories, setCategories] = useState<MegaMenuCategory[]>(() => getMegaMenuCategories());
+
+  useEffect(() => {
+    loadAndSyncCustomProducts().then(() => {
+      setCategories(getMegaMenuCategories());
+    });
+
+    const handleUpdate = () => {
+      setCategories(getMegaMenuCategories());
+    };
+    window.addEventListener("sap_products_updated", handleUpdate);
+    return () => {
+      window.removeEventListener("sap_products_updated", handleUpdate);
+    };
+  }, []);
+
+  const totalProductsCount = categories.reduce((acc, cat) => acc + cat.items.length, 0);
+
+  // Close mega menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuContainerRef.current && !menuContainerRef.current.contains(e.target as Node)) {
+        setProductsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const [active, setActive] = useState<string>(() => {
     if (typeof window === "undefined") return "home";
     const path = window.location.pathname;
     if (path === "/about") return "about";
     if (path === "/services") return "services";
-    if (path === "/products") return "products";
+    if (path.startsWith("/products")) return "products";
     if (path === "/careers") return "careers";
     if (path === "/portfolio") return "portfolio";
     if (path === "/contact") return "contact";
@@ -97,7 +139,7 @@ export function Nav() {
       const path = window.location.pathname;
       if (path === "/about") { setActive("about"); return; }
       if (path === "/services") { setActive("services"); return; }
-      if (path === "/products") { setActive("products"); return; }
+      if (path.startsWith("/products")) { setActive("products"); return; }
       if (path === "/careers") { setActive("careers"); return; }
       if (path === "/portfolio") { setActive("portfolio"); return; }
       if (path === "/contact") { setActive("contact"); return; }
@@ -118,75 +160,182 @@ export function Nav() {
     };
   }, []);
 
-  // Intersection observer for homepage sections
-  useEffect(() => {
-    if (typeof window === "undefined" || window.location.pathname !== "/") return;
-    const ids = ["home", "about", "services"];
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => !!el);
-    if (sections.length === 0) return;
+  // Handle smooth mouse enter/leave for desktop mega-menu
+  const handleMouseEnter = () => {
+    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    setProductsOpen(true);
+  };
 
-    const visibility = new Map<string, number>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          visibility.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0);
-        });
-        let bestId = active;
-        let bestRatio = 0;
-        visibility.forEach((ratio, id) => {
-          if (ratio > bestRatio) {
-            bestRatio = ratio;
-            bestId = id;
-          }
-        });
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 4) {
-          bestId = "services";
-        }
-        if (bestRatio > 0) setActive(bestId);
-      },
-      {
-        threshold: [0, 0.2, 0.5, 0.8, 1],
-        rootMargin: "-25% 0px -45% 0px",
-      }
-    );
-    sections.forEach((s) => io.observe(s));
-    return () => io.disconnect();
-  }, [active]);
+  const handleMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setProductsOpen(false);
+    }, 140);
+  };
+
+  const getProductIcon = (id: string) => {
+    switch (id) {
+      case "briefvault": return <FileText className="size-5" />;
+      case "primeinbox": return <Mail className="size-5" />;
+      case "nexaleadai": return <Search className="size-5" />;
+      case "greviewpilot": return <Star className="size-5" />;
+      case "bookmytime": return <Calendar className="size-5" />;
+      case "chatnexgen": return <MessageCircle className="size-5" />;
+      default: return <Sparkles className="size-5" />;
+    }
+  };
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${scrolled ? "py-3" : "py-5"
+    <>
+      {/* Backdrop overlay when product dropdown is open */}
+      <AnimatePresence>
+        {(productsOpen || open) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/15 backdrop-blur-[2px]"
+            onClick={() => {
+              setProductsOpen(false);
+              setOpen(false);
+            }}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+          scrolled ? "py-3" : "py-5"
         }`}
-    >
+      >
       <div className="container-1280">
         <div
-          className={`flex items-center justify-between rounded-full px-4 md:px-6 transition-all duration-300 ${scrolled ? "glass py-2" : "glass py-2.5"
-            }`}
+          className={`flex items-center justify-between rounded-full px-4 md:px-6 transition-all duration-300 ${
+            scrolled ? "glass py-2" : "glass py-2.5"
+          }`}
         >
-          <a href="#home" className="flex items-center">
+          <a href="/#home" className="flex items-center">
             <img
               src="/logo/sap_logo.png"
               alt="SAP DigiTech Solutions Logo"
-              className={`object-contain transition-all duration-300 ${scrolled ? "h-7" : "h-8 md:h-9"
-                }`}
+              className={`object-contain transition-all duration-300 ${
+                scrolled ? "h-7" : "h-8 md:h-9"
+              }`}
             />
           </a>
 
+          {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1 relative">
             {links.map(([label, href, id]) => {
               const isActive = active === id;
+
+              if (id === "products") {
+                return (
+                  <div
+                    key={label}
+                    ref={menuContainerRef}
+                    className="relative"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setProductsOpen((v) => !v)}
+                      aria-expanded={productsOpen}
+                      aria-current={isActive ? "page" : undefined}
+                      className={`relative px-3.5 py-2 text-[0.875rem] font-medium transition-colors flex items-center gap-1 cursor-pointer bg-transparent border-0 outline-none ${
+                        isActive || productsOpen ? "text-[#1B2240]" : "text-navy/60 hover:text-[#1B2240]"
+                      }`}
+                    >
+                      {(isActive || productsOpen) && (
+                        <motion.span
+                          layoutId="nav-active-pill"
+                          transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                          className="absolute inset-0 rounded-full bg-navy/[0.06] border border-navy/10"
+                        />
+                      )}
+                      <span className="relative z-10">{label}</span>
+                      <ChevronDown
+                        className={`size-3.5 relative z-10 transition-transform duration-200 ${
+                          productsOpen ? "rotate-180 text-[#FF6B00]" : "text-navy/60"
+                        }`}
+                      />
+                    </button>
+
+                    {/* Cashfree-style Products Mega Menu Dropdown */}
+                    <AnimatePresence>
+                      {productsOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                          transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[780px] rounded-3xl bg-white border border-slate-200 product-nav-dropdown p-6 z-50 text-left before:content-[''] before:absolute before:-top-4 before:left-0 before:right-0 before:h-4"
+                          onMouseEnter={handleMouseEnter}
+                          onMouseLeave={handleMouseLeave}
+                        >
+                          <div className="grid grid-cols-2 gap-6">
+                            {categories.map((cat, idx) => (
+                              <div key={idx} className="space-y-1">
+                                {cat.items.map((prod) => (
+                                    <Link
+                                      key={prod.id}
+                                      to={prod.url}
+                                      onClick={() => setProductsOpen(false)}
+                                      className="group flex items-start gap-3.5 p-3 rounded-2xl hover:bg-[#FF6B00]/[0.05] transition-all duration-200"
+                                    >
+                                      <div className="size-10 rounded-xl bg-[#FF6B00]/10 text-[#FF6B00] group-hover:bg-[#FF6B00] group-hover:text-white transition-all duration-200 grid place-items-center shrink-0">
+                                        {getProductIcon(prod.id)}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm font-bold text-[#1B2240] group-hover:text-[#FF6B00] transition-colors">
+                                            {prod.name}
+                                          </span>
+                                          <span className="text-[0.62rem] font-bold px-1.5 py-0.5 rounded-full bg-[#FF6B00]/10 text-[#FF6B00]">
+                                            {prod.badge}
+                                          </span>
+                                        </div>
+                                        <p className="text-xs text-slate-500 leading-snug line-clamp-1 mt-0.5 group-hover:text-slate-700 transition-colors">
+                                          {prod.tagline}
+                                        </p>
+                                      </div>
+                                    </Link>
+                                  ))}
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Mega-menu footer strip */}
+                          <div className="flex items-center justify-end pt-3 mt-3 border-t border-slate-100 text-xs">
+                            <Link
+                              to="/products"
+                              onClick={() => setProductsOpen(false)}
+                              className="font-bold text-[#FF6B00] hover:text-[#E05300] flex items-center gap-1.5 transition-colors group"
+                            >
+                              Explore all 6 SaaS products
+                              <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              }
+
               return (
                 <a
                   key={label}
                   href={href}
                   aria-current={isActive ? "page" : undefined}
-                  className={`relative px-3.5 py-2 text-[0.875rem] font-medium transition-colors ${isActive ? "text-navy" : "text-navy/60 hover:text-navy"
-                    }`}
+                  className={`relative px-3.5 py-2 text-[0.875rem] font-medium transition-colors ${
+                    isActive ? "text-navy" : "text-navy/60 hover:text-navy"
+                  }`}
                 >
                   {isActive && (
                     <motion.span
@@ -200,7 +349,6 @@ export function Nav() {
               );
             })}
           </nav>
-
 
           <div className="flex items-center gap-2">
             <a
@@ -224,25 +372,77 @@ export function Nav() {
           </div>
         </div>
 
+        {/* Mobile Navigation Drawer */}
         <AnimatePresence>
           {open && (
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              className="lg:hidden mt-2 glass rounded-3xl p-4"
+              className="lg:hidden mt-2 bg-white border border-slate-200 product-nav-dropdown rounded-3xl p-4 max-h-[85vh] overflow-y-auto"
             >
               <div className="flex flex-col">
-                {links.map(([label, href]) => (
-                  <a
-                    key={label}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    className="px-3 py-3 text-sm font-medium text-navy border-b border-hairline last:border-0"
-                  >
-                    {label}
-                  </a>
-                ))}
+                {links.map(([label, href, id]) => {
+                  if (id === "products") {
+                    return (
+                      <div key={label} className="border-b border-hairline py-2">
+                        <button
+                          type="button"
+                          onClick={() => setMobileProductsOpen((v) => !v)}
+                          className="w-full flex items-center justify-between py-2 text-sm font-medium text-navy text-left"
+                        >
+                          <span className="flex items-center gap-2">
+                            {label}
+                            <span className="text-[0.65rem] px-2 py-0.5 rounded-full bg-[#FF6B00]/10 text-[#FF6B00] font-bold">
+                              {totalProductsCount} Products
+                            </span>
+                          </span>
+                          <ChevronDown
+                            className={`size-4 transition-transform ${mobileProductsOpen ? "rotate-180 text-[#FF6B00]" : ""}`}
+                          />
+                        </button>
+                        {mobileProductsOpen && (
+                          <div className="space-y-1.5 pl-2 pt-2 pb-1">
+                            {categories.flatMap((cat) => cat.items).map((prod: MegaMenuItem) => (
+                              <Link
+                                key={prod.id}
+                                to={prod.url}
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-slate-50 transition-colors"
+                              >
+                                <div className="size-7 rounded-lg bg-[#FF6B00]/10 text-[#FF6B00] grid place-items-center shrink-0">
+                                  {getProductIcon(prod.id)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs font-bold text-navy truncate">{prod.name}</p>
+                                  <p className="text-[0.68rem] text-slate-500 truncate">{prod.tagline}</p>
+                                </div>
+                              </Link>
+                            ))}
+                            <Link
+                              to="/products"
+                              onClick={() => setOpen(false)}
+                              className="block text-center py-2 text-xs font-bold text-[#FF6B00] hover:underline"
+                            >
+                              View All {totalProductsCount} Products →
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <a
+                      key={label}
+                      href={href}
+                      onClick={() => setOpen(false)}
+                      className="px-3 py-3 text-sm font-medium text-navy border-b border-hairline last:border-0"
+                    >
+                      {label}
+                    </a>
+                  );
+                })}
                 <a href="/contact" onClick={() => setOpen(false)} className="btn-primary mt-3">
                   Book Strategy Call <ArrowRight className="size-4" />
                 </a>
@@ -251,7 +451,8 @@ export function Nav() {
           )}
         </AnimatePresence>
       </div>
-    </motion.header>
+      </motion.header>
+    </>
   );
 }
 

@@ -440,3 +440,10 @@
     display: none;
   }
 }
+
+.product-nav-dropdown {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
+  box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.08) !important;
+}
+
