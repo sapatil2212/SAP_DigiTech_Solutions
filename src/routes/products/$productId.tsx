@@ -100,6 +100,7 @@ function ProductDetailPage() {
   const [product, setProduct] = useState<ProductDetail | undefined>(() => getProductDetail(productId));
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [activeCapability, setActiveCapability] = useState(0);
+  const [copiedDiagram, setCopiedDiagram] = useState(false);
 
   useEffect(() => {
     const current = getProductDetail(productId);
@@ -220,7 +221,7 @@ function ProductDetailPage() {
                     <span className="text-lg sm:text-xl font-extrabold text-[#1B2240] block tracking-tight">
                       {stat.value}
                     </span>
-                    <span className="text-[0.72rem] text-slate-500 font-medium block mt-0.5">
+                    <span className="text-[0.72rem] text-slate-400 font-normal block mt-0.5">
                       {stat.label}
                     </span>
                   </div>
@@ -313,38 +314,6 @@ function ProductDetailPage() {
         </div>
       </section>
 
-      {/* ─── Sticky Developer Navigation Bar ─── */}
-      {(product.comprehensiveTechStack || product.vpsDeploymentGuide) && (
-        <nav aria-label="Page Navigation" className="sticky top-16 sm:top-20 z-30 bg-white/95 backdrop-blur-md border-y border-slate-200/90 py-2.5 shadow-xs">
-          <div className="container-1280 px-4 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
-            <span className="text-slate-400 uppercase tracking-wider text-[0.68rem] mr-1 hidden sm:inline">Sections:</span>
-            {product.comprehensiveTechStack && (
-              <a href="#tech-stack" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
-                <Code className="size-3.5 text-[#FF6B00]" /> Complete Tech Stack
-              </a>
-            )}
-            {product.systemCapabilities && (
-              <a href="#system-capabilities" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
-                <Workflow className="size-3.5 text-blue-600" /> System Capabilities & AI
-              </a>
-            )}
-            {product.vpsDeploymentGuide && (
-              <a href="#vps-deployment" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
-                <Server className="size-3.5 text-emerald-600" /> VPS Deployment Runbook
-              </a>
-            )}
-            {product.vpsRedeploymentGuide && (
-              <a href="#vps-redeploy" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
-                <RefreshCw className="size-3.5 text-violet-600" /> Zero-Downtime Redeploy
-              </a>
-            )}
-            <a href="#buy-source-code" className="px-4 py-1.5 rounded-full bg-[#FF6B00] hover:bg-[#E05300] text-white transition-colors shrink-0 ml-auto flex items-center gap-1.5 shadow-sm">
-              <Download className="size-3.5" /> Buy Source Code — ₹{product.sourceCodeOffer.fixedPrice}
-            </a>
-          </div>
-        </nav>
-      )}
-
       {/* ─── Production Tech Stack & Architecture Strip ─── */}
       <section className="py-8 bg-slate-50 border-b border-slate-200/80">
         <div className="container-1280 px-4">
@@ -369,14 +338,21 @@ function ProductDetailPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
             {product.sourceCodeOffer.techStackDetailed.map((item, idx) => (
-              <div key={idx} className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-                <span className="text-[0.68rem] font-mono uppercase tracking-wider text-[#FF6B00] font-bold block mb-1">
+              <div key={idx} className="p-4 rounded-2xl bg-white/90 border border-slate-200/70 shadow-2xs hover:border-[#FF6B00]/30 transition-colors">
+                <span className="text-[0.68rem] font-mono uppercase tracking-wider text-[#FF6B00] font-bold block mb-1.5">
                   {item.category}
                 </span>
-                <p className="text-xs sm:text-sm font-bold text-[#1B2240] leading-snug">
-                  {item.techs.join(" • ")}
+                <p className="text-xs sm:text-sm font-normal text-slate-500 leading-relaxed">
+                  {item.techs.map((tech, tIdx) => (
+                    <span key={tIdx} className="inline-flex items-center">
+                      <span className="text-slate-500 hover:text-slate-700 transition-colors">{tech}</span>
+                      {tIdx < item.techs.length - 1 && (
+                        <span className="mx-1.5 text-slate-300 font-normal select-none">•</span>
+                      )}
+                    </span>
+                  ))}
                 </p>
               </div>
             ))}
@@ -418,7 +394,7 @@ function ProductDetailPage() {
                     </div>
 
                     {cat.description && (
-                      <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                      <p className="text-xs text-slate-400 font-normal leading-relaxed">
                         {cat.description}
                       </p>
                     )}
@@ -432,16 +408,16 @@ function ProductDetailPage() {
                                 href={item.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs font-bold text-[#1B2240] hover:text-[#FF6B00] transition-colors flex items-center gap-1 group"
+                                className="text-xs font-semibold text-slate-700 hover:text-[#FF6B00] transition-colors flex items-center gap-1 group"
                               >
                                 <span>{item.name}</span>
                                 <ExternalLink className="size-3 text-slate-400 group-hover:text-[#FF6B00]" />
                               </a>
                             ) : (
-                              <span className="text-xs font-bold text-[#1B2240]">{item.name}</span>
+                              <span className="text-xs font-semibold text-slate-700">{item.name}</span>
                             )}
                           </div>
-                          <p className="text-[0.72rem] text-slate-600 leading-snug">
+                          <p className="text-[0.72rem] text-slate-400 font-normal leading-snug">
                             {item.details}
                           </p>
                         </div>
@@ -460,52 +436,105 @@ function ProductDetailPage() {
         <section id="system-capabilities" className="py-16 md:py-24 bg-[#F8FAFC] border-b border-slate-200/80 scroll-mt-28">
           <div className="container-1280 px-4 space-y-12">
             
-            {/* Header with Audience */}
-            <div className="max-w-4xl space-y-3">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
-                <Workflow className="size-4" /> 2. SYSTEM CAPABILITIES & ARCHITECTURE
-              </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1B2240] tracking-tight">
-                What {product.name} Does
-              </h2>
-              <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-medium">
-                {product.systemCapabilities.targetAudience}
-              </p>
-            </div>
-
-            {/* Architecture ASCII Blueprint Container */}
-            <div className="rounded-3xl bg-[#090D18] border border-slate-800 p-6 sm:p-8 text-white shadow-xl space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-xl bg-[#FF6B00]/20 text-[#FF6B00] grid place-items-center">
-                    <Layers className="size-4" />
+            {/* Side-by-Side 2 Cards: What BriefVault Does & Core Architecture Blueprint */}
+            <div className="grid lg:grid-cols-12 gap-8 items-stretch">
+              
+              {/* Card 1: What BriefVault Does */}
+              <div className="lg:col-span-5 rounded-3xl bg-white border border-slate-200/90 p-7 sm:p-9 shadow-sm flex flex-col justify-between space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
+                      <Workflow className="size-4" /> 2. SYSTEM CAPABILITIES & ARCHITECTURE
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B2240] tracking-tight">
+                      What {product.name} Does
+                    </h2>
                   </div>
-                  <div>
-                    <h3 className="text-base font-extrabold text-white">
-                      BriefVault Core Architecture Blueprint
-                    </h3>
-                    <p className="text-xs text-slate-400">
-                      End-to-end ingestion, 6-stage background queue pipeline, 19 AI modules, Cashfree billing & multi-tenant security
-                    </p>
+
+                  <p className="text-sm sm:text-base text-slate-500 leading-relaxed font-normal">
+                    {product.systemCapabilities.targetAudience}
+                  </p>
+
+                  <div className="pt-2 space-y-3">
+                    <span className="text-[0.72rem] uppercase font-bold text-slate-400 tracking-wider block">
+                      Target Legal & Compliance Teams
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Law Firms",
+                        "In-House Legal Counsel",
+                        "Chartered Accountants",
+                        "Company Secretaries",
+                        "Tax Consultants",
+                        "Corporate Compliance",
+                      ].map((item, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1 rounded-full bg-slate-50 border border-slate-200/80 text-slate-500 text-xs font-medium"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(product.systemCapabilities?.architectureDiagram || "");
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-[#FF6B00] text-slate-200 hover:text-white text-xs font-semibold transition-all cursor-pointer self-start sm:self-auto"
-                >
-                  <Copy className="size-3.5" />
-                  <span>Copy Diagram</span>
-                </button>
+
+                <div className="pt-5 border-t border-slate-100 grid grid-cols-2 gap-3 text-xs">
+                  <div className="p-3.5 rounded-2xl bg-[#FFF7F2] border border-[#FF6B00]/20 space-y-0.5">
+                    <span className="text-[0.68rem] uppercase font-bold text-[#FF6B00] block">Input Formats</span>
+                    <span className="font-semibold text-slate-600 block">PDF, DOCX, Scanned OCR</span>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-500/20 space-y-0.5">
+                    <span className="text-[0.68rem] uppercase font-bold text-emerald-600 block">Fact Verification</span>
+                    <span className="font-semibold text-slate-600 block">Exact Page Citations</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="overflow-x-auto py-2">
-                <pre className="font-mono text-[0.72rem] sm:text-xs text-emerald-400/90 leading-relaxed whitespace-pre font-semibold selection:bg-[#FF6B00] selection:text-white">
-                  {product.systemCapabilities.architectureDiagram}
-                </pre>
+              {/* Card 2: Core Architecture Blueprint ASCII Card */}
+              <div className="lg:col-span-7 rounded-3xl bg-[#090D18] border border-slate-800 p-6 sm:p-8 text-white shadow-xl flex flex-col justify-between space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="size-8 rounded-xl bg-[#FF6B00]/20 text-[#FF6B00] grid place-items-center shrink-0">
+                      <Layers className="size-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-extrabold text-white">
+                        BriefVault Core Architecture Blueprint
+                      </h3>
+                      <p className="text-xs text-slate-400">
+                        End-to-end ingestion, 6-stage background queue pipeline, 19 AI modules, Cashfree billing & multi-tenant security
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(product.systemCapabilities?.architectureDiagram || "");
+                      setCopiedDiagram(true);
+                      setTimeout(() => setCopiedDiagram(false), 2000);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-[#FF6B00] text-slate-200 hover:text-white text-xs font-semibold transition-all cursor-pointer self-start sm:self-auto shrink-0"
+                  >
+                    {copiedDiagram ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+                    <span>{copiedDiagram ? "Copied!" : "Copy Diagram"}</span>
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto py-2 my-auto">
+                  <pre className="font-mono text-[0.68rem] sm:text-[0.72rem] md:text-xs text-emerald-400/95 leading-tight whitespace-pre font-semibold selection:bg-[#FF6B00] selection:text-white">
+                    {product.systemCapabilities.architectureDiagram}
+                  </pre>
+                </div>
+
+                <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-[0.72rem] text-slate-400">
+                  <span className="flex items-center gap-1.5">
+                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" /> Zero-Redis MySQL Durable Queue
+                  </span>
+                  <span className="text-slate-500 font-mono">19 AI Modules • Cashfree AutoPay E-Mandates</span>
+                </div>
               </div>
+
             </div>
 
             {/* 1. Ingestion & Document Processing Pipeline (6 Stages) */}
@@ -536,7 +565,7 @@ function ProductDetailPage() {
                     <h4 className="text-sm font-bold text-[#1B2240]">
                       {stage.title}
                     </h4>
-                    <p className="text-xs text-slate-600 leading-relaxed">
+                    <p className="text-xs text-slate-400 font-normal leading-relaxed">
                       {stage.description}
                     </p>
                   </div>
@@ -570,7 +599,7 @@ function ProductDetailPage() {
                           {grp.count} Engines
                         </span>
                       </div>
-                      <ul className="space-y-2 mt-3 text-xs text-slate-700">
+                      <ul className="space-y-2 mt-3 text-xs text-slate-400 font-normal">
                         {grp.modules.map((m, idx) => (
                           <li key={idx} className="flex items-start gap-2">
                             <CheckCircle2 className="size-3.5 text-[#FF6B00] shrink-0 mt-0.5" />
@@ -594,12 +623,12 @@ function ProductDetailPage() {
                 <h4 className="text-base font-bold text-[#1B2240]">
                   3. {product.systemCapabilities.ragCapabilities.title}
                 </h4>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
                   {product.systemCapabilities.ragCapabilities.description}
                 </p>
                 <div className="space-y-1.5 pt-1">
                   {product.systemCapabilities.ragCapabilities.highlights.map((h, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-400 font-normal">
                       <span className="size-1.5 rounded-full bg-emerald-500" />
                       <span>{h}</span>
                     </div>
@@ -615,11 +644,11 @@ function ProductDetailPage() {
                 <h4 className="text-base font-bold text-[#1B2240]">
                   4. {product.systemCapabilities.documentComparison.title}
                 </h4>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
                   {product.systemCapabilities.documentComparison.description}
                 </p>
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-600 space-y-1">
-                  <p className="font-semibold text-slate-800">Key Deviation Highlights:</p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-400 font-normal space-y-1">
+                  <p className="font-semibold text-slate-600">Key Deviation Highlights:</p>
                   <p>• Indemnity caps & uncapped liabilities</p>
                   <p>• Dispute resolution & arbitration seat differences</p>
                   <p>• Modified termination triggers & notice periods</p>
@@ -634,7 +663,7 @@ function ProductDetailPage() {
                 <h4 className="text-base font-bold text-[#1B2240]">
                   5. {product.systemCapabilities.reportGeneration.title}
                 </h4>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
                   {product.systemCapabilities.reportGeneration.description}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -656,8 +685,8 @@ function ProductDetailPage() {
                 </h4>
                 <div className="space-y-2 pt-1">
                   {product.systemCapabilities.adminAndBilling.features.map((feat, idx) => (
-                    <div key={idx} className="text-xs text-slate-600">
-                      <span className="font-bold text-slate-800">{feat.name}:</span> {feat.desc}
+                    <div key={idx} className="text-xs text-slate-400 font-normal">
+                      <span className="font-semibold text-slate-600">{feat.name}:</span> {feat.desc}
                     </div>
                   ))}
                 </div>
@@ -723,7 +752,7 @@ function ProductDetailPage() {
                       </div>
                     </div>
 
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2.5">
+                    <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed mt-2.5">
                       {cap.description}
                     </p>
 
@@ -830,7 +859,7 @@ function ProductDetailPage() {
                   <h3 className="text-base font-bold text-[#1B2240]">
                     {feat.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
                     {feat.desc}
                   </p>
                 </div>
@@ -948,7 +977,7 @@ function ProductDetailPage() {
                   </div>
 
                   {st.description && (
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
                       {st.description}
                     </p>
                   )}
@@ -1105,7 +1134,7 @@ function ProductDetailPage() {
                 </h4>
                 <div className="grid sm:grid-cols-2 gap-3.5">
                   {product.sourceCodeOffer.deliverables.map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-slate-700">
+                    <div key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-slate-500 font-normal">
                       <CheckCircle2 className="size-4 text-emerald-500 shrink-0 mt-0.5" />
                       <span className="leading-snug">{item}</span>
                     </div>
@@ -1188,7 +1217,7 @@ function ProductDetailPage() {
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-5 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
+                      <div className="px-6 pb-5 text-xs sm:text-sm text-slate-400 font-normal leading-relaxed border-t border-slate-100 pt-3">
                         {faq.a}
                       </div>
                     </motion.div>
@@ -1275,7 +1304,7 @@ function ProductDetailPage() {
                   </Link>
 
                   {/* Description / Tagline (2 Lines) */}
-                  <p className="mt-2 text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                  <p className="mt-2 text-xs sm:text-sm text-slate-400 font-normal line-clamp-2 leading-relaxed min-h-[2.5rem]">
                     {prod.tagline}
                   </p>
 
