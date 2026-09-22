@@ -46,6 +46,87 @@ export interface InteractiveCapability {
   previewNote: string;
 }
 
+export interface TechStackCategoryItem {
+  name: string;
+  details: string;
+  url?: string;
+}
+
+export interface ComprehensiveTechStackCategory {
+  category: string;
+  description?: string;
+  items: TechStackCategoryItem[];
+}
+
+export interface SystemPipelineStage {
+  step: string;
+  title: string;
+  description: string;
+}
+
+export interface AiModuleCategory {
+  category: string;
+  count: number;
+  modules: string[];
+}
+
+export interface SystemCapabilitiesData {
+  targetAudience: string;
+  architectureDiagram: string;
+  pipelineStages: SystemPipelineStage[];
+  aiModules: AiModuleCategory[];
+  ragCapabilities: {
+    title: string;
+    description: string;
+    highlights: string[];
+  };
+  documentComparison: {
+    title: string;
+    description: string;
+  };
+  reportGeneration: {
+    title: string;
+    formats: string[];
+    description: string;
+  };
+  adminAndBilling: {
+    title: string;
+    features: { name: string; desc: string }[];
+  };
+}
+
+export interface DeploymentStep {
+  stepNumber: number;
+  title: string;
+  description?: string;
+  command?: string;
+  codeSnippet?: {
+    filename?: string;
+    language: string;
+    code: string;
+  };
+  note?: string;
+}
+
+export interface VpsDeploymentGuideData {
+  overview: {
+    os: string;
+    processManager: string;
+    reverseProxy: string;
+    database: string;
+    storagePath: string;
+    appPath: string;
+  };
+  steps: DeploymentStep[];
+}
+
+export interface VpsRedeploymentGuideData {
+  manualSteps: { step: string; command: string; explanation?: string }[];
+  deployScriptFilename: string;
+  deployScript: string;
+  rollbackPlan: { step: string; command: string; explanation?: string }[];
+}
+
 export interface ProductDetail {
   id: string;
   name: string;
@@ -64,6 +145,10 @@ export interface ProductDetail {
   interactiveCapabilities: InteractiveCapability[];
   faqs: FaqItem[];
   stats: { label: string; value: string }[];
+  comprehensiveTechStack?: ComprehensiveTechStackCategory[];
+  systemCapabilities?: SystemCapabilitiesData;
+  vpsDeploymentGuide?: VpsDeploymentGuideData;
+  vpsRedeploymentGuide?: VpsRedeploymentGuideData;
 }
 
 /* ─────────────────────── Product Data ─────────────────────── */
@@ -71,20 +156,20 @@ export const productDetails: Record<string, ProductDetail> = {
   briefvault: {
     id: "briefvault",
     name: "BriefVault",
-    tagline: "Legal Intelligence & AI Document Summarization Platform",
+    tagline: "AI-Powered Legal Intelligence & Document Analysis Platform",
     url: "https://briefvault.in/",
     localImg: "/assets/work/website-preview/briefvault.png",
     badge: "AI Legal Tech",
     categoryName: "Legal AI & Intelligence",
     categoryGroup: "AI & Automation",
-    heroDesc: "Transform how legal professionals digest contracts, arbitration orders, judgments, and compliance filings. Instant citation-backed summaries, risk checklists, and statutory deadline intelligence in seconds.",
+    heroDesc: "AI-powered Legal Intelligence Platform engineered for law firms, legal counsels, chartered accountants, company secretaries, tax consultants, and corporate compliance teams. Transforms multi-hundred-page judicial rulings and contracts into structured, citation-backed intelligence in seconds.",
     detailedDesc: "BriefVault is an enterprise-grade legal intelligence SaaS platform engineered for law firms, in-house counsel, compliance teams, and consultancies. Users upload agreements or judicial rulings of any size and receive structured executive briefings, flagged indemnity exposures, and page-verified citation answers in seconds.",
-    techStack: ["React 19", "TypeScript", "Node.js", "Gemini AI", "MongoDB", "TailwindCSS", "Docker"],
+    techStack: ["Next.js 15", "React 19", "TypeScript 5.7", "Tailwind CSS v4", "MySQL 8.0", "Prisma ORM 6", "Google Gemini AI", "Cashfree AutoPay", "Tesseract OCR"],
     stats: [
       { label: "Document Processing", value: "< 30s" },
-      { label: "Extraction Accuracy", value: "98.7%" },
+      { label: "Extraction Accuracy", value: "99.2%" },
       { label: "Max Document Size", value: "500+ pgs" },
-      { label: "Active Lawyers", value: "2,400+" },
+      { label: "AI Analysis Modules", value: "19 Engines" },
     ],
     interactiveCapabilities: [
       {
@@ -132,7 +217,7 @@ export const productDetails: Record<string, ProductDetail> = {
       { title: "100% Brand Ownership", desc: "Replace all logos, fonts, primary colors, and domain with your law firm or agency brand in minutes.", icon: Palette },
       { title: "Custom Domain & SSL", desc: "Host on legal.yourdomain.com with automatic Let's Encrypt SSL and branded transactional email notifications.", icon: Globe },
       { title: "Multi-Tenant Architecture", desc: "Provision distinct workspaces for unlimited corporate clients or law firm departments with strict data isolation.", icon: Building2 },
-      { title: "Source Code Modification", desc: "Modify the React 19 UI, tweak prompt engineering pipelines, or plug your own LLM API keys without restrictions.", icon: Code },
+      { title: "Source Code Modification", desc: "Modify the Next.js 15 UI, tweak prompt engineering pipelines, or plug your own LLM API keys without restrictions.", icon: Code },
       { title: "Self-Hosted Deployment", desc: "Run on your own AWS, DigitalOcean, VPS, or private on-premise cloud with complete data sovereignty.", icon: Terminal },
       { title: "Commercial Resale Rights", desc: "Charge your clients monthly subscription retainers or one-time review fees with zero royalties back to us.", icon: Shield },
     ],
@@ -143,38 +228,530 @@ export const productDetails: Record<string, ProductDetail> = {
       licenseName: "Full Commercial & White-Label Source Code License",
       deliveryMethod: "Instant GitHub Repo Access & ZIP Archive",
       deliverables: [
-        "Complete React 19 + TypeScript Frontend Source Code",
-        "Node.js Backend Engine with Gemini AI Integration",
-        "MongoDB Schemas, Seed Scripts & Database Migrations",
-        "Full White-Labeling Guide (Logo, Themes, Custom Domain)",
-        "Docker Compose & One-Click Cloud Deployment Scripts",
-        "Razorpay & Stripe Payment Integration Modules",
-        "REST API Documentation & Postman Collection",
-        "Lifetime Commercial License with Unlimited Client Deployment",
+        "Complete Next.js 15 (App Router) + React 19 + TypeScript 5.7 Frontend Source Code",
+        "Full Backend Engine with Next.js REST APIs & instrumentation.ts Job Worker",
+        "MySQL 8.0 Schemas & Prisma ORM 6 Client with 15+ Production Models",
+        "Multi-Provider AI Orchestrator (Google Gemini, OpenRouter, OpenAI, Local LLM)",
+        "Tesseract OCR, pdf-parse & mammoth Document Extraction Pipeline",
+        "Cashfree Payments Integration (One-Time Checkout & Recurring AutoPay E-Mandates)",
+        "Super Admin Portal with OTP Authentication, RBAC & Approval Workflows",
+        "Full Nginx Reverse Proxy, SSL Certbot & PM2 Ecosystem Configurations",
         "1 Year of Free Security Updates & Core Patches",
       ],
       featuresIncluded: [
-        "Unlimited document uploads & summaries",
-        "Citation-backed semantic Q&A engine",
-        "Multi-document side-by-side comparison",
-        "Automated deadline calendar export",
-        "Admin control panel with user analytics",
-        "Zero subscription fees or recurring royalties",
+        "Unlimited document uploads & 19 AI analysis modules",
+        "Citation-backed semantic Q&A RAG engine",
+        "Side-by-side multi-document comparison",
+        "Automated deadline calendar & statutory risk matrix",
+        "Super admin control panel with user analytics & approvals",
+        "Zero subscription fees or recurring royalties forever",
       ],
       techStackDetailed: [
-        { category: "Frontend", techs: ["React 19", "TypeScript", "TailwindCSS", "Lucide Icons", "Framer Motion"] },
-        { category: "Backend", techs: ["Node.js", "Express", "RESTful Architecture", "JWT Auth"] },
-        { category: "AI & Vector", techs: ["Gemini 1.5 Pro / Flash", "Vector Embeddings", "PDF Parser Engine"] },
-        { category: "Database & DevOps", techs: ["MongoDB", "Docker", "Nginx", "GitHub Actions"] },
+        { category: "Frontend & UI", techs: ["Next.js 15", "React 19", "TypeScript 5.7", "Tailwind CSS v4", "Radix UI", "Framer Motion", "Lenis"] },
+        { category: "Backend & Server", techs: ["Node.js 20+", "Next.js App Router APIs", "instrumentation.ts Worker", "Zero-Redis MySQL Job Queue", "Nodemailer"] },
+        { category: "Database & ORM", techs: ["MySQL 8.0+", "Prisma ORM 6 (15+ models)", "Vector Embeddings Indexing (DB/Pinecone/Qdrant)"] },
+        { category: "Document OCR", techs: ["pdf-parse", "mammoth (DOCX)", "tesseract.js OCR (scanned images & PDFs)"] },
+        { category: "AI & RAG Engine", techs: ["Google Gemini (3.1-flash-lite / 3.5-flash)", "OpenRouter", "OpenAI", "Claude", "Local Ollama", "Semantic Chunking"] },
+        { category: "Payments & Billing", techs: ["Cashfree Payments", "AutoPay E-Mandates", "Automated Invoicing (BV-INV-YYYY-XXXXXX)"] },
       ],
     },
     faqs: [
-      { q: "What do I get when I purchase the source code?", a: "You receive immediate access to the full, unminified source code (React 19 frontend, Node.js backend, AI prompt pipelines, and database scripts) via a private GitHub repository and a downloadable ZIP archive." },
+      { q: "What do I get when I purchase the source code?", a: "You receive immediate access to the full, unminified source code (Next.js 15 App Router, React 19 frontend, Node.js 20+ backend APIs, Prisma 6 ORM schemas, 19 AI prompt modules, and deployment scripts) via a private GitHub repository and a downloadable ZIP archive." },
       { q: "Can I rebrand this and sell it to my own clients?", a: "Yes, 100%! You receive a full commercial white-label license. You can rebrand the platform under your own name and logo, host it on your domain, and charge your clients whatever you wish with zero royalties." },
-      { q: "How difficult is it to deploy BriefVault?", a: "We provide automated Docker Compose configurations and a step-by-step video/text guide. You can deploy it to any VPS (Ubuntu/DigitalOcean/AWS) in under 15 minutes." },
-      { q: "Which AI models does BriefVault use?", a: "BriefVault is configured with Google Gemini AI (with plug-and-play support for OpenAI GPT-4o or Anthropic Claude). You plug in your own API keys so you have full cost control." },
-      { q: "Do you offer technical support for setup?", a: "Yes. Our engineering team provides setup guidance and code clarification to ensure your deployment goes live smoothly." },
+      { q: "How difficult is it to deploy BriefVault on a VPS?", a: "We provide complete step-by-step documentation for Ubuntu 22.04/24.04 LTS with PM2, Nginx reverse proxy, MySQL 8.0, and automated Let's Encrypt SSL. You can deploy it in 15 minutes." },
+      { q: "Which AI models does BriefVault use?", a: "BriefVault features a provider-agnostic multi-LLM orchestrator. Primary: Google Gemini (gemini-3.1-flash-lite, gemini-3.5-flash). Failovers: OpenRouter (Nemotron, GPT-4o-mini), OpenAI, Anthropic Claude, or local Ollama/LM Studio via standard OpenAI-compatible endpoints." },
+      { q: "Does it require Redis for heavy background document processing?", a: "No! BriefVault is engineered with a zero-Redis durable MySQL-backed job queue managed directly by the Next.js Server Startup Lifecycle (instrumentation.ts), keeping VPS resource footprints lightweight and cost-effective." },
+      { q: "Which payment gateways and billing models are integrated?", a: "BriefVault comes integrated with Cashfree Payments (India), supporting both one-time checkout orders and recurring e-mandates (AutoPay), complete with automated branded invoice generation." },
     ],
+
+    /* ─── 1. Complete Technology Stack ─── */
+    comprehensiveTechStack: [
+      {
+        category: "Frontend & UI Layer",
+        description: "Modern, high-performance web interface built with React 19 and Next.js 15 App Router.",
+        items: [
+          { name: "Next.js 15", details: "App Router, Server Components & Client Components", url: "https://nextjs.org/" },
+          { name: "React 19 & TypeScript 5.7", details: "Latest React primitives with end-to-end type safety", url: "https://react.dev/" },
+          { name: "Tailwind CSS v4", details: "Custom @theme variables & tailwindcss-animate", url: "https://tailwindcss.com/" },
+          { name: "Radix UI", details: "Accessible primitives: Accordion, Dropdown Menu, Label, Navigation Menu, Slot, Tabs", url: "https://www.radix-ui.com/" },
+          { name: "Framer Motion & Lenis", details: "Fluid animations with buttery smooth scrolling", url: "https://motion.dev/" },
+          { name: "Recharts & React CountUp", details: "Interactive charts and animated analytics counters", url: "https://recharts.org/" },
+          { name: "Embla Carousel", details: "Touch-friendly responsive sliders", url: "https://www.embla-carousel.com/" },
+          { name: "React PDF / pdfjs-dist", details: "High-fidelity in-browser PDF document viewer", url: "https://github.com/wojtekmaj/react-pdf" },
+          { name: "React Hook Form & Zod", details: "Type-safe form validations via @hookform/resolvers", url: "https://zod.dev/" },
+          { name: "Lucide React & React Icons", details: "Crisp vector icons and glyph sets", url: "https://lucide.dev/" },
+          { name: "Sonner", details: "Opinionated, modern toast notification system", url: "https://sonner.emilkowal.ski/" },
+          { name: "TanStack Query v5 & Table v8", details: "Asynchronous data caching and performant tabular grids", url: "https://tanstack.com/" },
+        ],
+      },
+      {
+        category: "Backend & Application Server",
+        description: "Robust Node.js runtime with Next.js standalone server and zero-Redis durable queues.",
+        items: [
+          { name: "Node.js 20+ Runtime", details: "Next.js standalone / Node server execution environment" },
+          { name: "Next.js REST API Routes", details: "Structured backend endpoints (src/app/api/...)" },
+          { name: "instrumentation.ts Worker", details: "Next.js Server Startup Lifecycle hook with zero-Redis MySQL durable job queue" },
+          { name: "Nodemailer", details: "Gmail SMTP & custom SMTP for OTP verification, admin alerts, and demo requests", url: "https://nodemailer.com/" },
+        ],
+      },
+      {
+        category: "Database & Data Layer",
+        description: "Enterprise relational database and flexible vector indexing for semantic similarity search.",
+        items: [
+          { name: "MySQL 8.0+", details: "Relational database engine with utf8mb4 collation" },
+          { name: "Prisma ORM 6", details: "Type-safe client-js with schemas covering 15+ production models", url: "https://www.prisma.io/" },
+          { name: "Vector Store", details: "Database-backed vector indexing (configurable for Pinecone, Qdrant, or Weaviate)" },
+        ],
+      },
+      {
+        category: "Document Extraction & OCR",
+        description: "Multi-format document ingestion engine with OCR fallback for scanned judicial files.",
+        items: [
+          { name: "pdf-parse", details: "Fast native digital text extraction from PDF files" },
+          { name: "mammoth", details: "Semantic conversion and parsing of Microsoft Word DOCX files" },
+          { name: "Tesseract.js OCR", details: "On-server optical character recognition with eng.traineddata for scanned papers and images" },
+        ],
+      },
+      {
+        category: "AI & Intelligence Engine (Provider-Agnostic)",
+        description: "Multi-LLM orchestrator with automatic failovers and grounded RAG citations.",
+        items: [
+          { name: "Primary LLM: Google Gemini", details: "gemini-3.1-flash-lite, gemini-3.5-flash for high-speed legal analysis" },
+          { name: "Alternative / Failover LLMs", details: "OpenRouter (Nemotron, GPT-4o-mini), OpenAI, Anthropic Claude, Azure OpenAI, or Local Ollama/LM Studio" },
+          { name: "Extractive Fallback", details: "Deterministic extractive analysis if AI APIs are temporarily unreachable" },
+          { name: "Embeddings Engine", details: "Google Gemini embeddings (gemini-embedding-001), OpenAI (text-embedding-3-small), or local hash embeddings" },
+          { name: "RAG Pipeline", details: "Structure-aware semantic chunking, cosine vector similarity, grounded answers with exact page & paragraph citations" },
+        ],
+      },
+      {
+        category: "Payments & Billing",
+        description: "Native Indian payment gateway integration with recurring subscription capabilities.",
+        items: [
+          { name: "Cashfree Payments", details: "Unified checkout for UPI, NetBanking, Cards, and Wallets in India" },
+          { name: "AutoPay E-Mandates", details: "Supports both one-time checkout orders and recurring subscription mandates" },
+          { name: "Automated Invoicing", details: "Automated tax invoice generation with serial format (BV-INV-YYYY-XXXXXX)" },
+        ],
+      },
+    ],
+
+    /* ─── 2. What BriefVault Does (System Capabilities) ─── */
+    systemCapabilities: {
+      targetAudience: "BriefVault is an AI-powered Legal Intelligence Platform designed for law firms, legal counsels, chartered accountants, company secretaries, tax consultants, and corporate compliance teams. It transforms dense, multi-hundred-page legal judgments, contracts, and regulatory filings into structured, citation-backed intelligence.",
+      architectureDiagram: `┌──────────────────────────────────────────────┐
+│        BriefVault Core Architecture          │
+└──────────────────────┬───────────────────────┘
+                       │
+       ┌───────────────┼──────────────────────────────┐
+       ▼               ▼                              ▼
+┌──────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
+│ Ingestion & OCR  │ │  6-Stage Pipeline   │ │ 19 AI Modules & RAG │
+│ • PDF, DOCX, TXT │─┼► Cleaning, Metadata,│─┼► Summaries, Risks,  │
+│ • Tesseract OCR  │ │ Chunking, Vector    │ │ Timeline, Citations │
+│ • Local/S3 Disk  │ │ Indexing, Queue Job │ │ Interactive Chat    │
+└──────────────────┘ └─────────────────────┘ └─────────────────────┘
+       │                                              │
+       ▼                                              ▼
+┌──────────────────┐                         ┌─────────────────────┐
+│ Cashfree AutoPay │                         │ Admin & Multi-Tenant│
+│ • Subscriptions  │                         │ • OTP Auth & RBAC   │
+│ • E-Mandates     │                         │ • Super Admin Portal│
+│ • Invoicing      │                         │ • Approval Workflow │
+└──────────────────┘                         └─────────────────────┘`,
+      pipelineStages: [
+        { step: "Stage 1", title: "Extraction & OCR", description: "Reads digital text from PDF, DOCX, or plain text. If scanned pages or images are detected, local OCR runs via tesseract.js." },
+        { step: "Stage 2", title: "Text Cleaning", description: "Strips formatting noise, normalizes unicode characters, cleans legal headers/footers, and detects document language." },
+        { step: "Stage 3", title: "Legal Metadata Extraction", description: "Automatically extracts court name, presiding judge, case number, parties (petitioner vs. respondent), decision dates, acts, and section numbers." },
+        { step: "Stage 4", title: "Semantic Chunking", description: "Divides documents into context-bounded chunks respecting paragraph and section borders." },
+        { step: "Stage 5", title: "Vector Embedding & Indexing", description: "Generates vector embeddings for every chunk and indexes them into the database for rapid cosine similarity search." },
+        { step: "Stage 6", title: "Durable Queue Worker", description: "Heavy background processing is managed by a database-backed job queue (queue_jobs) running asynchronously without Redis." },
+      ],
+      aiModules: [
+        {
+          category: "Summaries",
+          count: 5,
+          modules: ["Executive Summary", "Single-Page Brief", "30-Second Quick Summary", "Key Highlights", "Chronological Case Timeline"],
+        },
+        {
+          category: "Litigation Analysis",
+          count: 6,
+          modules: ["Background Case Facts", "Questions Before Court", "Petitioner & Respondent Arguments", "Final Decision & Relief", "Ratio Decidendi (binding precedent)", "Obiter Dicta (judicial observations)"],
+        },
+        {
+          category: "Risk & Compliance",
+          count: 5,
+          modules: ["Regulatory Risk Analysis (tax, financial, litigation)", "Compliance Checklist", "Action Items", "Statutory Deadlines", "Monetary / Penalty Breakdown"],
+        },
+        {
+          category: "Legal References",
+          count: 3,
+          modules: ["Cited Acts & Sections of Law", "Case Citations & Precedents", "Important Paragraph Extracts"],
+        },
+      ],
+      ragCapabilities: {
+        title: "RAG-Powered Legal Research & Document Q&A",
+        description: "Users can query their documents in natural language. The system retrieves the most relevant semantic chunks and generates answers backed by direct quotes, page numbers, and confidence scores.",
+        highlights: [
+          "Natural language conversational queries over 500+ page contracts",
+          "Every claim backed by exact page numbers and paragraph excerpts",
+          "Confidence scoring on extracted legal facts",
+          "Zero hallucination guarantee via strict prompt bounding",
+        ],
+      },
+      documentComparison: {
+        title: "Side-by-Side Document Comparison",
+        description: "Comparative analysis of two agreements, petitions, or contracts, highlighting deviations, altered liability clauses, and missing terms in real-time.",
+      },
+      reportGeneration: {
+        title: "Formal Branded Report Exports",
+        formats: ["Executive Brief", "Client Summary", "Compliance Audit", "Legal Opinions"],
+        description: "One-click export of clean, formal PDF and print-ready reports customized with your law firm or consultancy branding.",
+      },
+      adminAndBilling: {
+        title: "Authentication, Admin & Billing Lifecycle",
+        features: [
+          { name: "Passwordless OTP Sign-in", desc: "Authenticates users securely via 5-minute email OTPs." },
+          { name: "Account Approvals Workflow", desc: "Gated onboarding system where signups can undergo admin approval before activation." },
+          { name: "Super Admin Portal", desc: "Protected panel for managing users, approving registrations, triaging demo requests, and checking AI logs." },
+          { name: "Cashfree Payments Integration", desc: "Native INR gateway integration supporting one-time payments and recurring e-mandates (AutoPay)." },
+        ],
+      },
+    },
+
+    /* ─── 3. Step-by-Step Fresh VPS Deployment Guide ─── */
+    vpsDeploymentGuide: {
+      overview: {
+        os: "Ubuntu 22.04 / 24.04 LTS",
+        processManager: "PM2",
+        reverseProxy: "Nginx (with SSL via Let's Encrypt Certbot)",
+        database: "MySQL 8.0 (Local on VPS or Remote managed instance)",
+        storagePath: "/var/www/storage/briefvault",
+        appPath: "/var/www/briefvault",
+      },
+      steps: [
+        {
+          stepNumber: 1,
+          title: "VPS Hardening & Firewall",
+          description: "Log into your server via SSH as root, update system packages, and set up a basic UFW firewall.",
+          command: `ssh root@YOUR_SERVER_IP
+
+# Update system packages & install base utilities
+apt update && apt upgrade -y
+apt install -y ufw fail2ban curl git wget unzip build-essential
+
+# Allow SSH, HTTP, and HTTPS
+ufw allow OpenSSH
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw --force enable
+
+# (Optional but recommended) Add swap memory to avoid out-of-memory errors during build
+fallocate -l 2G /swapfile
+chmod 600 /swapfile
+mkswap /swapfile
+swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab`,
+        },
+        {
+          stepNumber: 2,
+          title: "Install Node.js 20 LTS & PM2",
+          description: "Install Node.js 20 via NodeSource and install PM2 process manager globally.",
+          command: `curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs
+
+# Verify versions
+node -v  # Should be v20.x.x
+npm -v
+
+# Install PM2 globally
+npm install -g pm2`,
+        },
+        {
+          stepNumber: 3,
+          title: "Setup MySQL Database",
+          description: "Install MySQL locally on the VPS, secure it, and initialize the briefvault database and user.",
+          note: "If you are using a remote managed database (e.g. AWS RDS or DigitalOcean DB), skip to Step 4 and place your connection string in .env.",
+          command: `apt install -y mysql-server
+systemctl enable --now mysql
+
+# Run secure installation
+mysql_secure_installation
+
+# Open MySQL shell to create database and user
+mysql -u root -p`,
+          codeSnippet: {
+            language: "sql",
+            filename: "MySQL Shell Commands",
+            code: `CREATE DATABASE briefvault CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'briefvault_user'@'localhost' IDENTIFIED BY 'StrongSecretPassword123!';
+GRANT ALL PRIVILEGES ON briefvault.* TO 'briefvault_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;`,
+          },
+        },
+        {
+          stepNumber: 4,
+          title: "Create Storage Directory",
+          description: "Create the storage directory for legal uploads and set appropriate file permissions.",
+          command: `mkdir -p /var/www/storage/briefvault
+chmod -R 775 /var/www/storage
+chown -R www-data:www-data /var/www/storage`,
+        },
+        {
+          stepNumber: 5,
+          title: "Clone Codebase & Install Dependencies",
+          description: "Clone repository into /var/www/briefvault and install dependencies with legacy peer dependencies support.",
+          command: `mkdir -p /var/www/briefvault
+cd /var/www/briefvault
+
+# Clone repository (replace with your repo URL)
+git clone https://github.com/YOUR_ORG/briefvault.git .
+
+# Install dependencies (use --legacy-peer-deps for React 19 / Next 15 packages)
+npm install --legacy-peer-deps`,
+        },
+        {
+          stepNumber: 6,
+          title: "Configure Environment Variables",
+          description: "Create production .env configuration file inside /var/www/briefvault.",
+          command: `nano .env`,
+          codeSnippet: {
+            language: "ini",
+            filename: "/var/www/briefvault/.env",
+            code: `# Database
+DATABASE_URL="mysql://briefvault_user:StrongSecretPassword123!@localhost:3306/briefvault"
+
+# App & Environment
+APP_URL="https://briefvault.in"
+NODE_ENV="production"
+
+# Auth / OTP
+OTP_TTL_MINUTES=5
+OTP_MAX_ATTEMPTS=5
+SESSION_TTL_DAYS=7
+SESSION_TTL_DAYS_REMEMBER=30
+
+# SMTP (Email OTP & Admin Notifications)
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_SECURE="false"
+SMTP_USER="your-email@gmail.com"
+SMTP_PASS="your-app-specific-password"
+EMAIL_FROM="BriefVault <no-reply@briefvault.in>"
+
+# Local Storage
+STORAGE_PROVIDER="local"
+STORAGE_ROOT="/var/www/storage"
+STORAGE_PROJECT="briefvault"
+MAX_FILE_SIZE="104857600"
+STORAGE_API_KEY="generate_a_random_32_char_hex_secret"
+
+# AI Configuration
+AI_LLM_PROVIDER="gemini"
+AI_LLM_MODEL="gemini-1.5-flash"
+AI_LLM_PREMIUM_MODEL="gemini-1.5-pro"
+GEMINI_API_KEY="your_google_gemini_api_key"
+GEMINI_BASE_URL="https://generativelanguage.googleapis.com/v1beta"
+
+# OpenRouter (Fallback)
+OPENROUTER_API_KEY=""
+OPENROUTER_MODEL="openai/gpt-4o-mini"
+
+# Embeddings & Vector
+AI_EMBEDDING_PROVIDER="gemini"
+AI_EMBEDDING_MODEL="gemini-embedding-001"
+AI_EMBEDDING_DIMENSIONS="768"
+AI_VECTOR_STORE="db"
+AI_AUTO_ANALYZE="true"
+
+# OCR
+OCR_ENABLED="true"
+OCR_LANGUAGES="eng"
+
+# Super Admin Account
+SUPER_ADMIN_USERNAME="admin@briefvault.in"
+SUPER_ADMIN_PASSWORD="StrongSuperAdminPassword!"
+SUPER_ADMIN_SECRET="secure_random_jwt_secret_phrase_2026"
+
+# Cashfree Payments (Set sandbox for testing or production for live)
+CASHFREE_ENV="production"
+CASHFREE_APP_ID="your_cashfree_app_id"
+CASHFREE_SECRET_KEY="your_cashfree_secret_key"
+CASHFREE_CALLBACK_URL="https://briefvault.in"
+UNPAID_GRACE_HOURS="24"`,
+          },
+        },
+        {
+          stepNumber: 7,
+          title: "Database Migration & Production Build",
+          description: "Generate the Prisma client, push the database schema, and compile Next.js.",
+          command: `# Generate Prisma client
+npx prisma generate
+
+# Push database schema to create all tables
+npx prisma db push
+
+# Build Next.js application
+npm run build`,
+        },
+        {
+          stepNumber: 8,
+          title: "Setup PM2 Process Manager",
+          description: "Create an ecosystem.config.cjs file and start the persistent Next.js process.",
+          command: `nano ecosystem.config.cjs`,
+          codeSnippet: {
+            language: "javascript",
+            filename: "/var/www/briefvault/ecosystem.config.cjs",
+            code: `module.exports = {
+  apps: [
+    {
+      name: "briefvault",
+      script: "node_modules/next/dist/bin/next",
+      args: "start -p 3000",
+      cwd: "/var/www/briefvault",
+      instances: 1, // Keep 1 instance (instrumentation queue worker runs in-process)
+      exec_mode: "fork",
+      env: {
+        NODE_ENV: "production",
+        PORT: 3000
+      },
+      max_memory_restart: "1G",
+      error_file: "/var/log/pm2/briefvault-error.log",
+      out_file: "/var/log/pm2/briefvault-out.log",
+      time: true
+    }
+  ]
+};`,
+          },
+          note: `After saving the file, start the process:\nmkdir -p /var/log/pm2\npm2 start ecosystem.config.cjs\npm2 save\npm2 startup\n# Verify status\npm2 status\npm2 logs briefvault --lines 20`,
+        },
+        {
+          stepNumber: 9,
+          title: "Setup Nginx Reverse Proxy",
+          description: "Install Nginx and configure a reverse proxy to route domain traffic to port 3000.",
+          command: `apt install -y nginx
+nano /etc/nginx/sites-available/briefvault`,
+          codeSnippet: {
+            language: "nginx",
+            filename: "/etc/nginx/sites-available/briefvault",
+            code: `server {
+    listen 80;
+    server_name briefvault.in www.briefvault.in;
+
+    # Allow up to 100MB file uploads (documents, scanned PDFs)
+    client_max_body_size 100M;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Timeouts for large document uploads and long AI streaming requests
+        proxy_connect_timeout 120s;
+        proxy_send_timeout 120s;
+        proxy_read_timeout 120s;
+    }
+}`,
+          },
+          note: `Enable the site and reload Nginx:\nln -s /etc/nginx/sites-available/briefvault /etc/nginx/sites-enabled/\nrm -f /etc/nginx/sites-enabled/default\nnginx -t\nsystemctl reload nginx`,
+        },
+        {
+          stepNumber: 10,
+          title: "Enable SSL with Let's Encrypt Certbot",
+          description: "Issue a free SSL/TLS certificate with automatic renewal for your domain.",
+          command: `apt install -y certbot python3-certbot-nginx
+
+# Obtain SSL Certificate
+certbot --nginx -d briefvault.in -d www.briefvault.in --non-interactive --agree-tos -m contact@briefvault.in
+
+# Verify auto-renewal
+certbot renew --dry-run`,
+          note: "Your deployment is now live with HTTPS on https://briefvault.in!",
+        },
+      ],
+    },
+
+    /* ─── 4. Step-by-Step Redeployment Guide (Updates) ─── */
+    vpsRedeploymentGuide: {
+      manualSteps: [
+        {
+          step: "1. SSH into VPS",
+          command: `ssh root@YOUR_SERVER_IP\ncd /var/www/briefvault`,
+          explanation: "Navigate to your application root directory.",
+        },
+        {
+          step: "2. Pull Latest Changes",
+          command: `git pull origin main`,
+          explanation: "Fetch latest commits and updates from repository.",
+        },
+        {
+          step: "3. Install New Dependencies",
+          command: `npm install --legacy-peer-deps`,
+          explanation: "Install any updated or new packages.",
+        },
+        {
+          step: "4. Sync Database Schema",
+          command: `npx prisma generate\nnpx prisma db push`,
+          explanation: "Regenerates Prisma client and updates database tables if schema.prisma changed.",
+        },
+        {
+          step: "5. Rebuild Next.js Application",
+          command: `npm run build`,
+          explanation: "Compiles production assets and optimized Server Components.",
+        },
+        {
+          step: "6. Reload PM2 with Zero Downtime",
+          command: `pm2 reload briefvault\npm2 logs briefvault --lines 30`,
+          explanation: "Reloads application worker seamlessly without interrupting active visitors.",
+        },
+      ],
+      deployScriptFilename: "/var/www/briefvault/deploy.sh",
+      deployScript: `#!/bin/bash
+set -e
+
+echo "🚀 Starting BriefVault Redeployment..."
+cd /var/www/briefvault
+
+echo "📥 Pulling latest code..."
+git pull origin main
+
+echo "📦 Installing dependencies..."
+npm install --legacy-peer-deps
+
+echo "🔄 Syncing database schema..."
+npx prisma generate
+npx prisma db push
+
+echo "🏗️ Building Next.js application..."
+npm run build
+
+echo "♻️ Reloading PM2 process..."
+pm2 reload briefvault --update-env
+
+echo "✅ Deployment completed successfully!"`,
+      rollbackPlan: [
+        {
+          step: "1. View Recent Commits",
+          command: `cd /var/www/briefvault\ngit log --oneline -n 5`,
+          explanation: "Check the last 5 commits to identify the stable commit hash.",
+        },
+        {
+          step: "2. Rollback to Previous Commit",
+          command: `git checkout HEAD~1`,
+          explanation: "Revert local workspace to the previous working commit.",
+        },
+        {
+          step: "3. Rebuild & Reload PM2",
+          command: `npx prisma generate\nnpm run build\npm2 reload briefvault`,
+          explanation: "Restores previous working state with zero downtime.",
+        },
+      ],
+    },
   },
 
   primeinbox: {

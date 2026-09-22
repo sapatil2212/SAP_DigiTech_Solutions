@@ -9,7 +9,8 @@ import {
   Terminal, Headphones, BookOpen, Phone, CreditCard,
   CheckCircle, BarChart3, Users, Clock, ShieldCheck,
   Cpu, Layers, FileCode, CheckCircle2, GitBranch, Server,
-  Database, ArrowUpRight, Monitor, GraduationCap
+  Database, ArrowUpRight, Monitor, GraduationCap, Copy,
+  Workflow, Bot, Search, RefreshCw, FileText
 } from "lucide-react";
 import {
   getProductDetail,
@@ -44,6 +45,54 @@ export const Route = createFileRoute("/products/$productId")({
     ],
   }),
 });
+
+/* ─────────────────────── Interactive Code Box ─────────────────────── */
+function CodeSnippetBox({
+  code,
+  language = "bash",
+  filename,
+}: {
+  code: string;
+  language?: string;
+  filename?: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2200);
+  };
+
+  return (
+    <div className="rounded-2xl overflow-hidden bg-[#0A0E1A] border border-slate-800/90 shadow-xl my-3 text-left">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-[#121828] border-b border-slate-800 text-slate-300">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-rose-500/80" />
+            <span className="size-2 rounded-full bg-amber-500/80" />
+            <span className="size-2 rounded-full bg-emerald-500/80" />
+          </div>
+          <span className="text-[0.72rem] font-mono text-slate-300 font-semibold ml-1.5 flex items-center gap-1.5">
+            <Terminal className="size-3 text-[#FF6B00]" />
+            {filename || language}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-white/10 hover:bg-[#FF6B00] text-slate-200 hover:text-white text-xs font-semibold transition-all cursor-pointer"
+        >
+          {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+          <span>{copied ? "Copied!" : "Copy Code"}</span>
+        </button>
+      </div>
+      <div className="p-4 overflow-x-auto max-h-[450px] text-xs font-mono text-slate-200 leading-relaxed scrollbar-thin scrollbar-thumb-slate-700">
+        <pre className="font-mono whitespace-pre">{code}</pre>
+      </div>
+    </div>
+  );
+}
 
 /* ─────────────────────── Main Product Detail Page ─────────────────────── */
 function ProductDetailPage() {
@@ -264,6 +313,38 @@ function ProductDetailPage() {
         </div>
       </section>
 
+      {/* ─── Sticky Developer Navigation Bar ─── */}
+      {(product.comprehensiveTechStack || product.vpsDeploymentGuide) && (
+        <nav aria-label="Page Navigation" className="sticky top-16 sm:top-20 z-30 bg-white/95 backdrop-blur-md border-y border-slate-200/90 py-2.5 shadow-xs">
+          <div className="container-1280 px-4 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
+            <span className="text-slate-400 uppercase tracking-wider text-[0.68rem] mr-1 hidden sm:inline">Sections:</span>
+            {product.comprehensiveTechStack && (
+              <a href="#tech-stack" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
+                <Code className="size-3.5 text-[#FF6B00]" /> Complete Tech Stack
+              </a>
+            )}
+            {product.systemCapabilities && (
+              <a href="#system-capabilities" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
+                <Workflow className="size-3.5 text-blue-600" /> System Capabilities & AI
+              </a>
+            )}
+            {product.vpsDeploymentGuide && (
+              <a href="#vps-deployment" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
+                <Server className="size-3.5 text-emerald-600" /> VPS Deployment Runbook
+              </a>
+            )}
+            {product.vpsRedeploymentGuide && (
+              <a href="#vps-redeploy" className="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-[#FF6B00] hover:text-white text-slate-700 transition-colors shrink-0 flex items-center gap-1.5">
+                <RefreshCw className="size-3.5 text-violet-600" /> Zero-Downtime Redeploy
+              </a>
+            )}
+            <a href="#buy-source-code" className="px-4 py-1.5 rounded-full bg-[#FF6B00] hover:bg-[#E05300] text-white transition-colors shrink-0 ml-auto flex items-center gap-1.5 shadow-sm">
+              <Download className="size-3.5" /> Buy Source Code — ₹{product.sourceCodeOffer.fixedPrice}
+            </a>
+          </div>
+        </nav>
+      )}
+
       {/* ─── Production Tech Stack & Architecture Strip ─── */}
       <section className="py-8 bg-slate-50 border-b border-slate-200/80">
         <div className="container-1280 px-4">
@@ -302,6 +383,290 @@ function ProductDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* ─── 1. Complete Technology Stack ─── */}
+      {product.comprehensiveTechStack && (
+        <section id="tech-stack" className="py-16 md:py-20 bg-white border-b border-slate-200/80 scroll-mt-28">
+          <div className="container-1280 px-4">
+            <div className="max-w-3xl mb-12 space-y-3">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
+                <Code className="size-4" /> 1. COMPLETE TECHNOLOGY STACK
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B2240] tracking-tight">
+                Enterprise Technologies & Libraries
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                Full transparent breakdown of every framework, ORM, UI primitive, AI model, and payment gateway integrated into {product.name}.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {product.comprehensiveTechStack.map((cat, i) => (
+                <div
+                  key={i}
+                  className="rounded-3xl bg-slate-50/70 border border-slate-200/90 p-6 flex flex-col justify-between hover:bg-white hover:border-[#FF6B00]/40 hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
+                      <h3 className="text-base font-extrabold text-[#1B2240] flex items-center gap-2">
+                        <span className="size-2 rounded-full bg-[#FF6B00]" />
+                        {cat.category}
+                      </h3>
+                      <span className="text-[0.68rem] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
+                        {cat.items.length} Modules
+                      </span>
+                    </div>
+
+                    {cat.description && (
+                      <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                        {cat.description}
+                      </p>
+                    )}
+
+                    <div className="space-y-2.5 pt-1">
+                      {cat.items.map((item, idx) => (
+                        <div key={idx} className="p-2.5 rounded-xl bg-white border border-slate-200/70 text-left space-y-0.5 shadow-2xs">
+                          <div className="flex items-center justify-between gap-2">
+                            {item.url ? (
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-bold text-[#1B2240] hover:text-[#FF6B00] transition-colors flex items-center gap-1 group"
+                              >
+                                <span>{item.name}</span>
+                                <ExternalLink className="size-3 text-slate-400 group-hover:text-[#FF6B00]" />
+                              </a>
+                            ) : (
+                              <span className="text-xs font-bold text-[#1B2240]">{item.name}</span>
+                            )}
+                          </div>
+                          <p className="text-[0.72rem] text-slate-600 leading-snug">
+                            {item.details}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── 2. What BriefVault Does (System Capabilities) ─── */}
+      {product.systemCapabilities && (
+        <section id="system-capabilities" className="py-16 md:py-24 bg-[#F8FAFC] border-b border-slate-200/80 scroll-mt-28">
+          <div className="container-1280 px-4 space-y-12">
+            
+            {/* Header with Audience */}
+            <div className="max-w-4xl space-y-3">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
+                <Workflow className="size-4" /> 2. SYSTEM CAPABILITIES & ARCHITECTURE
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1B2240] tracking-tight">
+                What {product.name} Does
+              </h2>
+              <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-medium">
+                {product.systemCapabilities.targetAudience}
+              </p>
+            </div>
+
+            {/* Architecture ASCII Blueprint Container */}
+            <div className="rounded-3xl bg-[#090D18] border border-slate-800 p-6 sm:p-8 text-white shadow-xl space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="size-8 rounded-xl bg-[#FF6B00]/20 text-[#FF6B00] grid place-items-center">
+                    <Layers className="size-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-white">
+                      BriefVault Core Architecture Blueprint
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      End-to-end ingestion, 6-stage background queue pipeline, 19 AI modules, Cashfree billing & multi-tenant security
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(product.systemCapabilities?.architectureDiagram || "");
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-[#FF6B00] text-slate-200 hover:text-white text-xs font-semibold transition-all cursor-pointer self-start sm:self-auto"
+                >
+                  <Copy className="size-3.5" />
+                  <span>Copy Diagram</span>
+                </button>
+              </div>
+
+              <div className="overflow-x-auto py-2">
+                <pre className="font-mono text-[0.72rem] sm:text-xs text-emerald-400/90 leading-relaxed whitespace-pre font-semibold selection:bg-[#FF6B00] selection:text-white">
+                  {product.systemCapabilities.architectureDiagram}
+                </pre>
+              </div>
+            </div>
+
+            {/* 1. Ingestion & Document Processing Pipeline (6 Stages) */}
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B00]">
+                  PIPELINE WORKFLOW
+                </span>
+                <h3 className="text-2xl font-extrabold text-[#1B2240]">
+                  1. Ingestion & Document Processing Pipeline
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600">
+                  When a user uploads judicial rulings or agreements, BriefVault orchestrates a structured 6-stage asynchronous pipeline.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {product.systemCapabilities.pipelineStages.map((stage, idx) => (
+                  <div key={idx} className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-2 hover:border-[#FF6B00]/40 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[0.68rem] font-mono font-bold uppercase px-2.5 py-0.5 rounded-full bg-[#FF6B00]/10 text-[#FF6B00]">
+                        {stage.step}
+                      </span>
+                      <span className="size-6 rounded-full bg-slate-100 grid place-items-center text-xs font-bold text-slate-500">
+                        {idx + 1}
+                      </span>
+                    </div>
+                    <h4 className="text-sm font-bold text-[#1B2240]">
+                      {stage.title}
+                    </h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {stage.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 2. 19 AI Intelligence Modules */}
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B00]">
+                  MULTI-MODEL SUITE
+                </span>
+                <h3 className="text-2xl font-extrabold text-[#1B2240]">
+                  2. 19 AI Intelligence Modules
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600">
+                  BriefVault executes 19 distinct legal analysis modules categorized into four specialized practice areas.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+                {product.systemCapabilities.aiModules.map((grp, i) => (
+                  <div key={i} className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-3 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                        <h4 className="text-sm font-extrabold text-[#1B2240]">
+                          {grp.category}
+                        </h4>
+                        <span className="text-[0.68rem] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          {grp.count} Engines
+                        </span>
+                      </div>
+                      <ul className="space-y-2 mt-3 text-xs text-slate-700">
+                        {grp.modules.map((m, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle2 className="size-3.5 text-[#FF6B00] shrink-0 mt-0.5" />
+                            <span className="leading-snug">{m}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 3, 4, 5, 6 Capabilities Grid */}
+            <div className="grid md:grid-cols-2 gap-6 pt-2">
+              {/* 3. RAG Q&A */}
+              <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 text-left">
+                <div className="size-10 rounded-2xl bg-[#FF6B00]/10 text-[#FF6B00] grid place-items-center">
+                  <Search className="size-5" />
+                </div>
+                <h4 className="text-base font-bold text-[#1B2240]">
+                  3. {product.systemCapabilities.ragCapabilities.title}
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {product.systemCapabilities.ragCapabilities.description}
+                </p>
+                <div className="space-y-1.5 pt-1">
+                  {product.systemCapabilities.ragCapabilities.highlights.map((h, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs text-slate-700 font-medium">
+                      <span className="size-1.5 rounded-full bg-emerald-500" />
+                      <span>{h}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Document Comparison */}
+              <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 text-left">
+                <div className="size-10 rounded-2xl bg-blue-500/10 text-blue-600 grid place-items-center">
+                  <Layers className="size-5" />
+                </div>
+                <h4 className="text-base font-bold text-[#1B2240]">
+                  4. {product.systemCapabilities.documentComparison.title}
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {product.systemCapabilities.documentComparison.description}
+                </p>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-600 space-y-1">
+                  <p className="font-semibold text-slate-800">Key Deviation Highlights:</p>
+                  <p>• Indemnity caps & uncapped liabilities</p>
+                  <p>• Dispute resolution & arbitration seat differences</p>
+                  <p>• Modified termination triggers & notice periods</p>
+                </div>
+              </div>
+
+              {/* 5. Report Generation */}
+              <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 text-left">
+                <div className="size-10 rounded-2xl bg-violet-500/10 text-violet-600 grid place-items-center">
+                  <FileText className="size-5" />
+                </div>
+                <h4 className="text-base font-bold text-[#1B2240]">
+                  5. {product.systemCapabilities.reportGeneration.title}
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {product.systemCapabilities.reportGeneration.description}
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {product.systemCapabilities.reportGeneration.formats.map((fmt, idx) => (
+                    <span key={idx} className="px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200 text-xs font-bold">
+                      {fmt}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* 6. Authentication, Admin & Billing Lifecycle */}
+              <div className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-xs space-y-3 text-left">
+                <div className="size-10 rounded-2xl bg-emerald-500/10 text-emerald-600 grid place-items-center">
+                  <ShieldCheck className="size-5" />
+                </div>
+                <h4 className="text-base font-bold text-[#1B2240]">
+                  6. {product.systemCapabilities.adminAndBilling.title}
+                </h4>
+                <div className="space-y-2 pt-1">
+                  {product.systemCapabilities.adminAndBilling.features.map((feat, idx) => (
+                    <div key={idx} className="text-xs text-slate-600">
+                      <span className="font-bold text-slate-800">{feat.name}:</span> {feat.desc}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      )}
 
       {/* ─── Architectural Capabilities Deep-Dive Section ─── */}
       <section className="py-16 md:py-24 bg-white border-b border-slate-200/80">
@@ -513,6 +878,177 @@ function ProductDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* ─── 3. Step-by-Step Fresh VPS Deployment Guide ─── */}
+      {product.vpsDeploymentGuide && (
+        <section id="vps-deployment" className="py-16 md:py-24 bg-[#090D18] text-white border-b border-slate-800 scroll-mt-28">
+          <div className="container-1280 px-4 space-y-12">
+            
+            {/* Header & Overview */}
+            <div className="max-w-3xl space-y-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
+                <Server className="size-4" /> 3. PRODUCTION RUNBOOK
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+                Step-by-Step Fresh VPS Deployment Guide
+              </h2>
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+                Deploy {product.name} to a brand-new Ubuntu 22.04 / 24.04 LTS VPS (Hetzner, DigitalOcean, AWS EC2, Linode, Vultr, Contabo) in 15 minutes.
+              </p>
+            </div>
+
+            {/* Overview Matrix Banner */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/10 text-xs">
+              <div>
+                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Target OS</span>
+                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.os}</span>
+              </div>
+              <div>
+                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Process Mgr</span>
+                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.processManager}</span>
+              </div>
+              <div>
+                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Reverse Proxy</span>
+                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.reverseProxy}</span>
+              </div>
+              <div>
+                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Database</span>
+                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.database}</span>
+              </div>
+              <div>
+                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Storage Path</span>
+                <span className="font-mono text-slate-200 text-[0.7rem] mt-0.5 block truncate" title={product.vpsDeploymentGuide.overview.storagePath}>
+                  {product.vpsDeploymentGuide.overview.storagePath}
+                </span>
+              </div>
+              <div>
+                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">App Path</span>
+                <span className="font-mono text-slate-200 text-[0.7rem] mt-0.5 block truncate" title={product.vpsDeploymentGuide.overview.appPath}>
+                  {product.vpsDeploymentGuide.overview.appPath}
+                </span>
+              </div>
+            </div>
+
+            {/* 10 Step Cards */}
+            <div className="space-y-4">
+              {product.vpsDeploymentGuide.steps.map((st) => (
+                <div
+                  key={st.stepNumber}
+                  className="rounded-2xl bg-white/[0.03] border border-white/10 p-5 sm:p-6 space-y-3 hover:border-white/20 transition-colors"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      <span className="size-7 rounded-xl bg-[#FF6B00] text-white text-xs font-black grid place-items-center shrink-0">
+                        {st.stepNumber}
+                      </span>
+                      <h3 className="text-base font-bold text-white">
+                        {st.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {st.description && (
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                      {st.description}
+                    </p>
+                  )}
+
+                  {st.command && (
+                    <CodeSnippetBox code={st.command} language="bash" filename={`Step ${st.stepNumber} Commands`} />
+                  )}
+
+                  {st.codeSnippet && (
+                    <CodeSnippetBox
+                      code={st.codeSnippet.code}
+                      language={st.codeSnippet.language}
+                      filename={st.codeSnippet.filename}
+                    />
+                  )}
+
+                  {st.note && (
+                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 whitespace-pre-line font-mono">
+                      💡 {st.note}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* ─── 4. Step-by-Step Redeployment Guide (Updates) ─── */}
+      {product.vpsRedeploymentGuide && (
+        <section id="vps-redeploy" className="py-16 md:py-24 bg-[#0F1523] text-white border-b border-slate-800 scroll-mt-28">
+          <div className="container-1280 px-4 space-y-12">
+            
+            <div className="max-w-3xl space-y-3">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
+                <RefreshCw className="size-4" /> 4. ZERO-DOWNTIME UPDATES
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+                Step-by-Step Redeployment Guide
+              </h2>
+              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
+                When you make changes to code, push to Git, or want to deploy updates to your running VPS, use this seamless workflow.
+              </p>
+            </div>
+
+            {/* Automated 1-Command Redeploy Script Callout */}
+            <div className="p-6 rounded-3xl bg-gradient-to-r from-[#FF6B00]/15 to-transparent border border-[#FF6B00]/30 space-y-4">
+              <div className="flex items-center gap-2 text-sm font-bold text-[#FF6B00]">
+                <Zap className="size-4.5" />
+                <span>Automated 1-Command Redeploy Script (Recommended)</span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Create <code className="text-emerald-400 bg-black/40 px-1.5 py-0.5 rounded font-mono">{product.vpsRedeploymentGuide.deployScriptFilename}</code> once on your server, make it executable with <code className="text-emerald-400 bg-black/40 px-1.5 py-0.5 rounded font-mono">chmod +x {product.vpsRedeploymentGuide.deployScriptFilename}</code>, and run it anytime with zero downtime!
+              </p>
+
+              <CodeSnippetBox
+                code={product.vpsRedeploymentGuide.deployScript}
+                language="bash"
+                filename={product.vpsRedeploymentGuide.deployScriptFilename}
+              />
+            </div>
+
+            {/* Manual Redeployment Steps Grid */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Terminal className="size-4 text-emerald-400" />
+                Manual Redeployment Steps
+              </h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {product.vpsRedeploymentGuide.manualSteps.map((m, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
+                    <span className="text-xs font-bold text-white block">{m.step}</span>
+                    {m.explanation && <p className="text-[0.72rem] text-slate-400">{m.explanation}</p>}
+                    <CodeSnippetBox code={m.command} language="bash" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Rollback Plan */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <Shield className="size-4 text-rose-400" />
+                Emergency Rollback Plan (In case an update fails)
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                {product.vpsRedeploymentGuide.rollbackPlan.map((r, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-rose-500/[0.05] border border-rose-500/20 space-y-2">
+                    <span className="text-xs font-bold text-rose-300 block">{r.step}</span>
+                    {r.explanation && <p className="text-[0.72rem] text-slate-400">{r.explanation}</p>}
+                    <CodeSnippetBox code={r.command} language="bash" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </section>
+      )}
 
       {/* ─── One-Time Fixed Price Source Code Purchase Section ─── */}
       <section id="buy-source-code" className="py-16 md:py-24 bg-[#FDFDFC] border-b border-slate-200/80 scroll-mt-24">
