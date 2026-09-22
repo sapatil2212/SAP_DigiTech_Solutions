@@ -170,7 +170,7 @@ export function AiSolutions() {
         </div>
 
         {/* Headline */}
-        <h2 className="mt-5 sm:mt-6 text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-slate-900 leading-[1.1]">
+        <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-slate-900 leading-[1.15]">
           <span className="block">AI-Powered Solutions for</span>
           <span className="block">
             Smarter{" "}
@@ -184,13 +184,13 @@ export function AiSolutions() {
         </h2>
 
         {/* Cards */}
-        <div className="mt-12 sm:mt-14 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+        <div className="mt-8 sm:mt-12 md:mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {cards.map((c, i) => (
             <motion.button
               type="button"
               key={c.title}
               onClick={() => setOpenIndex(i)}
-              className="text-left rounded-3xl flex flex-col overflow-hidden will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7B6BF5] focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
+              className="text-left rounded-2xl sm:rounded-3xl flex flex-col overflow-hidden will-change-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7B6BF5] focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer"
               style={{ background: c.bg }}
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -208,19 +208,19 @@ export function AiSolutions() {
                   {c.mock}
                 </motion.div>
               </div>
-              <div className="p-5 flex flex-col gap-4 flex-1">
+              <div className="p-4 sm:p-5 flex flex-col gap-3 sm:gap-4 flex-1">
                 <div className="flex items-start gap-3">
                   <div
-                    className="size-9 sm:size-10 shrink-0 rounded-full grid place-items-center"
+                    className="size-8.5 sm:size-10 shrink-0 rounded-full grid place-items-center"
                     style={{ background: c.iconBg, color: c.iconColor }}
                   >
                     {c.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="font-semibold text-slate-900 text-base sm:text-lg leading-snug">{c.title}</div>
+                    <div className="font-semibold text-slate-900 text-sm sm:text-base leading-snug">{c.title}</div>
                   </div>
                 </div>
-                <p className="text-slate-600 text-sm sm:text-[15px] leading-relaxed">{c.desc}</p>
+                <p className="text-slate-600 text-xs sm:text-sm font-normal leading-relaxed">{c.desc}</p>
               </div>
             </motion.button>
           ))}
@@ -228,7 +228,7 @@ export function AiSolutions() {
 
         {/* CTA banner */}
         <motion.div
-          className="mt-8 sm:mt-10 rounded-3xl p-5 sm:p-7 md:p-8 grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-5 md:gap-8"
+          className="mt-8 sm:mt-10 rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-8 grid grid-cols-1 md:grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-5 md:gap-8"
           style={{ background: "linear-gradient(90deg, #E8E4FA 0%, #E4E8FA 100%)" }}
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -237,51 +237,51 @@ export function AiSolutions() {
         >
           <div className="relative shrink-0 justify-self-center md:justify-self-start">
             <motion.div
-              className="size-12 sm:size-14 rounded-full bg-[#7B6BF5] grid place-items-center text-white"
+              className="size-11 sm:size-14 rounded-full bg-[#7B6BF5] grid place-items-center text-white"
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Send className="size-5 sm:size-6" />
+              <Send className="size-4.5 sm:size-6" />
             </motion.div>
             <svg viewBox="0 0 100 40" className="absolute -right-16 top-4 w-24 h-10 hidden lg:block">
               <path d="M0,20 Q30,0 60,25 T100,15" stroke="#7B6BF5" strokeWidth="1.5" fill="none" strokeDasharray="3 3" />
             </svg>
           </div>
-          <div className="min-w-0 text-center md:text-left md:pl-6 lg:pl-10">
-            <div className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-900 leading-snug">
+          <div className="min-w-0 text-center md:text-left md:pl-4 lg:pl-10">
+            <div className="text-base sm:text-lg md:text-xl font-semibold text-slate-900 leading-snug">
               Let's build, automate &amp; grow your brand with AI.
             </div>
-            <div className="text-slate-600 text-sm sm:text-base mt-1">Smart strategies. Creative ideas. Real results.</div>
+            <div className="text-slate-600 text-xs sm:text-sm mt-1 font-normal">Smart strategies. Creative ideas. Real results.</div>
           </div>
           <motion.a
             href="/contact"
-            className="justify-self-center md:justify-self-end inline-flex items-center gap-2 rounded-full bg-[#7B6BF5] px-5 sm:px-6 py-3 sm:py-3.5 text-white font-medium text-sm sm:text-base"
+            className="justify-self-center md:justify-self-end inline-flex items-center gap-2 rounded-full bg-[#7B6BF5] px-4.5 sm:px-6 py-2.5 sm:py-3.5 text-white font-medium text-xs sm:text-sm"
             whileHover={{ scale: 1.04, backgroundColor: "#6B5CE7" }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 320, damping: 20 }}
           >
             Book a Free Consultation
             <motion.span
-              className="size-5 sm:size-6 rounded-full bg-white/20 grid place-items-center"
+              className="size-4.5 sm:size-5 rounded-full bg-white/20 grid place-items-center"
               whileHover={{ x: 3 }}
               transition={{ duration: 0.3, ease: EASE }}
             >
-              <ChevronRight className="size-3.5 sm:size-4" />
+              <ChevronRight className="size-3 sm:size-3.5" />
             </motion.span>
           </motion.a>
         </motion.div>
 
 
         {/* Feature row */}
-        <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 lg:gap-4">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4">
           {features.map((f) => (
             <div key={f.title} className="flex items-start gap-3">
-              <div className="size-10 shrink-0 rounded-lg bg-[#E8E4FA] grid place-items-center text-[#7B6BF5]">
-                <f.icon className="size-5" />
+              <div className="size-9 sm:size-10 shrink-0 rounded-lg bg-[#E8E4FA] grid place-items-center text-[#7B6BF5]">
+                <f.icon className="size-4.5 sm:size-5" />
               </div>
               <div className="min-w-0">
-                <div className="font-semibold text-slate-900 text-sm leading-snug">{f.title}</div>
-                <div className="text-slate-500 text-xs mt-0.5">{f.desc}</div>
+                <div className="font-semibold text-slate-900 text-xs sm:text-sm leading-snug">{f.title}</div>
+                <div className="text-slate-500 text-[0.72rem] sm:text-xs mt-0.5 font-normal">{f.desc}</div>
               </div>
             </div>
           ))}

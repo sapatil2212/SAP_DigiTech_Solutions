@@ -520,7 +520,7 @@ function Hero() {
   ];
 
   return (
-    <section id="home" className="relative overflow-hidden pt-32 md:pt-40 pb-10 md:pb-12">
+    <section id="home" className="relative overflow-hidden pt-24 sm:pt-32 md:pt-40 pb-8 md:pb-12">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#F9F7F4] via-[#FFF0E8]/60 to-[#F9F7F4]" />
       {/* Animated blobs — subtle, not overwhelming */}
@@ -557,9 +557,9 @@ function Hero() {
         </svg>
       </div>
       <div className="container-1280 relative z-10">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            <div className="relative min-h-[5.5rem] sm:min-h-[6.8rem] md:min-h-[8.2rem] lg:min-h-[9rem] flex items-center w-full">
+            <div className="relative min-h-[4.75rem] sm:min-h-[6.8rem] md:min-h-[8.2rem] lg:min-h-[9rem] flex items-center w-full">
               <AnimatePresence>
                 <motion.h1
                   key={headlineIndex}
@@ -570,7 +570,7 @@ function Hero() {
                     duration: 1.2,
                     ease: [0.22, 1, 0.36, 1],
                   }}
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-extrabold leading-[1.02] tracking-tight text-navy left-0 top-0 w-full"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-[4.25rem] font-extrabold leading-[1.05] tracking-tight text-navy left-0 top-0 w-full"
                 >
                   {heroHeadlines[headlineIndex].line1}<br className="hidden sm:inline" />{" "}
                   <span className="gradient-text">{heroHeadlines[headlineIndex].line2}</span>
@@ -582,7 +582,7 @@ function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.12 }}
-              className="mt-2 text-lg sm:text-xl font-bold leading-snug tracking-tight text-navy/85 max-w-xl"
+              className="mt-1 sm:mt-2 text-sm sm:text-xl font-bold leading-snug tracking-tight text-navy/85 max-w-xl"
             >
               Building smarter businesses with strategy, AI & digital growth.
             </motion.h2>
@@ -591,10 +591,10 @@ function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="mt-3 text-sm sm:text-base leading-relaxed text-muted-foreground max-w-xl"
+              className="mt-1.5 sm:mt-3 text-xs sm:text-base leading-relaxed text-muted-foreground max-w-xl font-normal"
             >
               We combine performance marketing, AI automation and design to build growth
-              engines for ambitious brands. Not campaigns that expire — systems that
+              engines for ambitious brands. Not <br className="sm:hidden" />campaigns that expire — systems that
               compound.
             </motion.p>
 
@@ -602,7 +602,7 @@ function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.28 }}
-              className="mt-6 flex flex-wrap items-center gap-3"
+              className="mt-4 sm:mt-6 flex flex-wrap items-center gap-2.5 sm:gap-3"
             >
               <a href="/contact" className="btn-primary animate-pulse-ring">
                 Book Strategy Call <ArrowRight className="size-4" />
@@ -619,7 +619,7 @@ function Hero() {
         </div>
 
         {/* Shipped Trust Marquee */}
-        <div className="mt-10 border-t border-hairline pt-6">
+        <div className="mt-7 sm:mt-10 border-t border-hairline pt-4 sm:pt-6">
           <p className="text-center text-[0.72rem] uppercase tracking-[0.2em] font-semibold text-muted-foreground">
             Trusted by ambitious brands across industries
           </p>
@@ -648,28 +648,28 @@ function About() {
     <section id="about" className="py-10 sm:py-14 bg-[#F8FAFC]/50 relative overflow-hidden">
       <div className="container-1280">
         {/* Top Header Block */}
-        <div className="grid md:grid-cols-12 gap-8 items-start justify-between">
+        <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-start justify-between">
           {/* Left Column */}
           <div className="md:col-span-6 flex flex-col">
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-[0.18em] text-[#2563EB]">
+            <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
               What We Do
             </span>
-            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold text-slate-950 leading-[1.08] tracking-tight">
+            <h2 className="mt-3 sm:mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-slate-950 leading-[1.12] tracking-tight">
               We solve digital <br className="hidden sm:inline" />
               challenges
             </h2>
           </div>
 
           {/* Right Column */}
-          <div className="md:col-span-6 flex flex-col items-start md:pt-8 md:pl-6">
-            <p className="text-slate-600 text-[1.05rem] leading-[1.65] max-w-xl">
+          <div className="md:col-span-6 flex flex-col items-start md:pt-6 md:pl-6">
+            <p className="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed max-w-xl font-normal">
               Together, we help our clients achieve tangible, measurable results.
               Focused on business outcomes, we bring a unique set of expertise
               and skills to the party.
             </p>
             <a
               href="/about"
-              className="mt-6 inline-flex items-center gap-1.5 text-[0.82rem] font-bold uppercase tracking-[0.15em] text-slate-900 border-b-2 border-slate-900 pb-1 hover:text-[#2563EB] hover:border-[#2563EB] transition-colors w-fit cursor-pointer"
+              className="mt-4 sm:mt-6 inline-flex items-center gap-1.5 text-xs sm:text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-slate-900 border-b-2 border-slate-900 pb-1 hover:text-[#2563EB] hover:border-[#2563EB] transition-colors w-fit cursor-pointer"
             >
               More About Us <ArrowRight className="size-3.5" />
             </a>
@@ -677,7 +677,7 @@ function About() {
         </div>
 
         {/* 3-Card Row underneath */}
-        <div className="mt-14 sm:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="mt-8 sm:mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {/* Card 1: Better audiences */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -685,15 +685,15 @@ function About() {
             viewport={{ once: true, margin: "-10% 0px" }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
             whileHover={{ y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
-            className="bg-[#E8E4FA] rounded-[2rem] p-8 sm:p-10 border border-purple-200/50 hover:shadow-[0_20px_40px_rgba(123,107,245,0.12)] transition-all duration-300 flex flex-col cursor-pointer"
+            className="bg-[#E8E4FA] rounded-2xl sm:rounded-[2rem] p-5 sm:p-7 md:p-8 border border-purple-200/50 hover:shadow-[0_20px_40px_rgba(123,107,245,0.12)] transition-all duration-300 flex flex-col cursor-pointer"
           >
-            <div className="flex justify-between items-center w-full mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-[#0F172A]">Better audiences</h3>
-              <div className="size-12 shrink-0 rounded-full bg-white text-[#7B6BF5] border border-purple-100/50 grid place-items-center">
-                <Target className="size-5 sm:size-6" />
+            <div className="flex justify-between items-center w-full mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-[#0F172A]">Better audiences</h3>
+              <div className="size-10 sm:size-12 shrink-0 rounded-full bg-white text-[#7B6BF5] border border-purple-100/50 grid place-items-center">
+                <Target className="size-4.5 sm:size-6" />
               </div>
             </div>
-            <p className="text-slate-700 text-[0.93rem] sm:text-[0.98rem] leading-[1.65]">
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-normal">
               At SAP DigiTech Solutions, we believe that reaching the right audience is the
               cornerstone of any successful digital marketing campaign. Our team of experts
               utilizes advanced targeting techniques to identify and engage with your ideal
@@ -708,15 +708,15 @@ function About() {
             viewport={{ once: true, margin: "-10% 0px" }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}
             whileHover={{ y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
-            className="bg-[#E0F2FE] rounded-[2rem] p-8 sm:p-10 border border-sky-200/50 hover:shadow-[0_20px_40px_rgba(2,132,199,0.12)] transition-all duration-300 flex flex-col cursor-pointer"
+            className="bg-[#E0F2FE] rounded-2xl sm:rounded-[2rem] p-5 sm:p-7 md:p-8 border border-sky-200/50 hover:shadow-[0_20px_40px_rgba(2,132,199,0.12)] transition-all duration-300 flex flex-col cursor-pointer"
           >
-            <div className="flex justify-between items-center w-full mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-[#0F172A]">Better analytics</h3>
-              <div className="size-12 shrink-0 rounded-full bg-white text-[#0284C7] border border-sky-100/50 grid place-items-center">
-                <BarChart3 className="size-5 sm:size-6" />
+            <div className="flex justify-between items-center w-full mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-[#0F172A]">Better analytics</h3>
+              <div className="size-10 sm:size-12 shrink-0 rounded-full bg-white text-[#0284C7] border border-sky-100/50 grid place-items-center">
+                <BarChart3 className="size-4.5 sm:size-6" />
               </div>
             </div>
-            <p className="text-slate-700 text-[0.93rem] sm:text-[0.98rem] leading-[1.65]">
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-normal">
               Our ultimate goal is to deliver better outcomes for your business. By focusing
               on the right audience and leveraging superior analytics, we drive results that
               matter. From increased brand awareness to higher conversion rates, our strategies
@@ -732,15 +732,15 @@ function About() {
             viewport={{ once: true, margin: "-10% 0px" }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             whileHover={{ y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
-            className="bg-[#DCFCE7] rounded-[2rem] p-8 sm:p-10 border border-emerald-200/50 hover:shadow-[0_20px_40px_rgba(5,150,105,0.12)] transition-all duration-300 flex flex-col cursor-pointer"
+            className="bg-[#DCFCE7] rounded-2xl sm:rounded-[2rem] p-5 sm:p-7 md:p-8 border border-emerald-200/50 hover:shadow-[0_20px_40px_rgba(5,150,105,0.12)] transition-all duration-300 flex flex-col cursor-pointer"
           >
-            <div className="flex justify-between items-center w-full mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-[#0F172A]">Better outcomes</h3>
-              <div className="size-12 shrink-0 rounded-full bg-white text-[#059669] border border-emerald-100/50 grid place-items-center">
-                <DollarSign className="size-5 sm:size-6" />
+            <div className="flex justify-between items-center w-full mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-[#0F172A]">Better outcomes</h3>
+              <div className="size-10 sm:size-12 shrink-0 rounded-full bg-white text-[#059669] border border-emerald-100/50 grid place-items-center">
+                <DollarSign className="size-4.5 sm:size-6" />
               </div>
             </div>
-            <p className="text-slate-700 text-[0.93rem] sm:text-[0.98rem] leading-[1.65]">
+            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed font-normal">
               At SAP DigiTech Solutions, we deliver superior results through our data-driven and
               customized digital marketing strategies. Our expert team uses advanced tools and
               innovative techniques to ensure measurable improvements in your online presence and
@@ -855,21 +855,21 @@ function Industries() {
     },
   ];
   return (
-    <section className="py-12 md:py-16 bg-white">
+    <section className="py-10 sm:py-14 md:py-16 bg-white">
       <div className="container-1280">
-        <div className="flex items-end justify-between flex-wrap gap-6">
+        <div className="flex items-end justify-between flex-wrap gap-4 sm:gap-6">
           <div>
             <span className="section-eyebrow">Industries</span>
-            <h2 className="mt-4 text-4xl md:text-5xl font-extrabold text-navy leading-[1.05]">
+            <h2 className="mt-3 sm:mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-navy leading-[1.12]">
               Deep expertise across<br /><span className="gradient-text">eight verticals.</span>
             </h2>
           </div>
-          <p className="max-w-lg text-slate-600 text-[0.98rem] leading-[1.65]">
+          <p className="max-w-lg text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed font-normal">
             We speak your customers' language with playbooks refined across hundreds of campaigns. From high-trust healthcare intake systems to high-conversion D2C funnels, we craft tailored digital growth strategies built for market leadership.
           </p>
         </div>
 
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {items.map((it, i) => (
             <motion.div
               key={it.name}
@@ -878,18 +878,18 @@ function Industries() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: (i % 4) * 0.08 }}
               whileHover={{ y: -6, scale: 1.02 }}
-              className={`rounded-3xl p-6 border ${it.border} flex flex-col justify-between transition-shadow duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] cursor-pointer`}
+              className={`rounded-2xl sm:rounded-3xl p-5 sm:p-6 border ${it.border} flex flex-col justify-between transition-shadow duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] cursor-pointer`}
               style={{ background: it.bg }}
             >
               <div>
                 <div
-                  className="size-11 sm:size-12 rounded-full grid place-items-center shadow-sm"
+                  className="size-10 sm:size-12 rounded-full grid place-items-center shadow-sm"
                   style={{ background: it.iconBg, color: it.iconColor }}
                 >
-                  <it.Icon className="size-5 sm:size-6" />
+                  <it.Icon className="size-4.5 sm:size-6" />
                 </div>
-                <p className={`mt-5 font-bold text-lg ${it.titleColor}`}>{it.name}</p>
-                <p className={`mt-1.5 text-xs sm:text-sm ${it.descColor} leading-relaxed`}>{it.desc}</p>
+                <p className={`mt-4 sm:mt-5 font-semibold text-base sm:text-lg ${it.titleColor}`}>{it.name}</p>
+                <p className={`mt-1 text-xs sm:text-sm ${it.descColor} leading-relaxed font-normal`}>{it.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -1678,34 +1678,34 @@ export function Portfolio({ isFullPage = false }: { isFullPage?: boolean }) {
   }
 
   return (
-    <section id="portfolio" className="py-12 md:py-16 bg-[color:var(--sky-tint)] relative overflow-hidden">
+    <section id="portfolio" className="py-10 sm:py-14 md:py-16 bg-[color:var(--sky-tint)] relative overflow-hidden">
       {/* Decorative vectors */}
       <div className="absolute top-1/4 right-0 size-80 rounded-full bg-primary/5 blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 size-80 rounded-full bg-sky-500/5 blur-3xl pointer-events-none" />
 
       <div className="container-1280 relative z-10">
         {/* Top Header Block */}
-        <div className="grid md:grid-cols-12 gap-8 items-start justify-between">
+        <div className="grid md:grid-cols-12 gap-6 md:gap-8 items-start justify-between">
           {/* Left Column */}
           <div className="md:col-span-6 flex flex-col">
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-[0.18em] text-[#2563EB]">
+            <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
               Our Portfolio
             </span>
-            <h2 className="mt-4 text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold text-slate-950 leading-[1.08] tracking-tight text-left">
+            <h2 className="mt-3 sm:mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-slate-950 leading-[1.12] tracking-tight text-left">
               Witnessing Brand <br className="hidden sm:inline" />
               <span className="gradient-text">Transformation</span>
             </h2>
           </div>
 
           {/* Right Column */}
-          <div className="md:col-span-6 flex flex-col items-start md:pt-8 md:pl-6">
-            <p className="text-slate-600 text-[1.05rem] leading-[1.65] max-w-xl text-left">
+          <div className="md:col-span-6 flex flex-col items-start md:pt-6 md:pl-6">
+            <p className="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed max-w-xl text-left font-normal">
               At SAP DigiTech Solutions, our work speaks for itself. We design high-impact solutions, from revitalizing brand identities and packaging to launching digital campaigns. Each project reflects our commitment to creative excellence and strategic growth.
             </p>
             {!isFullPage && (
               <a
                 href="/portfolio"
-                className="btn-ghost mt-6"
+                className="btn-ghost mt-4 sm:mt-6 text-xs sm:text-sm"
               >
                 See all case studies <ArrowUpRight className="size-4" />
               </a>
@@ -1713,15 +1713,15 @@ export function Portfolio({ isFullPage = false }: { isFullPage?: boolean }) {
           </div>
         </div>
 
-        {/* Categories Tab Selector */}
-        <div className="mt-10 flex flex-wrap gap-2 pb-4 border-b border-hairline">
+        {/* Categories Tab Selector (Horizontal scroll on mobile with no-scrollbar) */}
+        <div className="mt-6 sm:mt-10 flex gap-2 pb-3 overflow-x-auto no-scrollbar flex-nowrap sm:flex-wrap border-b border-hairline">
           {categories.map((cat) => {
             const isActive = filter === cat;
             return (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`relative px-4 py-2 text-sm font-semibold rounded-full transition-all border cursor-pointer ${isActive
+                className={`relative whitespace-nowrap px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold rounded-full transition-all border cursor-pointer shrink-0 ${isActive
                     ? "border-navy bg-navy text-white"
                     : "border-hairline bg-white/60 hover:bg-white text-navy/70 hover:text-navy"
                   }`}
@@ -1742,11 +1742,11 @@ export function Portfolio({ isFullPage = false }: { isFullPage?: boolean }) {
         {/* Dynamic Project Grid */}
         <motion.div
           layout
-          className={`mt-10 grid gap-4 lg:gap-5 ${filter === "Creative Logo"
+          className={`mt-8 sm:mt-10 grid gap-3 sm:gap-4 lg:gap-5 ${filter === "Creative Logo"
               ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
               : filter === "Marketing & Ads"
                 ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             }`}
         >
           <AnimatePresence mode="popLayout">
@@ -1758,7 +1758,7 @@ export function Portfolio({ isFullPage = false }: { isFullPage?: boolean }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className={`group relative rounded-[2rem] border border-hairline overflow-hidden hover:border-primary/30 transition-colors duration-300 cursor-pointer bg-slate-50 ${p.category === "Creative Logo"
+                className={`group relative rounded-2xl sm:rounded-[2rem] border border-hairline overflow-hidden hover:border-primary/30 transition-colors duration-300 cursor-pointer bg-slate-50 ${p.category === "Creative Logo"
                     ? "aspect-square"
                     : p.url ? "aspect-[16/9]" : "aspect-[4/5]"
                   }`}
@@ -1774,12 +1774,12 @@ export function Portfolio({ isFullPage = false }: { isFullPage?: boolean }) {
 
                   {/* Bottom overlay with compact glass title card and clean arrow icon (only for projects with live website link) */}
                   {p.url && (
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between z-30 pointer-events-none">
-                      <div className="rounded-xl glass px-3 py-1.5 pointer-events-auto">
-                        <h3 className="text-[0.7rem] sm:text-xs font-bold text-navy leading-tight">{p.t}</h3>
+                    <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between z-30 pointer-events-none">
+                      <div className="rounded-xl glass px-2.5 sm:px-3 py-1 sm:py-1.5 pointer-events-auto max-w-[80%]">
+                        <h3 className="text-[0.7rem] sm:text-xs font-semibold text-navy leading-tight truncate">{p.t}</h3>
                       </div>
-                      <div className="size-8 rounded-full bg-white border border-slate-200/50 shadow-sm grid place-items-center text-navy group-hover:bg-[#7B6BF5] group-hover:text-white transition-colors duration-300 shrink-0 pointer-events-auto">
-                        <ArrowUpRight className="size-4.5" />
+                      <div className="size-7 sm:size-8 rounded-full bg-white border border-slate-200/50 shadow-sm grid place-items-center text-navy group-hover:bg-[#7B6BF5] group-hover:text-white transition-colors duration-300 shrink-0 pointer-events-auto">
+                        <ArrowUpRight className="size-3.5 sm:size-4.5" />
                       </div>
                     </div>
                   )}
@@ -1945,43 +1945,43 @@ function Testimonials() {
   const marqueeItems = [...items, ...items, ...items];
 
   return (
-    <section className="py-12 md:py-16 overflow-hidden">
+    <section className="py-10 sm:py-14 md:py-16 overflow-hidden">
       <div className="container-1280">
         <div className="text-center max-w-2xl mx-auto">
           <span className="section-eyebrow">Testimonials</span>
-          <h2 className="mt-4 text-4xl md:text-5xl font-extrabold text-navy leading-[1.05]">
+          <h2 className="mt-3 sm:mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-navy leading-[1.12]">
             Words from <span className="gradient-text">our partners.</span>
           </h2>
         </div>
       </div>
 
-      <div className="mt-14 relative w-full overflow-hidden py-4">
+      <div className="mt-8 sm:mt-12 relative w-full overflow-hidden py-4">
         {/* Gradient edge overlays for elegant blend */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-16 md:w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-16 md:w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
 
         <div
-          className="w-max flex gap-6 animate-marquee hover:[animation-play-state:paused]"
+          className="w-max flex gap-4 sm:gap-6 animate-marquee hover:[animation-play-state:paused]"
           style={{ animationDuration: '40s' }}
         >
           {marqueeItems.map((t, i) => (
             <div
               key={`${t.n}-${i}`}
-              className="w-[320px] md:w-[380px] shrink-0 card-elevated p-7 relative border border-hairline bg-white rounded-2xl"
+              className="w-[280px] sm:w-[320px] md:w-[380px] shrink-0 card-elevated p-5 sm:p-7 relative border border-hairline bg-white rounded-2xl"
             >
-              <Quote className="size-6 text-primary/30" />
-              <p className="mt-4 text-[0.95rem] leading-[1.7] text-navy min-h-[5.5rem]">"{t.q}"</p>
-              <div className="mt-5 flex items-center gap-3">
-                <span className="size-11 grid place-items-center rounded-full gradient-brand text-white font-bold text-sm shrink-0">
+              <Quote className="size-5 sm:size-6 text-primary/30" />
+              <p className="mt-3 sm:mt-4 text-xs sm:text-sm md:text-[0.95rem] leading-relaxed text-navy min-h-[4.5rem] sm:min-h-[5.5rem] font-normal">"{t.q}"</p>
+              <div className="mt-4 sm:mt-5 flex items-center gap-3">
+                <span className="size-9 sm:size-11 grid place-items-center rounded-full gradient-brand text-white font-semibold text-xs sm:text-sm shrink-0">
                   {t.n.split(" ").map((s) => s[0]).slice(0, 2).join("")}
                 </span>
                 <div className="overflow-hidden">
-                  <p className="font-semibold text-navy text-sm truncate">{t.n}</p>
-                  <p className="text-xs text-muted-foreground truncate">{t.r}</p>
+                  <p className="font-semibold text-navy text-xs sm:text-sm truncate">{t.n}</p>
+                  <p className="text-[0.7rem] sm:text-xs text-muted-foreground truncate font-normal">{t.r}</p>
                 </div>
                 <div className="ml-auto flex gap-0.5 shrink-0">
                   {Array.from({ length: 5 }).map((_, k) => (
-                    <Star key={k} className="size-3.5 fill-amber-400 text-amber-400" />
+                    <Star key={k} className="size-3 sm:size-3.5 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
               </div>
@@ -1997,60 +1997,60 @@ function Testimonials() {
 
 function Founder() {
   return (
-    <section id="founder" className="py-12 md:py-16 relative overflow-hidden">
+    <section id="founder" className="py-10 sm:py-14 md:py-16 relative overflow-hidden">
       <div className="absolute -top-20 -left-20 size-96 rounded-full bg-primary/10 blur-3xl -z-10" />
       <div className="container-1280">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-5">
-            <div className="relative aspect-[4/5] rounded-[32px] overflow-hidden border border-hairline bg-slate-50">
+            <div className="relative aspect-[4/5] rounded-2xl sm:rounded-[32px] overflow-hidden border border-hairline bg-slate-50 max-w-sm mx-auto lg:max-w-none">
               <img
                 src="/assets/work/founder/swapnil-agarkhedkar.png"
                 alt="Swapnil Agarkhedkar"
                 className="w-full h-full object-cover object-center"
               />
-              <div className="absolute bottom-6 left-6 right-6 rounded-2xl glass p-4">
-                <p className="text-xs uppercase tracking-widest text-primary font-semibold">Founder</p>
-                <p className="mt-1 text-xl font-extrabold text-navy">Swapnil Agarkhedkar</p>
-                <p className="text-xs text-muted-foreground">Digital Marketing & AI Strategist</p>
+              <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 rounded-xl sm:rounded-2xl glass p-3 sm:p-4">
+                <p className="text-[0.65rem] sm:text-xs uppercase tracking-widest text-primary font-semibold">Founder</p>
+                <p className="mt-0.5 sm:mt-1 text-lg sm:text-xl font-semibold text-navy">Swapnil Agarkhedkar</p>
+                <p className="text-[0.7rem] sm:text-xs text-muted-foreground font-normal">Digital Marketing & AI Strategist</p>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-7">
             <span className="section-eyebrow">Meet the Founder</span>
-            <h2 className="mt-4 text-4xl md:text-5xl font-extrabold text-navy leading-[1.05]">
+            <h2 className="mt-3 sm:mt-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-navy leading-[1.12]">
               Swapnil <span className="gradient-text">Agarkhedkar</span>
             </h2>
-            <p className="mt-5 text-[1.025rem] leading-[1.65] text-slate-600">
+            <p className="mt-3 sm:mt-5 text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 font-normal">
               Swapnil is a Digital Marketing Strategist dedicated to helping businesses scale through a powerful mix of strategy, performance marketing, technology, and AI automation.
             </p>
-            <p className="mt-3 text-[1.025rem] leading-[1.65] text-slate-600">
+            <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 font-normal">
               With deep expertise in consumer psychology and digital systems, Swapnil works across industries including hospitality, technology, and professional services. He has developed specialized authority in healthcare marketing—partnering with hospitals, clinics, and laboratories to build compliant, high-trust client systems.
             </p>
-            <p className="mt-3 text-[1.025rem] leading-[1.65] text-slate-600">
+            <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 font-normal">
               A believer in structured growth and innovation, Swapnil's vision is to empower enterprises to leverage AI intelligently and build competitive, future-ready brands.
             </p>
 
-            <div className="mt-8 grid sm:grid-cols-3 gap-3">
+            <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 { n: "MBA", l: "Marketing Management", icon: GraduationCap },
                 { n: "MJMC", l: "Masters in Journalism and Mass Communication", icon: Megaphone },
                 { n: "Certified", l: "Digital Marketing Strategist", icon: Award },
               ].map(({ n, l, icon: Icon }) => (
-                <div key={l} className="card-elevated p-4 text-center flex flex-col items-center justify-center h-full min-h-[145px]">
-                  <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2.5">
+                <div key={l} className="card-elevated p-3.5 sm:p-4 text-center flex flex-col items-center justify-center h-full min-h-[120px] sm:min-h-[145px]">
+                  <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                     <Icon className="size-4" />
                   </div>
-                  <p className="text-base font-bold gradient-text">{n}</p>
-                  <p className="text-[0.72rem] sm:text-[0.62rem] md:text-[0.68rem] font-medium text-slate-500 mt-1 leading-snug max-w-[150px] mx-auto">
+                  <p className="text-sm sm:text-base font-semibold gradient-text">{n}</p>
+                  <p className="text-[0.72rem] sm:text-[0.62rem] md:text-[0.68rem] font-normal text-slate-500 mt-1 leading-snug max-w-[150px] mx-auto">
                     {l}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8">
-              <a href="/contact" className="btn-primary inline-flex">
+            <div className="mt-6 sm:mt-8">
+              <a href="/contact" className="btn-primary inline-flex text-xs sm:text-sm">
                 Book a Strategy Consultation <ArrowRight className="size-4" />
               </a>
             </div>
@@ -2291,39 +2291,40 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="py-12 md:py-16">
+    <section id="contact" className="py-10 sm:py-14 md:py-16">
       <div className="container-1280">
-        <div className="grid lg:grid-cols-12 gap-8 items-stretch">
-          <div className="lg:col-span-5 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden bg-gradient-to-br from-[#FFF0E8] to-[#FFF7F4] border border-[#FF6B00]/20 text-navy flex flex-col justify-between">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+          <div className="lg:col-span-5 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-7 md:p-10 relative overflow-hidden bg-gradient-to-br from-[#FFF0E8] to-[#FFF7F4] border border-[#FF6B00]/20 text-navy flex flex-col justify-between">
             <div className="absolute -top-20 -right-20 size-72 rounded-full bg-[#FF6B00]/15 blur-3xl pointer-events-none" />
 
             <div>
-              <h2 className="text-3xl md:text-4xl font-extrabold leading-[1.1] text-slate-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold leading-[1.15] text-slate-900 tracking-tight">
                 Ready to Grow <span className="gradient-text">Smarter?</span>
               </h2>
 
-              <p className="mt-4 text-slate-600 text-[0.98rem] leading-[1.65]">
+              <p className="mt-3 sm:mt-4 text-slate-600 text-xs sm:text-sm md:text-[0.98rem] leading-relaxed font-normal">
                 Whether you're looking to generate more leads, strengthen your brand, automate your business processes, or build a future-ready digital presence, we're here to help.
               </p>
 
-              <p className="mt-3 text-slate-600 text-sm leading-[1.65]">
+              <p className="mt-2.5 sm:mt-3 text-slate-600 text-xs sm:text-sm leading-relaxed font-normal">
                 Let's discuss your goals and create a growth strategy tailored specifically for your business.
               </p>
 
-              <div className="mt-8 space-y-4">
+              <div className="mt-6 sm:mt-8 space-y-3.5 sm:space-y-4">
                 {/* WhatsApp Link */}
                 <a
                   href="https://wa.me/917745868073"
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Contact on WhatsApp"
                   className="flex items-center gap-3.5 text-slate-800 hover:text-[#25D366] transition-colors group cursor-pointer"
                 >
-                  <span className="size-10 rounded-xl bg-white border border-[#FF6B00]/20 grid place-items-center shrink-0 shadow-sm group-hover:border-emerald-300 transition-colors">
-                    <WhatsAppLogo className="size-5" />
+                  <span className="size-9 sm:size-10 rounded-xl bg-white border border-[#FF6B00]/20 grid place-items-center shrink-0 shadow-sm group-hover:border-emerald-300 transition-colors">
+                    <WhatsAppLogo className="size-4.5 sm:size-5" />
                   </span>
                   <div>
-                    <span className="block text-[0.68rem] uppercase font-bold text-slate-400 tracking-wider">WhatsApp</span>
-                    <span className="text-base font-bold text-slate-900 group-hover:text-[#25D366] transition-colors">
+                    <span className="block text-[0.65rem] sm:text-[0.68rem] uppercase font-medium text-slate-400 tracking-wider">WhatsApp</span>
+                    <span className="text-sm sm:text-base font-semibold text-slate-900 group-hover:text-[#25D366] transition-colors">
                       +91 77458 68073
                     </span>
                   </div>
@@ -2332,14 +2333,15 @@ export function Contact() {
                 {/* Email Link */}
                 <a
                   href="mailto:sapdigitechsolutions@gmail.com"
+                  aria-label="Send Email"
                   className="flex items-center gap-3.5 text-slate-800 hover:text-primary transition-colors group cursor-pointer"
                 >
-                  <span className="size-10 rounded-xl bg-white border border-[#FF6B00]/20 grid place-items-center text-primary shrink-0 shadow-sm group-hover:border-primary/40 transition-colors">
-                    <Mail className="size-5" />
+                  <span className="size-9 sm:size-10 rounded-xl bg-white border border-[#FF6B00]/20 grid place-items-center text-primary shrink-0 shadow-sm group-hover:border-primary/40 transition-colors">
+                    <Mail className="size-4.5 sm:size-5" />
                   </span>
                   <div>
-                    <span className="block text-[0.68rem] uppercase font-bold text-slate-400 tracking-wider">Email</span>
-                    <span className="text-base font-bold text-slate-900 group-hover:text-primary transition-colors">
+                    <span className="block text-[0.65rem] sm:text-[0.68rem] uppercase font-medium text-slate-400 tracking-wider">Email</span>
+                    <span className="text-sm sm:text-base font-semibold text-slate-900 group-hover:text-primary transition-colors">
                       sapdigitechsolutions@gmail.com
                     </span>
                   </div>
@@ -2347,11 +2349,12 @@ export function Contact() {
 
                 {/* Locations */}
                 <div className="flex items-center gap-3.5 text-slate-800">
-                  <span className="size-10 rounded-xl bg-white border border-[#FF6B00]/20 grid place-items-center text-primary shrink-0 shadow-sm">
-                    <MapPin className="size-5" />
+                  <span className="size-9 sm:size-10 rounded-xl bg-white border border-[#FF6B00]/20 grid place-items-center text-primary shrink-0 shadow-sm">
+                    <MapPin className="size-4.5 sm:size-5" />
                   </span>
                   <div>
-                    <span className="text-base font-bold text-slate-900">Pune · Nashik · Mumbai</span>
+                    <span className="block text-[0.65rem] sm:text-[0.68rem] uppercase font-medium text-slate-400 tracking-wider">Locations</span>
+                    <span className="text-sm sm:text-base font-semibold text-slate-900">Pune · Nashik · Mumbai</span>
                   </div>
                 </div>
               </div>
@@ -2360,7 +2363,7 @@ export function Contact() {
 
           <form
             onSubmit={handleSubmit}
-            className="lg:col-span-7 card-elevated p-8 md:p-10 space-y-4"
+            className="lg:col-span-7 card-elevated p-5 sm:p-7 md:p-10 space-y-4 rounded-2xl sm:rounded-3xl"
           >
             <div className="grid sm:grid-cols-2 gap-4">
               <FloatingInput label="Full name" value={name} onChange={setName} required />
@@ -2478,14 +2481,14 @@ export function Footer() {
 
   return (
     <footer className="relative bg-[#080C16] text-white border-t border-slate-800/80">
-      <div className="container-1280 relative pt-16 pb-12">
-        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-start">
+      <div className="container-1280 relative pt-12 sm:pt-16 pb-24 sm:pb-12">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-8 items-start">
           {/* Brand column (Left - 4 cols) */}
           <div className="lg:col-span-4">
             <a href="/#home" className="inline-block">
               <img src="/logo/sap_logo_dark.png" alt="SAP DigiTech Solutions Logo" className="h-8 md:h-9 object-contain" />
             </a>
-            <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-sm">
+            <p className="mt-4 text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm font-normal">
               A modern digital growth studio blending strategy, AI, and technology for ambitious businesses.
             </p>
             <div className="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/60 border border-slate-700/60 text-xs text-slate-300 font-medium">
@@ -2495,9 +2498,9 @@ export function Footer() {
           </div>
 
           {/* Links columns (Middle - 5 cols) */}
-          <div className="lg:col-span-5 grid grid-cols-3 gap-6">
+          <div className="lg:col-span-5 grid grid-cols-3 gap-4 sm:gap-6">
             <div>
-              <p className="text-[0.72rem] uppercase tracking-[0.16em] font-bold text-slate-300">Company</p>
+              <p className="text-[0.72rem] uppercase tracking-[0.16em] font-semibold text-slate-300">Company</p>
               <ul className="mt-4 space-y-2.5">
                 {["About", "Careers", "Products", "Services", "Contact"].map((l) => (
                   <li key={l}>
@@ -2508,7 +2511,7 @@ export function Footer() {
             </div>
 
             <div>
-              <p className="text-[0.72rem] uppercase tracking-[0.16em] font-bold text-slate-300">Services</p>
+              <p className="text-[0.72rem] uppercase tracking-[0.16em] font-semibold text-slate-300">Services</p>
               <ul className="mt-4 space-y-2.5">
                 {["Performance Marketing", "AI Automation", "Web Development", "Video Production", "Graphic Design", "Social Media (SMM)"].map((l) => (
                   <li key={l}>
@@ -2519,7 +2522,7 @@ export function Footer() {
             </div>
 
             <div>
-              <p className="text-[0.72rem] uppercase tracking-[0.16em] font-bold text-slate-300">Industries</p>
+              <p className="text-[0.72rem] uppercase tracking-[0.16em] font-semibold text-slate-300">Industries</p>
               <ul className="mt-4 space-y-2">
                 {[
                   "Healthcare & Clinics",
@@ -2542,10 +2545,10 @@ export function Footer() {
 
           {/* Contact info (Right side - 3 cols) */}
           <div className="lg:col-span-3 lg:text-right flex flex-col lg:items-end">
-            <p className="text-[0.72rem] uppercase tracking-[0.16em] font-bold text-slate-300">Direct Inquiries</p>
+            <p className="text-[0.72rem] uppercase tracking-[0.16em] font-semibold text-slate-300">Direct Inquiries</p>
             <div className="mt-4 space-y-3">
               <a href="tel:+917745868073" className="flex items-center lg:justify-end gap-3 text-slate-300 hover:text-white transition-colors group">
-                <span className="text-sm font-medium">+91 77458 68073</span>
+                <span className="text-xs sm:text-sm font-medium">+91 77458 68073</span>
                 <span className="size-8 rounded-lg bg-slate-800/80 border border-slate-700/60 grid place-items-center text-slate-300 group-hover:text-white group-hover:border-slate-600 transition-colors">
                   <Phone className="size-3.5" />
                 </span>

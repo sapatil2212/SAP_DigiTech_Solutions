@@ -288,10 +288,35 @@ export function FloatingWidgets() {
 
   return (
     <>
-      {/* Vertical Floating Action Stack (Bottom Right) */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-2.5 pointer-events-auto select-none">
-        {/* 1. Direct Phone Call Button */}
-        <div className="relative group flex items-center justify-end">
+      {/* Mobile Fixed Bottom Sticky Action Bar */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-[#090D18]/95 backdrop-blur-xl border-t border-slate-800/90 px-3 py-2 flex items-center gap-2.5 pb-[max(0.65rem,env(safe-area-inset-bottom))] shadow-[0_-8px_25px_rgba(0,0,0,0.5)] pointer-events-auto select-none">
+        {/* WhatsApp Button */}
+        <a
+          href="https://wa.me/917745868073?text=Hi%20SAP%20DigiTech%20Solutions%2C%20I%20would%20like%20to%20know%20more%20about%20your%20services."
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Chat on WhatsApp"
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-semibold text-xs tracking-tight transition-all active:scale-95 shadow-sm cursor-pointer"
+        >
+          <WhatsAppLogo className="size-4 text-white" />
+          <span>WhatsApp</span>
+        </a>
+
+        {/* Call Now Button */}
+        <a
+          href="tel:+917745868073"
+          aria-label="Call +91 77458 68073"
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#E05300] hover:opacity-95 text-white font-semibold text-xs tracking-tight transition-all active:scale-95 shadow-sm cursor-pointer"
+        >
+          <Phone className="size-3.5 text-white" />
+          <span>Call Now</span>
+        </a>
+      </div>
+
+      {/* Floating Action Stack (AI Widget on Mobile; Call + WhatsApp + AI on Desktop) */}
+      <div className="fixed bottom-16 sm:bottom-5 right-3.5 sm:right-5 z-40 sm:z-50 flex flex-col items-end gap-2.5 pointer-events-auto select-none">
+        {/* 1. Direct Phone Call Button (Desktop Only) */}
+        <div className="hidden sm:flex relative group items-center justify-end">
           <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none absolute right-12 whitespace-nowrap bg-[#0B0F19]/95 text-white text-[0.7rem] font-semibold px-2.5 py-1 rounded-lg shadow-lg border border-white/10 backdrop-blur-md">
             Call +91 77458 68073
           </span>
@@ -304,8 +329,8 @@ export function FloatingWidgets() {
           </a>
         </div>
 
-        {/* 2. Official WhatsApp Button */}
-        <div className="relative group flex items-center justify-end">
+        {/* 2. Official WhatsApp Button (Desktop Only) */}
+        <div className="hidden sm:flex relative group items-center justify-end">
           <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none absolute right-12 whitespace-nowrap bg-[#075E54]/95 text-white text-[0.7rem] font-semibold px-2.5 py-1 rounded-lg shadow-lg border border-emerald-500/30 backdrop-blur-md">
             Chat on WhatsApp
           </span>
@@ -320,16 +345,16 @@ export function FloatingWidgets() {
           </a>
         </div>
 
-        {/* 3. Sleek Transparent AI Robo Widget (Zero Background, Reduced Size) */}
+        {/* 3. Sleek Transparent AI Robo Widget (Always Visible, Elevated on Mobile) */}
         <div className="relative flex items-center justify-end">
-          {/* Floating Speech Bubble Teaser */}
+          {/* Floating Speech Bubble Teaser (Desktop Only - Hidden on Mobile) */}
           <AnimatePresence>
             {!chatOpen && showSpeechBubble && (
               <motion.div
                 initial={{ opacity: 0, x: 8, scale: 0.92 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: 8, scale: 0.92 }}
-                className="absolute right-11 whitespace-nowrap bg-[#0B0F19]/95 text-slate-100 text-[0.72rem] font-semibold px-2.5 py-1.5 rounded-xl shadow-xl border border-cyan-500/30 backdrop-blur-xl flex items-center gap-1.5"
+                className="hidden sm:flex absolute right-11 whitespace-nowrap bg-[#0B0F19]/95 text-slate-100 text-[0.72rem] font-semibold px-2.5 py-1.5 rounded-xl shadow-xl border border-cyan-500/30 backdrop-blur-xl items-center gap-1.5"
               >
                 <span>{speechBubbleText}</span>
                 <button
@@ -378,7 +403,7 @@ export function FloatingWidgets() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.95 }}
             transition={{ type: "spring", damping: 28, stiffness: 360 }}
-            className="fixed bottom-20 right-4 sm:right-5 z-50 w-[calc(100vw-2rem)] sm:w-[350px] h-[450px] max-h-[76vh] rounded-2xl bg-[#090D18]/95 border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden text-slate-100 font-sans backdrop-blur-xl"
+            className="fixed bottom-18 sm:bottom-20 right-3 sm:right-5 z-50 w-[calc(100vw-1.5rem)] sm:w-[350px] h-[450px] max-h-[72vh] sm:max-h-[76vh] rounded-2xl bg-[#090D18]/95 border border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.7)] flex flex-col overflow-hidden text-slate-100 font-sans backdrop-blur-xl"
           >
             {/* Header */}
             <div className="px-3.5 py-2.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
