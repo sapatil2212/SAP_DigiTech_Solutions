@@ -17,6 +17,10 @@ import {
   saveCustomProduct,
   deleteCustomProduct,
   type CustomProductDetail,
+  getProductPricingOverrides,
+  saveProductPriceOverride,
+  deleteProductPriceOverride,
+  type ProductPriceOverride,
 } from "./storageManager";
 import { sendCustomerDownloadEmail } from "./emailService";
 
@@ -42,7 +46,8 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
   if ((pathname === "/api/admin/products" || pathname === "/api/products") && request.method === "GET") {
     try {
       const customProducts = getCustomProducts();
-      return new Response(JSON.stringify({ success: true, customProducts }), {
+      const pricingOverrides = getProductPricingOverrides();
+      return new Response(JSON.stringify({ success: true, customProducts, pricingOverrides }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -147,6 +152,73 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
       status: success ? 200 : 404,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  }
+
+  // 1i. Product Pricing Overrides List: GET /api/admin/pricing or GET /api/pricing
+  if ((pathname === "/api/admin/pricing" || pathname === "/api/pricing") && request.method === "GET") {
+    try {
+      const pricingOverrides = getProductPricingOverrides();
+      return new Response(JSON.stringify({ success: true, pricingOverrides }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("Failed to list pricing overrides:", err);
+      return new Response(JSON.stringify({ error: "Failed to list pricing overrides" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
+  // 1j. Product Pricing Update: POST /api/admin/pricing
+  if (pathname === "/api/admin/pricing" && request.method === "POST") {
+    try {
+      const body = await request.json();
+      const { productId, fixedPrice, originalPrice, discountPercentage } = body;
+
+      if (!productId || fixedPrice === undefined || fixedPrice === null) {
+        return new Response(
+          JSON.stringify({ error: "Product ID and Fixed Price are required." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const override = saveProductPriceOverride({
+        productId,
+        fixedPrice: Number(fixedPrice),
+        originalPrice: originalPrice !== undefined ? Number(originalPrice) : undefined,
+        discountPercentage: discountPercentage !== undefined ? Number(discountPercentage) : undefined,
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          override,
+          pricingOverrides: getProductPricingOverrides(),
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    } catch (err: any) {
+      console.error("Failed to save price override:", err);
+      return new Response(
+        JSON.stringify({ error: err?.message || "Failed to update product pricing." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+  }
+
+  // 1k. Product Pricing Reset: DELETE /api/admin/pricing/:productId
+  if (pathname.startsWith("/api/admin/pricing/") && request.method === "DELETE") {
+    const prodId = pathname.replace("/api/admin/pricing/", "").trim();
+    const success = deleteProductPriceOverride(prodId);
+    return new Response(
+      JSON.stringify({
+        success,
+        pricingOverrides: getProductPricingOverrides(),
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 
   // 1. Payment Completion & 5-Minute Link Generation: POST /api/payment/complete

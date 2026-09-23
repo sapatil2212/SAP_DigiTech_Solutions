@@ -9,7 +9,14 @@ import {
   CheckCircle, AlertCircle, CreditCard, Link as LinkIcon, Share2, Plus, Clock, MessageSquare,
   Sparkles, Globe, Tag, Code, HelpCircle, Info, List, DollarSign, Wrench, FileText
 } from "lucide-react";
-import { productDetails, getAllProductDetails, registerCustomProducts, unregisterCustomProduct } from "@/lib/productData";
+import {
+  productDetails,
+  getAllProductDetails,
+  registerCustomProducts,
+  unregisterCustomProduct,
+  registerPricingOverrides,
+  getAllPricingOverrides,
+} from "@/lib/productData";
 import { toast } from "sonner";
 import {
   Table,
@@ -182,6 +189,13 @@ function AdminStorageDashboard() {
   const [newLinkValidityDays, setNewLinkValidityDays] = useState<number>(0);
   const [creatingLink, setCreatingLink] = useState(false);
 
+  // Price Edit Modal States
+  const [priceModalOpen, setPriceModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<AdminProductItem | null>(null);
+  const [editFixedPrice, setEditFixedPrice] = useState<number | string>(1999);
+  const [editOriginalPrice, setEditOriginalPrice] = useState<number | string>(49999);
+  const [savingPrice, setSavingPrice] = useState(false);
+
   // Modals
   const [inspectPkg, setInspectPkg] = useState<StoredPackage | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<StoredPackage | null>(null);
@@ -282,22 +296,93 @@ function AdminStorageDashboard() {
     }
   };
 
-  // Fetch custom products from VPS API
+  // Fetch custom products and pricing overrides from VPS API
   const fetchCustomProducts = async () => {
     try {
       const res = await fetch("/api/admin/products");
       if (res.ok) {
         const data = await res.json();
-        if (data.success && Array.isArray(data.customProducts)) {
-          registerCustomProducts(data.customProducts);
-          if (typeof window !== "undefined") {
-            localStorage.setItem("sap_custom_products", JSON.stringify(data.customProducts));
+        if (data.success) {
+          if (data.pricingOverrides && typeof data.pricingOverrides === "object") {
+            registerPricingOverrides(data.pricingOverrides);
+          }
+          if (Array.isArray(data.customProducts)) {
+            registerCustomProducts(data.customProducts);
+            if (typeof window !== "undefined") {
+              localStorage.setItem("sap_custom_products", JSON.stringify(data.customProducts));
+            }
           }
           setProductsList(getInitialProducts());
         }
       }
     } catch (err) {
       console.warn("Error loading custom products:", err);
+    }
+  };
+
+  const handleOpenPriceModal = (product: AdminProductItem) => {
+    setEditingProduct(product);
+    setEditFixedPrice(product.fixedPrice);
+    setEditOriginalPrice(product.originalPrice);
+    setPriceModalOpen(true);
+  };
+
+  const handleSavePrice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    const fixed = Math.max(1, Math.round(Number(editFixedPrice)));
+    const original = Math.max(fixed, Math.round(Number(editOriginalPrice) || Math.max(fixed * 10, 49999)));
+
+    if (isNaN(fixed) || fixed <= 0) {
+      toast.error("Please enter a valid price greater than 0");
+      return;
+    }
+
+    const discount = Math.max(1, Math.min(99, Math.round(((original - fixed) / original) * 100)));
+
+    try {
+      setSavingPrice(true);
+      const res = await fetch("/api/admin/pricing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: editingProduct.id,
+          fixedPrice: fixed,
+          originalPrice: original,
+          discountPercentage: discount,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Register client-side override so everywhere updates immediately
+        registerPricingOverrides({
+          [editingProduct.id]: {
+            fixedPrice: fixed,
+            originalPrice: original,
+            discountPercentage: discount,
+          },
+        });
+
+        // Update local products list in admin view
+        setProductsList((prev) =>
+          prev.map((item) =>
+            item.id === editingProduct.id
+              ? { ...item, fixedPrice: fixed, originalPrice: original }
+              : item
+          )
+        );
+
+        toast.success(`Pricing updated for ${editingProduct.name} (₹${fixed.toLocaleString("en-IN")})!`);
+        setPriceModalOpen(false);
+      } else {
+        toast.error(data.error || "Failed to update pricing");
+      }
+    } catch (err) {
+      console.error("Save price error:", err);
+      toast.error("Network error while updating pricing");
+    } finally {
+      setSavingPrice(false);
     }
   };
 
@@ -1632,13 +1717,44 @@ function AdminStorageDashboard() {
                           </div>
                         </div>
 
-                        <div className="flex items-baseline justify-between gap-2">
-                          <h3 className="font-bold text-slate-900 text-sm">{prod.name}</h3>
-                          <span className="text-xs font-bold text-slate-900">
-                            ₹{prod.fixedPrice.toLocaleString("en-IN")}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">{prod.tagline}</p>
+                        {(() => {
+                          const discountPct = Math.max(
+                            1,
+                            Math.min(
+                              99,
+                              Math.round(
+                                ((prod.originalPrice - prod.fixedPrice) / (prod.originalPrice || 1)) * 100
+                              )
+                            )
+                          );
+                          return (
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <h3 className="font-bold text-slate-900 text-sm">{prod.name}</h3>
+                                <div className="flex items-center gap-1.5 mt-0.5">
+                                  <span className="text-[10px] text-slate-400 line-through">
+                                    ₹{prod.originalPrice.toLocaleString("en-IN")}
+                                  </span>
+                                  <span className="text-xs font-black text-slate-900">
+                                    ₹{prod.fixedPrice.toLocaleString("en-IN")}
+                                  </span>
+                                  <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    {discountPct}% OFF
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleOpenPriceModal(prod)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#FF6B00] text-[11px] font-bold transition-colors cursor-pointer shrink-0 border border-orange-200/60"
+                                title="Change product pricing"
+                              >
+                                <DollarSign className="w-3 h-3" />
+                                <span>Change Price</span>
+                              </button>
+                            </div>
+                          );
+                        })()}
+                        <p className="text-xs text-slate-500 mt-2 line-clamp-2">{prod.tagline}</p>
 
                         <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs">
                           <div>
@@ -1656,11 +1772,19 @@ function AdminStorageDashboard() {
 
                       <div className="flex items-center gap-2 pt-2">
                         <button
+                          onClick={() => handleOpenPriceModal(prod)}
+                          className="py-2 px-3 rounded-xl bg-orange-50 hover:bg-[#FF6B00] text-[#FF6B00] hover:text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border border-orange-200/80"
+                          title="Change product price"
+                        >
+                          <DollarSign className="w-3.5 h-3.5" />
+                          <span>Edit Price</span>
+                        </button>
+                        <button
                           onClick={() => {
                             setSelectedProductId(prod.id);
                             setActiveTab("upload");
                           }}
-                          className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-orange-50 hover:text-orange-700 text-slate-700 text-xs font-semibold transition-colors cursor-pointer text-center"
+                          className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors cursor-pointer text-center"
                         >
                           Upload Release
                         </button>
@@ -3075,6 +3199,220 @@ function AdminStorageDashboard() {
                     )}
                   </button>
                 </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────── PRICE EDIT MODAL ───────────────────── */}
+      {priceModalOpen && editingProduct && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border border-slate-200/90 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            {/* Modal Header */}
+            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-orange-50/70 via-white to-amber-50/40">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#E05300] text-white flex items-center justify-center shadow-md shadow-orange-500/20">
+                  <DollarSign className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base sm:text-lg font-bold text-slate-900">Change Product Pricing</h2>
+                    <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full bg-orange-100 text-[#FF6B00]">
+                      {editingProduct.id}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {editingProduct.name} — updates Razorpay checkout and front-end displays in real time.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPriceModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <form onSubmit={handleSavePrice} className="p-5 sm:p-6 space-y-5 overflow-y-auto">
+              {/* Live Preview Card */}
+              {(() => {
+                const fixed = Math.max(0, Math.round(Number(editFixedPrice) || 0));
+                const original = Math.max(fixed, Math.round(Number(editOriginalPrice) || 0));
+                const discount = original > fixed
+                  ? Math.max(1, Math.min(99, Math.round(((original - fixed) / original) * 100)))
+                  : 0;
+
+                return (
+                  <div className="rounded-2xl bg-[#0B0F19] text-white p-5 border border-slate-800 shadow-md space-y-3">
+                    <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-[#FF6B00] font-bold">
+                        Live Storefront Preview
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-sans">
+                        Full Commercial License
+                      </span>
+                    </div>
+
+                    <div className="flex items-baseline justify-between gap-3">
+                      <div>
+                        <div className="text-xs text-slate-400 font-medium">Customer Checkout Price</div>
+                        <div className="flex items-baseline gap-2 mt-0.5">
+                          <span className="text-3xl font-black text-white tracking-tight">
+                            ₹{fixed.toLocaleString("en-IN")}
+                          </span>
+                          {original > fixed && (
+                            <span className="text-sm text-slate-400 line-through">
+                              ₹{original.toLocaleString("en-IN")}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {discount > 0 && (
+                        <div className="text-right">
+                          <span className="inline-block text-[11px] font-bold px-3 py-1 rounded-full bg-[#FF6B00] text-white shadow-sm">
+                            Save {discount}% One-Time Fixed
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 grid grid-cols-2 gap-2 text-[11px] text-slate-300">
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Razorpay Gateway Sync</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Instant Front-End Update</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Price Inputs */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Fixed Selling Price */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Selling Price (INR) <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      required
+                      value={editFixedPrice}
+                      onChange={(e) => setEditFixedPrice(e.target.value)}
+                      placeholder="1999"
+                      className="w-full h-11 pl-8 pr-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-[#FF6B00] focus:bg-white focus:ring-2 focus:ring-[#FF6B00]/15"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500">The amount charged at Razorpay checkout.</p>
+                </div>
+
+                {/* Original Comparison Price */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Original Price (INR) <span className="text-slate-400 font-normal">(Crossed out)</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={editOriginalPrice}
+                      onChange={(e) => setEditOriginalPrice(e.target.value)}
+                      placeholder="49999"
+                      className="w-full h-11 pl-8 pr-3.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-[#FF6B00] focus:bg-white focus:ring-2 focus:ring-[#FF6B00]/15"
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500">Used to show customer discount percentage.</p>
+                </div>
+              </div>
+
+              {/* Quick Pricing Presets */}
+              <div className="space-y-2 pt-1">
+                <label className="block text-xs font-semibold text-slate-600">
+                  Quick Price Presets
+                </label>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {[
+                    { label: "Promo", price: 999, orig: 24999 },
+                    { label: "Starter", price: 1499, orig: 34999 },
+                    { label: "Standard", price: 1999, orig: 49999 },
+                    { label: "Pro", price: 2499, orig: 49999 },
+                    { label: "Agency", price: 4999, orig: 69999 },
+                    { label: "VIP", price: 9999, orig: 99999 },
+                  ].map((preset) => (
+                    <button
+                      key={preset.price}
+                      type="button"
+                      onClick={() => {
+                        setEditFixedPrice(preset.price);
+                        setEditOriginalPrice(preset.orig);
+                      }}
+                      className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
+                        Number(editFixedPrice) === preset.price
+                          ? "bg-orange-50 border-[#FF6B00] text-[#FF6B00] font-bold shadow-2xs"
+                          : "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700 font-medium"
+                      }`}
+                    >
+                      <div className="text-[10px] text-slate-400">{preset.label}</div>
+                      <div className="text-xs font-bold leading-tight mt-0.5">₹{preset.price.toLocaleString("en-IN")}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Informational Scope Note */}
+              <div className="p-3.5 rounded-2xl bg-orange-50/70 border border-orange-200/80 text-xs text-orange-900 space-y-1">
+                <div className="font-bold flex items-center gap-1.5 text-[#E05300]">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Immediate Live Reflection</span>
+                </div>
+                <p className="text-[11px] text-orange-800 leading-relaxed">
+                  Saving updates <code className="font-mono font-semibold">/products/{editingProduct.id}</code>, the <code className="font-mono font-semibold">/products</code> catalog, and the direct Razorpay payment link <code className="font-mono font-semibold">/pay/{editingProduct.id}</code> without needing to rebuild or restart the VPS server.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setPriceModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingPrice}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#E05300] hover:from-[#E05300] hover:to-[#C74700] text-white text-xs font-bold transition-all shadow-md hover:shadow-lg cursor-pointer active:scale-98 disabled:opacity-60"
+                >
+                  {savingPrice ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Price...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Save & Reflect Pricing</span>
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           </div>

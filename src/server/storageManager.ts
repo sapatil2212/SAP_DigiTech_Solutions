@@ -508,16 +508,23 @@ export function listPaymentLinks(): PaymentLink[] {
       links = JSON.parse(data) as PaymentLink[];
     }
 
-    // Ensure all 6 canonical product links exist
+    // Ensure all canonical product links exist
     let modified = false;
+    const overrides = getProductPricingOverrides();
+
     for (const def of DEFAULT_PRODUCT_PAYMENT_CONFIGS) {
-      if (!links.some((l) => l.id === def.id && !l.isCustom)) {
+      const existing = links.find((l) => l.id === def.id && !l.isCustom);
+      const override = overrides[def.id.toLowerCase()];
+      const targetAmount = override ? override.fixedPrice : def.amount;
+      const targetOriginalPrice = override ? override.originalPrice : def.originalPrice;
+
+      if (!existing) {
         links.unshift({
           id: def.id,
           productId: def.id,
           productName: def.name,
-          amount: def.amount,
-          originalPrice: def.originalPrice,
+          amount: targetAmount,
+          originalPrice: targetOriginalPrice,
           clientName: "Public Storefront",
           notes: def.notes,
           createdAt: new Date().toISOString(),
@@ -527,6 +534,10 @@ export function listPaymentLinks(): PaymentLink[] {
           url: `/pay/${def.id}`,
           isCustom: false,
         });
+        modified = true;
+      } else if (override && (existing.amount !== override.fixedPrice || existing.originalPrice !== override.originalPrice)) {
+        existing.amount = override.fixedPrice;
+        existing.originalPrice = override.originalPrice;
         modified = true;
       }
     }
@@ -601,9 +612,23 @@ export function createPaymentLink(params: {
 export function getPaymentLinkById(id: string): PaymentLink | null {
   const links = listPaymentLinks();
   const lower = id.toLowerCase();
-  return (
-    links.find((l) => l.id.toLowerCase() === lower || l.productId.toLowerCase() === lower) || null
-  );
+  const found = links.find((l) => l.id.toLowerCase() === lower || l.productId.toLowerCase() === lower) || null;
+  if (!found) return null;
+
+  // If this is a canonical public storefront link, ensure it has latest price override
+  if (!found.isCustom || found.clientName === "Public Storefront") {
+    const overrides = getProductPricingOverrides();
+    const ov = overrides[found.productId.toLowerCase()];
+    if (ov) {
+      return {
+        ...found,
+        amount: ov.fixedPrice,
+        originalPrice: ov.originalPrice,
+      };
+    }
+  }
+
+  return found;
 }
 
 /**
@@ -751,3 +776,111 @@ export function deleteCustomProduct(id: string): boolean {
   return true;
 }
 
+/* ─────────────────────── Product Pricing Overrides ─────────────────────── */
+
+export interface ProductPriceOverride {
+  productId: string;
+  fixedPrice: number;
+  originalPrice: number;
+  discountPercentage: number;
+  updatedAt: string;
+}
+
+function getProductPricingPath(): string {
+  return join(getStorageDir(), "product_pricing.json");
+}
+
+/**
+ * Retrieve all persistent product pricing overrides
+ */
+export function getProductPricingOverrides(): Record<string, ProductPriceOverride> {
+  try {
+    const p = getProductPricingPath();
+    if (!existsSync(p)) {
+      return {};
+    }
+    const data = readFileSync(p, "utf-8");
+    return JSON.parse(data) as Record<string, ProductPriceOverride>;
+  } catch (err) {
+    console.error("Error reading product pricing overrides:", err);
+    return {};
+  }
+}
+
+/**
+ * Save or update a product's pricing override and synchronize canonical payment links
+ */
+export function saveProductPriceOverride(params: {
+  productId: string;
+  fixedPrice: number;
+  originalPrice?: number;
+  discountPercentage?: number;
+}): ProductPriceOverride {
+  const overrides = getProductPricingOverrides();
+  const lowerId = params.productId.toLowerCase().trim();
+  const fixed = Math.max(1, Math.round(Number(params.fixedPrice) || 1999));
+  const original = Math.max(fixed, Math.round(Number(params.originalPrice) || Math.max(fixed * 10, 49999)));
+  const discount = params.discountPercentage !== undefined
+    ? Math.max(1, Math.min(99, Math.round(Number(params.discountPercentage))))
+    : Math.max(1, Math.min(99, Math.round(((original - fixed) / original) * 100)));
+
+  const override: ProductPriceOverride = {
+    productId: lowerId,
+    fixedPrice: fixed,
+    originalPrice: original,
+    discountPercentage: discount,
+    updatedAt: new Date().toISOString(),
+  };
+
+  overrides[lowerId] = override;
+  writeFileSync(getProductPricingPath(), JSON.stringify(overrides, null, 2), "utf-8");
+
+  // 1. Synchronize public payment links in payment_links.json
+  try {
+    const links = listPaymentLinks();
+    let linkModified = false;
+    for (const link of links) {
+      if (link.productId.toLowerCase() === lowerId && (!link.isCustom || link.clientName === "Public Storefront")) {
+        link.amount = fixed;
+        link.originalPrice = original;
+        linkModified = true;
+      }
+    }
+    if (linkModified) {
+      savePaymentLinks(links);
+    }
+  } catch (linkErr) {
+    console.warn("Failed to synchronize payment links with price override:", linkErr);
+  }
+
+  // 2. If it is a custom product, also update custom_products.json
+  try {
+    const customProds = getCustomProducts();
+    const customIdx = customProds.findIndex((p) => p.id.toLowerCase() === lowerId);
+    if (customIdx >= 0) {
+      if (!customProds[customIdx].sourceCodeOffer) {
+        customProds[customIdx].sourceCodeOffer = {} as any;
+      }
+      customProds[customIdx].sourceCodeOffer.fixedPrice = fixed;
+      customProds[customIdx].sourceCodeOffer.originalPrice = original;
+      customProds[customIdx].sourceCodeOffer.discountPercentage = discount;
+      writeFileSync(getCustomProductsPath(), JSON.stringify(customProds, null, 2), "utf-8");
+    }
+  } catch (custErr) {
+    console.warn("Failed to synchronize custom product with price override:", custErr);
+  }
+
+  return override;
+}
+
+/**
+ * Remove a pricing override and revert to defaults
+ */
+export function deleteProductPriceOverride(productId: string): boolean {
+  const overrides = getProductPricingOverrides();
+  const lowerId = productId.toLowerCase().trim();
+  if (!overrides[lowerId]) return false;
+  delete overrides[lowerId];
+  writeFileSync(getProductPricingPath(), JSON.stringify(overrides, null, 2), "utf-8");
+  return true;
+}

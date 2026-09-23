@@ -3449,11 +3449,102 @@ export function getDemoCredentials(p: { id: string; demoCredentials?: DemoCreden
   };
 }
 
+/* ─────────────────────── Dynamic Pricing Overrides ─────────────────────── */
+export interface ProductPriceOverride {
+  productId: string;
+  fixedPrice: number;
+  originalPrice: number;
+  discountPercentage: number;
+  updatedAt?: string;
+}
+
+const dynamicPricingOverrides: Record<string, ProductPriceOverride> = {};
+
+export function registerPricingOverrides(
+  overrides: Record<string, { fixedPrice: number; originalPrice?: number; discountPercentage?: number }>,
+  saveStorage = true
+): void {
+  if (!overrides || typeof overrides !== "object") return;
+  let modified = false;
+
+  for (const [id, ov] of Object.entries(overrides)) {
+    if (!id || !ov) continue;
+    const lower = id.toLowerCase().trim();
+    const fixed = Number(ov.fixedPrice);
+    if (isNaN(fixed) || fixed <= 0) continue;
+    const original = Number(ov.originalPrice) || Math.max(fixed * 10, 49999);
+    const discount = ov.discountPercentage !== undefined
+      ? Number(ov.discountPercentage)
+      : Math.max(1, Math.min(99, Math.round(((original - fixed) / original) * 100)));
+
+    dynamicPricingOverrides[lower] = {
+      productId: lower,
+      fixedPrice: fixed,
+      originalPrice: original,
+      discountPercentage: discount,
+    };
+
+    if (productDetails[lower]?.sourceCodeOffer) {
+      productDetails[lower].sourceCodeOffer.fixedPrice = fixed;
+      productDetails[lower].sourceCodeOffer.originalPrice = original;
+      productDetails[lower].sourceCodeOffer.discountPercentage = discount;
+    }
+    if (dynamicCustomProducts[lower]?.sourceCodeOffer) {
+      dynamicCustomProducts[lower].sourceCodeOffer.fixedPrice = fixed;
+      dynamicCustomProducts[lower].sourceCodeOffer.originalPrice = original;
+      dynamicCustomProducts[lower].sourceCodeOffer.discountPercentage = discount;
+    }
+    modified = true;
+  }
+
+  if (modified && typeof window !== "undefined" && saveStorage) {
+    try {
+      localStorage.setItem("sap_pricing_overrides", JSON.stringify(dynamicPricingOverrides));
+      window.dispatchEvent(new CustomEvent("sap_products_updated", { detail: dynamicPricingOverrides }));
+    } catch {
+      // Ignore
+    }
+  }
+}
+
+export function getPricingOverride(productId: string): ProductPriceOverride | undefined {
+  return dynamicPricingOverrides[productId.toLowerCase().trim()];
+}
+
+export function getAllPricingOverrides(): Record<string, ProductPriceOverride> {
+  return { ...dynamicPricingOverrides };
+}
+
+// Check localStorage on browser initialization for pricing overrides
+if (typeof window !== "undefined") {
+  try {
+    const storedPrices = localStorage.getItem("sap_pricing_overrides");
+    if (storedPrices) {
+      const parsed = JSON.parse(storedPrices);
+      if (parsed && typeof parsed === "object") {
+        registerPricingOverrides(parsed, false);
+      }
+    }
+  } catch (e) {
+    // Ignore parse error
+  }
+}
+
 export function registerCustomProducts(products: (ProductDetail | any)[]): void {
   for (const p of products) {
     if (!p || !p.id) continue;
     const normalized = normalizeProduct(p);
-    dynamicCustomProducts[normalized.id.toLowerCase()] = normalized;
+    const lower = normalized.id.toLowerCase();
+    
+    // Apply dynamic price override if already present
+    const override = dynamicPricingOverrides[lower];
+    if (override && normalized.sourceCodeOffer) {
+      normalized.sourceCodeOffer.fixedPrice = override.fixedPrice;
+      normalized.sourceCodeOffer.originalPrice = override.originalPrice;
+      normalized.sourceCodeOffer.discountPercentage = override.discountPercentage;
+    }
+
+    dynamicCustomProducts[lower] = normalized;
   }
 
   // Synchronize megaMenuCategories array in-place
@@ -3507,7 +3598,7 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * Fetch and synchronize custom products from the backend API
+ * Fetch and synchronize custom products and pricing overrides from the backend API
  */
 let syncPromise: Promise<ProductDetail[]> | null = null;
 export async function loadAndSyncCustomProducts(): Promise<ProductDetail[]> {
@@ -3522,6 +3613,9 @@ export async function loadAndSyncCustomProducts(): Promise<ProductDetail[]> {
       const res = await fetch("/api/products");
       if (res.ok) {
         const data = await res.json();
+        if (data.pricingOverrides && typeof data.pricingOverrides === "object") {
+          registerPricingOverrides(data.pricingOverrides);
+        }
         if (data.customProducts && Array.isArray(data.customProducts)) {
           registerCustomProducts(data.customProducts);
         }
@@ -3542,7 +3636,23 @@ export function getProductDetail(id: string): ProductDetail | undefined {
   if (!id) return undefined;
   let lower = id.toLowerCase().trim();
   if (lower === "medicdocks") lower = "mediadocks";
-  return productDetails[lower] || dynamicCustomProducts[lower];
+  const prod = productDetails[lower] || dynamicCustomProducts[lower];
+  if (!prod) return undefined;
+
+  const override = dynamicPricingOverrides[lower];
+  if (override && prod.sourceCodeOffer) {
+    return {
+      ...prod,
+      sourceCodeOffer: {
+        ...prod.sourceCodeOffer,
+        fixedPrice: override.fixedPrice,
+        originalPrice: override.originalPrice,
+        discountPercentage: override.discountPercentage,
+      },
+    };
+  }
+
+  return prod;
 }
 
 export function getAllProductDetails(): ProductDetail[] {
@@ -3552,7 +3662,24 @@ export function getAllProductDetails(): ProductDetail[] {
   const uniqueProducts = Object.values(productDetails).filter((p, index, self) =>
     index === self.findIndex((item) => item.id === p.id)
   );
-  return [...uniqueProducts, ...customList];
+  const all = [...uniqueProducts, ...customList];
+
+  return all.map((p) => {
+    const lower = p.id.toLowerCase();
+    const override = dynamicPricingOverrides[lower];
+    if (override && p.sourceCodeOffer) {
+      return {
+        ...p,
+        sourceCodeOffer: {
+          ...p.sourceCodeOffer,
+          fixedPrice: override.fixedPrice,
+          originalPrice: override.originalPrice,
+          discountPercentage: override.discountPercentage,
+        },
+      };
+    }
+    return p;
+  });
 }
 
 /* ─────────────────────── Mega Menu Navigation Helpers ─────────────────────── */
