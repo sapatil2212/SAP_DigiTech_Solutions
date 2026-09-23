@@ -129,7 +129,7 @@ export async function sendCustomerDownloadEmail(params: SendDownloadEmailParams)
                 </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #94a3b8;">License:</td>
-                  <td style="padding: 6px 0; font-size: 13px; color: #10b981; font-weight: 700; text-align: right;">100% Commercial White-Label</td>
+                  <td style="padding: 6px 0; font-size: 13px; color: #10b981; font-weight: 700; text-align: right;">100% Commercial Rights</td>
                 </tr>
                 <tr>
                   <td style="padding: 6px 0; font-size: 13px; color: #94a3b8;">Payment Reference:</td>
@@ -176,7 +176,7 @@ export async function sendCustomerDownloadEmail(params: SendDownloadEmailParams)
                   <li>Production React 19 Frontend & Node.js API Codebase</li>
                   <li>Ready-to-Deploy Docker Compose Setup</li>
                   <li>Database Schemas, Migrations & Seed Scripts</li>
-                  <li>Full Commercial White-Label Rebranding Rights</li>
+                  <li>Full Commercial Rebranding & Source Code Rights</li>
                   <li>Architecture, Setup & Deployment Guides</li>
                 </ul>
               </div>

@@ -72,7 +72,7 @@ function ShareableCheckoutPage() {
           productName: initialProduct.name,
           amount: initialProduct.sourceCodeOffer.fixedPrice,
           originalPrice: initialProduct.sourceCodeOffer.originalPrice,
-          notes: initialProduct.tagline || "Full Commercial White-Label Source Code License",
+          notes: initialProduct.tagline || "Full Commercial Source Code License",
         }
       : null
   );
@@ -144,7 +144,7 @@ function ShareableCheckoutPage() {
           productName: prod.name,
           amount: prod.sourceCodeOffer.fixedPrice,
           originalPrice: prod.sourceCodeOffer.originalPrice,
-          notes: "Full Commercial White-Label Source Code License",
+          notes: "Full Commercial Source Code License",
         });
       }
       setLoading(false);
@@ -553,6 +553,19 @@ function ShareableCheckoutPage() {
                     </span>
                   </div>
 
+                  {/* Legal Disclaimer & Copyright Notice */}
+                  <div className="p-3 rounded-xl bg-rose-50/70 border border-rose-200/80 flex items-start gap-2.5 text-left">
+                    <AlertTriangle className="size-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800 block">
+                        Legal Warning & Trademark Notice
+                      </span>
+                      <p className="text-[10px] text-rose-700/90 font-normal leading-relaxed">
+                        Please change the original product name, brand assets, and logo before deploying. Operating under the original name may result in copyright or trademark infringement.
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Submit Button */}
                   <div className="pt-1">
                     <button
@@ -566,7 +579,7 @@ function ShareableCheckoutPage() {
                       <ArrowRight className="size-3.5" />
                     </button>
                     <p className="text-center text-[10px] text-slate-400 mt-1.5 font-medium">
-                      By proceeding, you receive a full white-label commercial source code license.
+                      By proceeding, you receive an instant source code license.
                     </p>
                   </div>
                 </form>
@@ -590,7 +603,7 @@ function ShareableCheckoutPage() {
                     Your {linkInfo.productName} Code is Ready
                   </h2>
                   <p className="text-xs text-slate-500">
-                    Your commercial white-label license has been registered. Download your package below.
+                    Your commercial source code license has been registered. Download your package below.
                   </p>
                 </div>
 
@@ -667,7 +680,7 @@ function ShareableCheckoutPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Commercial Rights:</span>
-                    <span className="font-semibold text-emerald-700">100% White-Label Included</span>
+                    <span className="font-semibold text-emerald-700">Full Commercial Rights Included</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Customer:</span>

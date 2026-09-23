@@ -85,7 +85,7 @@ const getInitialProducts = (): AdminProductItem[] => {
     name: p.name,
     badge: p.badge,
     tagline: p.tagline,
-    fixedPrice: p.sourceCodeOffer?.fixedPrice || 1,
+    fixedPrice: p.sourceCodeOffer?.fixedPrice || 1999,
     originalPrice: p.sourceCodeOffer?.originalPrice || 49999,
     isCustom: (p as any).isCustom || false,
     categoryName: p.categoryName,
@@ -120,10 +120,10 @@ function AdminStorageDashboard() {
     heroDesc: "",
     detailedDesc: "",
     techStack: "React 19, TypeScript, Node.js, TailwindCSS",
-    fixedPrice: 1,
+    fixedPrice: 1999,
     originalPrice: 49999,
-    licenseName: "Full Commercial & White-Label Source Code License",
-    deliverables: "Complete React 19 Frontend Code\nNode.js Backend Engine\nDocker Compose & Cloud Configs\nFull White-Labeling Rights",
+    licenseName: "Full Commercial Source Code License",
+    deliverables: "Complete React 19 Frontend Code\nNode.js Backend Engine\nDocker Compose & Cloud Configs\nFull Commercial Rights",
     featuresIncluded: "Lifetime Commercial License\nUnlimited Client Deployments\n1 Year Free Updates",
     stat1Label: "Processing Speed", stat1Val: "< 15s",
     stat2Label: "Accuracy", stat2Val: "99.2%",
@@ -174,11 +174,11 @@ function AdminStorageDashboard() {
 
   // Create Link Form State
   const [newLinkProduct, setNewLinkProduct] = useState(productsList[0]?.id || "briefvault");
-  const [newLinkAmount, setNewLinkAmount] = useState<number | string>(productsList[0]?.fixedPrice || 1);
+  const [newLinkAmount, setNewLinkAmount] = useState<number | string>(productsList[0]?.fixedPrice || 1999);
   const [newLinkClientName, setNewLinkClientName] = useState("");
   const [newLinkClientEmail, setNewLinkClientEmail] = useState("");
   const [newLinkClientPhone, setNewLinkClientPhone] = useState("");
-  const [newLinkNotes, setNewLinkNotes] = useState("Full Commercial White-Label Source Code License");
+  const [newLinkNotes, setNewLinkNotes] = useState("Full Commercial Source Code License");
   const [newLinkValidityDays, setNewLinkValidityDays] = useState<number>(0);
   const [creatingLink, setCreatingLink] = useState(false);
 
@@ -314,10 +314,10 @@ function AdminStorageDashboard() {
       heroDesc: "Supercharge engineering velocity with automated PR reviews, architectural vulnerability detection, and AI-driven syntax refactoring in seconds.",
       detailedDesc: "DevPulse AI is an enterprise-grade developer productivity SaaS platform engineered for software agencies, dev shops, and enterprise engineering teams. Developers connect GitHub or GitLab repositories to receive inline architectural feedback, automated unit test generation, and compliance checks with zero manual friction.",
       techStack: "React 19, TypeScript, Node.js, Python, Gemini 1.5 Pro, PostgreSQL, Docker, Redis",
-      fixedPrice: 1,
+      fixedPrice: 1999,
       originalPrice: 49999,
-      licenseName: "Full Commercial & White-Label Source Code License",
-      deliverables: "Complete React 19 + TypeScript Frontend Dashboard\nNode.js & Python AI Code Analysis Microservices\nPostgreSQL Database Schemas & Migrations\nDocker Compose & One-Click Cloud Deployment Scripts\nFull White-Labeling Guide (Logo, Themes, Domain)\nRazorpay & Stripe Payment Integration Modules\nLifetime Commercial License with Unlimited Deployments",
+      licenseName: "Full Commercial Source Code License",
+      deliverables: "Complete React 19 + TypeScript Frontend Dashboard\nNode.js & Python AI Code Analysis Microservices\nPostgreSQL Database Schemas & Migrations\nDocker Compose & One-Click Cloud Deployment Scripts\nFull Rebranding Guide (Logo, Themes, Domain)\nRazorpay & Stripe Payment Integration Modules\nLifetime Commercial License with Unlimited Deployments",
       featuresIncluded: "Unlimited repository scans & PR analyses\nAutomated AST security vulnerability audits\nInline refactoring suggestions with diff previews\nZero subscription fees or recurring royalties",
       stat1Label: "Analysis Speed", stat1Val: "< 15s",
       stat2Label: "Bug Accuracy", stat2Val: "99.1%",
@@ -357,10 +357,10 @@ function AdminStorageDashboard() {
         detailedDesc: productForm.detailedDesc.trim() || productForm.heroDesc.trim(),
         techStack: productForm.techStack.split(",").map((s) => s.trim()).filter(Boolean),
         sourceCodeOffer: {
-          fixedPrice: Number(productForm.fixedPrice) || 1,
+          fixedPrice: Number(productForm.fixedPrice) || 1999,
           originalPrice: Number(productForm.originalPrice) || 49999,
-          discountPercentage: Math.max(1, Math.round(((Number(productForm.originalPrice || 49999) - Number(productForm.fixedPrice || 1)) / Number(productForm.originalPrice || 49999)) * 100)),
-          licenseName: productForm.licenseName.trim() || "Full Commercial & White-Label Source Code License",
+          discountPercentage: Math.max(1, Math.round(((Number(productForm.originalPrice || 49999) - Number(productForm.fixedPrice || 1999)) / Number(productForm.originalPrice || 49999)) * 100)),
+          licenseName: productForm.licenseName.trim() || "Full Commercial Source Code License",
           deliveryMethod: "Instant Encrypted Download (5-Min Expiring Session)",
           deliverables: productForm.deliverables.split("\n").map((s) => s.trim()).filter(Boolean),
           featuresIncluded: productForm.featuresIncluded.split("\n").map((s) => s.trim()).filter(Boolean),
@@ -389,7 +389,7 @@ function AdminStorageDashboard() {
             description: productForm.feature1Desc || "Automates processing with sub-second response times.",
             metrics: productForm.stat1Val || "99% Faster",
             badge: "Core AI",
-            previewNote: "Full commercial white-label source code included.",
+            previewNote: "Full commercial source code included.",
           },
         ],
         faqs: [
@@ -458,7 +458,7 @@ function AdminStorageDashboard() {
   const copyWhatsAppPitch = (link: PaymentLinkItem) => {
     const origin = typeof window !== "undefined" ? window.location.origin : "https://sapdigitechsolutions.in";
     const fullUrl = `${origin}${link.url}`;
-    const pitch = `Hello ${link.clientName && link.clientName !== "Public Storefront" ? link.clientName : "there"},\n\nHere is your verified direct checkout link to acquire the 100% White-Label Source Code for *${link.productName}* from SAP DigiTech Solutions:\n\n🔗 *Payment & Instant Download Link:* ${fullUrl}\n💰 *Commercial License Fee:* ₹${link.amount.toLocaleString("en-IN")}\n\n*Included in your package:*\n✅ Full Unminified Frontend & Backend Source Code\n✅ Docker Compose & VPS Auto-Deployment Scripts\n✅ Zero Recurring Royalties or Per-Seat Charges\n✅ Instant Direct .ZIP Download & Verified License\n\nYou can complete the checkout and immediately download your source code archive. Let us know if you need any technical assistance!`;
+    const pitch = `Hello ${link.clientName && link.clientName !== "Public Storefront" ? link.clientName : "there"},\n\nHere is your verified direct checkout link to acquire the Full Commercial Source Code for *${link.productName}* from SAP DigiTech Solutions:\n\n🔗 *Payment & Instant Download Link:* ${fullUrl}\n💰 *Commercial License Fee:* ₹${link.amount.toLocaleString("en-IN")}\n\n*Included in your package:*\n✅ Full Unminified Frontend & Backend Source Code\n✅ Docker Compose & VPS Auto-Deployment Scripts\n✅ Zero Recurring Royalties or Per-Seat Charges\n✅ Instant Direct .ZIP Download & Verified License\n\nYou can complete the checkout and immediately download your source code archive. Let us know if you need any technical assistance!`;
     navigator.clipboard.writeText(pitch);
     setCopiedPitchId(link.id);
     toast.success("Client WhatsApp proposal message copied!");
@@ -1588,7 +1588,7 @@ function AdminStorageDashboard() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 mt-1">
-                    Manage production platforms, download telemetry, upload release archives, or register new white-label products.
+                    Manage production platforms, download telemetry, upload release archives, or register new commercial products.
                   </p>
                 </div>
                 <button
@@ -1919,7 +1919,7 @@ function AdminStorageDashboard() {
                       totalPaidCount: 0,
                       active: true,
                       createdAt: new Date().toISOString(),
-                      notes: "100% White-Label Commercial Source Code License",
+                      notes: "Full Commercial Source Code License",
                     };
 
                     const origin = typeof window !== "undefined" ? window.location.origin : "https://sapdigitechsolutions.in";
@@ -1938,7 +1938,7 @@ function AdminStorageDashboard() {
                               {prod.badge}
                             </span>
                             <span className="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
-                              <CheckCircle2 className="size-3 text-emerald-500" /> White-Label
+                              <CheckCircle2 className="size-3 text-emerald-500" /> Commercial
                             </span>
                           </div>
 
@@ -2479,7 +2479,7 @@ function AdminStorageDashboard() {
                 </div>
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-900">Register Commercial SaaS Product</h3>
-                  <p className="text-xs text-slate-500">Configure complete technical blueprint, white-label deliverables, and catalog pricing.</p>
+                  <p className="text-xs text-slate-500">Configure complete technical blueprint, commercial deliverables, and catalog pricing.</p>
                 </div>
               </div>
 
@@ -2786,7 +2786,7 @@ function AdminStorageDashboard() {
                         type="text"
                         value={productForm.licenseName}
                         onChange={(e) => setProductForm({ ...productForm, licenseName: e.target.value })}
-                        placeholder="Full Commercial & White-Label Source Code License"
+                        placeholder="Full Commercial Source Code License"
                         className="w-full h-10 bg-slate-50 border border-slate-300 rounded-xl px-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-[#FF6B00] focus:bg-white"
                       />
                     </div>
@@ -2943,7 +2943,7 @@ function AdminStorageDashboard() {
                     {/* White Label Rights */}
                     <div className="pt-2 border-t border-slate-100">
                       <label className="block font-semibold text-slate-700 mb-1.5">
-                        White-Label Rights & Commercial Resale Perks
+                        Commercial Ownership & Resale Perks
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">

@@ -6,11 +6,11 @@ import {
   ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp,
   Download, ExternalLink, Sparkles, Star, Shield, Zap,
   Crown, Code, Globe, Lock, Palette, Building2, Mail,
-  Terminal, Headphones, BookOpen, Phone, CreditCard,
+  Terminal, Headphones, BookOpen, CreditCard,
   CheckCircle, BarChart3, Users, Clock, ShieldCheck,
   Cpu, Layers, FileCode, CheckCircle2, GitBranch, Server,
   Database, ArrowUpRight, Monitor, GraduationCap, Copy,
-  Workflow, Bot, Search, RefreshCw, FileText
+  Workflow, Bot, Search, FileText, AlertTriangle
 } from "lucide-react";
 import {
   getProductDetail,
@@ -19,6 +19,7 @@ import {
   type ProductDetail,
 } from "@/lib/productData";
 import { RazorpayCheckout, RazorpayBuyButton } from "@/components/RazorpayCheckout";
+import { LiveDemoButton } from "@/components/LiveDemoModal";
 
 export const Route = createFileRoute("/products/$productId")({
   component: ProductDetailPage,
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/products/$productId")({
       { title: `${loaderData?.name ?? "Product"} Source Code — SAP DigiTech Solutions` },
       {
         name: "description",
-        content: loaderData?.heroDesc ?? "Production-ready SaaS source code with complete commercial white-label license.",
+        content: loaderData?.heroDesc ?? "Production-ready SaaS source code with complete ownership.",
       },
     ],
   }),
@@ -127,7 +128,7 @@ function ProductDetailPage() {
     description: product.heroDesc || "Production-tested SaaS capability ready for immediate deployment.",
     metrics: "< 15s latency",
     badge: "Core Module",
-    previewNote: "Full commercial white-label source code included.",
+    previewNote: "Full commercial source code included.",
   };
   const otherProducts = getAllProductDetails().filter((p) => p.id !== product.id).slice(0, 3);
 
@@ -141,9 +142,9 @@ function ProductDetailPage() {
         <div className="absolute top-10 left-1/4 -translate-x-1/2 w-[500px] h-[300px] bg-radial from-[#FF6B00]/8 via-orange-100/30 to-transparent blur-3xl pointer-events-none" />
         <div className="absolute top-20 right-10 size-[360px] rounded-full bg-[#1B2240]/4 blur-3xl pointer-events-none" />
 
-        <div className="container-1280 relative z-10 px-4">
+        <div className="w-full relative z-10 pl-4 sm:pl-6 lg:pl-[max(1.5rem,calc((100%-1240px)/2+1.5rem))] pr-0">
           {/* Breadcrumbs Navigation */}
-          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium mb-6">
+          <div className="flex items-center gap-2 text-xs text-slate-500 font-medium mb-6 pr-4 sm:pr-6">
             <Link to="/" className="hover:text-[#FF6B00] transition-colors">Home</Link>
             <span className="text-slate-300">/</span>
             <Link to="/products" className="hover:text-[#FF6B00] transition-colors">Products</Link>
@@ -151,10 +152,10 @@ function ProductDetailPage() {
             <span className="text-[#1B2240] font-bold">{product.name}</span>
           </div>
 
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-8">
             
             {/* Left Column: Product Value Proposition */}
-            <div className="lg:col-span-6 space-y-6">
+            <div className="w-full lg:w-[480px] xl:w-[540px] shrink-0 space-y-6 pr-4 sm:pr-6 lg:pr-4">
               <div className="flex items-center gap-2.5 flex-wrap">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00] text-xs font-bold">
                   <Sparkles className="size-3.5" />
@@ -164,15 +165,10 @@ function ProductDetailPage() {
                 <span className="text-xs text-slate-600 font-semibold uppercase tracking-wide">
                   {product.categoryName}
                 </span>
-                <span className="text-xs text-slate-300 font-medium">•</span>
-                <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-bold">
-                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  100% White-Label
-                </span>
               </div>
 
               <div className="space-y-3">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1B2240] tracking-tight leading-[1.08]">
+                <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-[#1B2240] tracking-tight leading-[1.08]">
                   {product.name}
                 </h1>
                 <p className="text-base sm:text-lg font-semibold text-[#FF6B00]">
@@ -194,24 +190,7 @@ function ProductDetailPage() {
                   icon={<ArrowRight className="size-4" />}
                   className="px-6 py-3.5 shadow-sm"
                 />
-
-                <a
-                  href={liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full font-semibold text-sm bg-white hover:bg-slate-50 text-[#1B2240] border border-slate-200/90 shadow-xs transition-colors"
-                >
-                  Visit Live Site
-                  <ExternalLink className="size-3.5 text-slate-400" />
-                </a>
-
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-full font-semibold text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
-                >
-                  Book Demo
-                  <Phone className="size-3.5 text-slate-500" />
-                </Link>
+                <LiveDemoButton product={product} variant="hero" />
               </div>
 
               {/* Key Metric Stats Chips */}
@@ -229,85 +208,16 @@ function ProductDetailPage() {
               </div>
             </div>
 
-            {/* ─── Right Column: Dashboard ONLY (Clean, Ultra-Professional Browser Mockup) ─── */}
-            <div className="lg:col-span-6">
-              <div className="rounded-3xl bg-[#0B0F19] border border-slate-800 shadow-2xl shadow-slate-950/20 overflow-hidden group transition-all duration-300">
-                {/* Browser Top Chrome Header */}
-                <div className="px-4 py-3 bg-[#0E1322] border-b border-slate-800 flex items-center justify-between gap-3">
-                  {/* Window Controls */}
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <div className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E]" />
-                    <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
-                    <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
-                  </div>
-
-                  {/* Clean Address Bar */}
-                  <div className="flex-1 max-w-sm bg-slate-900/90 border border-slate-700/80 rounded-full px-3.5 py-1 flex items-center justify-between gap-2 text-xs shadow-inner">
-                    <div className="flex items-center gap-1.5 truncate">
-                      <Lock className="size-3 text-emerald-400 shrink-0" />
-                      <span className="text-[0.72rem] text-slate-300 font-mono truncate">{cleanDomain}</span>
-                    </div>
-                    <span className="flex items-center gap-1 text-[0.62rem] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full shrink-0">
-                      <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
-                    </span>
-                  </div>
-
-                  {/* External Link Action */}
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={`Open ${product.name} live in new tab`}
-                    className="size-7 rounded-lg bg-slate-800 hover:bg-[#FF6B00] text-slate-300 hover:text-white grid place-items-center transition-colors shrink-0"
-                  >
-                    <ExternalLink className="size-3.5" />
-                  </a>
-                </div>
-
-                {/* Pristine Dashboard Screenshot Preview */}
-                <div className="relative overflow-hidden bg-slate-950 group/img">
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block relative overflow-hidden"
-                  >
-                    <img
-                      src={product.localImg}
-                      alt={`${product.name} live dashboard screenshot`}
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = "/assets/work/website-preview/briefvault.png";
-                      }}
-                      className="w-full object-cover object-top max-h-[420px] transition-transform duration-700 ease-out group-hover/img:scale-[1.02]"
-                    />
-
-                    {/* Interactive Hover Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-end justify-between p-4">
-                      <span className="text-xs font-bold text-white flex items-center gap-1.5 bg-[#FF6B00] px-4 py-2 rounded-full shadow-lg">
-                        Launch {cleanDomain} <ExternalLink className="size-3.5" />
-                      </span>
-                      <span className="text-[0.68rem] text-slate-300 bg-slate-900/90 px-3 py-1.5 rounded-full backdrop-blur-sm border border-slate-700/60">
-                        Click to open full website
-                      </span>
-                    </div>
-                  </a>
-                </div>
-
-                {/* Dashboard Status Footer */}
-                <div className="px-4 py-2.5 bg-[#090D18] border-t border-slate-800/80 flex items-center justify-between text-[0.72rem] text-slate-400">
-                  <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                    <CheckCircle2 className="size-3.5" /> Production Deployed
-                  </span>
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#FF6B00] font-bold hover:underline flex items-center gap-1"
-                  >
-                    {cleanDomain} <ArrowUpRight className="size-3" />
-                  </a>
-                </div>
-              </div>
+            {/* ─── Right Column: ONLY dashboard image (faint gray border, light shadow, wider, touching right side) ─── */}
+            <div className="w-full lg:flex-1 flex justify-end items-center overflow-visible">
+              <img
+                src={product.localImg}
+                alt={`${product.name} dashboard`}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = "/assets/work/website-preview/briefvault.png";
+                }}
+                className="w-full max-w-none lg:max-w-[850px] xl:max-w-[1050px] 2xl:max-w-[1200px] h-auto object-contain object-right block ml-auto rounded-2xl lg:rounded-r-none lg:rounded-l-2xl border border-slate-200/90 shadow-xl shadow-slate-900/5"
+              />
             </div>
 
           </div>
@@ -360,72 +270,97 @@ function ProductDetailPage() {
         </div>
       </section>
 
+
       {/* ─── 1. Complete Technology Stack ─── */}
       {product.comprehensiveTechStack && (
         <section id="tech-stack" className="py-16 md:py-20 bg-white border-b border-slate-200/80 scroll-mt-28">
           <div className="container-1280 px-4">
-            <div className="max-w-3xl mb-12 space-y-3">
+            <div className="max-w-3xl mb-10 space-y-3">
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
                 <Code className="size-4" /> 1. COMPLETE TECHNOLOGY STACK
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1B2240] tracking-tight">
                 Enterprise Technologies & Libraries
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-400 font-normal leading-relaxed">
                 Full transparent breakdown of every framework, ORM, UI primitive, AI model, and payment gateway integrated into {product.name}.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {product.comprehensiveTechStack.map((cat, i) => (
-                <div
-                  key={i}
-                  className="rounded-3xl bg-slate-50/70 border border-slate-200/90 p-6 flex flex-col justify-between hover:bg-white hover:border-[#FF6B00]/40 hover:shadow-lg transition-all duration-300"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
-                      <h3 className="text-base font-extrabold text-[#1B2240] flex items-center gap-2">
-                        <span className="size-2 rounded-full bg-[#FF6B00]" />
-                        {cat.category}
-                      </h3>
-                      <span className="text-[0.68rem] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">
-                        {cat.items.length} Modules
-                      </span>
-                    </div>
+            {/* Unified Single Card for Tech Stack */}
+            <div className="rounded-3xl bg-slate-50/70 border border-slate-200/90 p-6 sm:p-8 lg:p-10 shadow-sm space-y-8">
+              {/* Card Meta Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-[#FF6B00]" />
+                    <h3 className="text-sm font-bold text-[#1B2240] tracking-wide uppercase">
+                      Architecture & Technology Matrix
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400 font-normal">
+                    Production-tested modules across frontend, backend, database, OCR, intelligence, and payments.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[0.72rem] font-bold px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-600 shadow-2xs">
+                    {product.comprehensiveTechStack.length} Infrastructure Layers
+                  </span>
+                  <span className="text-[0.72rem] font-bold px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00]">
+                    {product.comprehensiveTechStack.reduce((acc, cat) => acc + cat.items.length, 0)} Production Modules
+                  </span>
+                </div>
+              </div>
 
-                    {cat.description && (
-                      <p className="text-xs text-slate-400 font-normal leading-relaxed">
-                        {cat.description}
-                      </p>
-                    )}
-
-                    <div className="space-y-2.5 pt-1">
-                      {cat.items.map((item, idx) => (
-                        <div key={idx} className="p-2.5 rounded-xl bg-white border border-slate-200/70 text-left space-y-0.5 shadow-2xs">
-                          <div className="flex items-center justify-between gap-2">
-                            {item.url ? (
-                              <a
-                                href={item.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs font-semibold text-slate-700 hover:text-[#FF6B00] transition-colors flex items-center gap-1 group"
-                              >
-                                <span>{item.name}</span>
-                                <ExternalLink className="size-3 text-slate-400 group-hover:text-[#FF6B00]" />
-                              </a>
-                            ) : (
-                              <span className="text-xs font-semibold text-slate-700">{item.name}</span>
-                            )}
+              {/* Balanced Columns inside Single Card */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+                {[0, 1, 2].map((colIdx) => (
+                  <div key={colIdx} className="space-y-6">
+                    {product.comprehensiveTechStack
+                      ?.filter((_, idx) => idx % 3 === colIdx)
+                      .map((cat, catIdx) => (
+                        <div key={catIdx} className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs space-y-3">
+                          <div className="flex items-center justify-between pb-2.5 border-b border-slate-100">
+                            <h4 className="text-xs font-bold text-[#1B2240] uppercase tracking-wider flex items-center gap-2">
+                              <span className="size-1.5 rounded-full bg-[#FF6B00]" />
+                              {cat.category}
+                            </h4>
+                            <span className="text-[0.68rem] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                              {cat.items.length} Modules
+                            </span>
                           </div>
-                          <p className="text-[0.72rem] text-slate-400 font-normal leading-snug">
-                            {item.details}
-                          </p>
+                          {cat.description && (
+                            <p className="text-[0.72rem] text-slate-400 font-normal leading-relaxed">
+                              {cat.description}
+                            </p>
+                          )}
+                          <div className="divide-y divide-slate-100">
+                            {cat.items.map((item, idx) => (
+                              <div key={idx} className="py-2 flex items-center justify-between gap-3 first:pt-1 last:pb-1">
+                                {item.url ? (
+                                  <a
+                                    href={item.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs font-semibold text-slate-800 hover:text-[#FF6B00] transition-colors inline-flex items-center gap-1 group shrink-0"
+                                  >
+                                    <span>{item.name}</span>
+                                    <ExternalLink className="size-2.5 text-slate-400 group-hover:text-[#FF6B00]" />
+                                  </a>
+                                ) : (
+                                  <span className="text-xs font-semibold text-slate-800 shrink-0">{item.name}</span>
+                                )}
+                                <span className="text-[0.72rem] text-slate-400 font-normal text-right max-w-[55%] leading-snug">
+                                  {item.details}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ))}
-                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -869,18 +804,18 @@ function ProductDetailPage() {
         </div>
       </section>
 
-      {/* ─── 100% White-Label & Commercial Rights Section ─── */}
+      {/* ─── 100% Commercial Rights & Full Ownership Section ─── */}
       <section className="py-16 md:py-24 bg-[#0B0F19] text-white border-b border-slate-800">
         <div className="container-1280 px-4">
           <div className="max-w-3xl mx-auto text-center mb-12 space-y-3">
             <span className="text-xs font-extrabold uppercase tracking-wider text-[#FF6B00]">
-              COMMERCIAL RIGHTS & REBRANDING
+              COMMERCIAL RIGHTS & OWNERSHIP
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-              100% White-Label Ownership. Zero Monthly Fees.
+              100% Full Ownership. Zero Monthly Fees.
             </h2>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              You receive full commercial rights to rebrand, customize, host on your infrastructure, and charge clients recurring fees with zero royalties.
+              You receive full commercial rights to customize, host on your infrastructure, and charge clients recurring fees with zero royalties.
             </p>
           </div>
 
@@ -908,176 +843,7 @@ function ProductDetailPage() {
         </div>
       </section>
 
-      {/* ─── 3. Step-by-Step Fresh VPS Deployment Guide ─── */}
-      {product.vpsDeploymentGuide && (
-        <section id="vps-deployment" className="py-16 md:py-24 bg-[#090D18] text-white border-b border-slate-800 scroll-mt-28">
-          <div className="container-1280 px-4 space-y-12">
-            
-            {/* Header & Overview */}
-            <div className="max-w-3xl space-y-3">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
-                <Server className="size-4" /> 3. PRODUCTION RUNBOOK
-              </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-                Step-by-Step Fresh VPS Deployment Guide
-              </h2>
-              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                Deploy {product.name} to a brand-new Ubuntu 22.04 / 24.04 LTS VPS (Hetzner, DigitalOcean, AWS EC2, Linode, Vultr, Contabo) in 15 minutes.
-              </p>
-            </div>
 
-            {/* Overview Matrix Banner */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 p-4 sm:p-5 rounded-2xl bg-white/[0.04] border border-white/10 text-xs">
-              <div>
-                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Target OS</span>
-                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.os}</span>
-              </div>
-              <div>
-                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Process Mgr</span>
-                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.processManager}</span>
-              </div>
-              <div>
-                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Reverse Proxy</span>
-                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.reverseProxy}</span>
-              </div>
-              <div>
-                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Database</span>
-                <span className="font-bold text-white mt-0.5 block">{product.vpsDeploymentGuide.overview.database}</span>
-              </div>
-              <div>
-                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">Storage Path</span>
-                <span className="font-mono text-slate-200 text-[0.7rem] mt-0.5 block truncate" title={product.vpsDeploymentGuide.overview.storagePath}>
-                  {product.vpsDeploymentGuide.overview.storagePath}
-                </span>
-              </div>
-              <div>
-                <span className="text-[0.65rem] text-slate-400 uppercase font-mono font-bold block">App Path</span>
-                <span className="font-mono text-slate-200 text-[0.7rem] mt-0.5 block truncate" title={product.vpsDeploymentGuide.overview.appPath}>
-                  {product.vpsDeploymentGuide.overview.appPath}
-                </span>
-              </div>
-            </div>
-
-            {/* 10 Step Cards */}
-            <div className="space-y-4">
-              {product.vpsDeploymentGuide.steps.map((st) => (
-                <div
-                  key={st.stepNumber}
-                  className="rounded-2xl bg-white/[0.03] border border-white/10 p-5 sm:p-6 space-y-3 hover:border-white/20 transition-colors"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/10">
-                    <div className="flex items-center gap-3">
-                      <span className="size-7 rounded-xl bg-[#FF6B00] text-white text-xs font-black grid place-items-center shrink-0">
-                        {st.stepNumber}
-                      </span>
-                      <h3 className="text-base font-bold text-white">
-                        {st.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {st.description && (
-                    <p className="text-xs sm:text-sm text-slate-400 font-normal leading-relaxed">
-                      {st.description}
-                    </p>
-                  )}
-
-                  {st.command && (
-                    <CodeSnippetBox code={st.command} language="bash" filename={`Step ${st.stepNumber} Commands`} />
-                  )}
-
-                  {st.codeSnippet && (
-                    <CodeSnippetBox
-                      code={st.codeSnippet.code}
-                      language={st.codeSnippet.language}
-                      filename={st.codeSnippet.filename}
-                    />
-                  )}
-
-                  {st.note && (
-                    <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 whitespace-pre-line font-mono">
-                      💡 {st.note}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </section>
-      )}
-
-      {/* ─── 4. Step-by-Step Redeployment Guide (Updates) ─── */}
-      {product.vpsRedeploymentGuide && (
-        <section id="vps-redeploy" className="py-16 md:py-24 bg-[#0F1523] text-white border-b border-slate-800 scroll-mt-28">
-          <div className="container-1280 px-4 space-y-12">
-            
-            <div className="max-w-3xl space-y-3">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#FF6B00] flex items-center gap-1.5">
-                <RefreshCw className="size-4" /> 4. ZERO-DOWNTIME UPDATES
-              </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight">
-                Step-by-Step Redeployment Guide
-              </h2>
-              <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                When you make changes to code, push to Git, or want to deploy updates to your running VPS, use this seamless workflow.
-              </p>
-            </div>
-
-            {/* Automated 1-Command Redeploy Script Callout */}
-            <div className="p-6 rounded-3xl bg-gradient-to-r from-[#FF6B00]/15 to-transparent border border-[#FF6B00]/30 space-y-4">
-              <div className="flex items-center gap-2 text-sm font-bold text-[#FF6B00]">
-                <Zap className="size-4.5" />
-                <span>Automated 1-Command Redeploy Script (Recommended)</span>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Create <code className="text-emerald-400 bg-black/40 px-1.5 py-0.5 rounded font-mono">{product.vpsRedeploymentGuide.deployScriptFilename}</code> once on your server, make it executable with <code className="text-emerald-400 bg-black/40 px-1.5 py-0.5 rounded font-mono">chmod +x {product.vpsRedeploymentGuide.deployScriptFilename}</code>, and run it anytime with zero downtime!
-              </p>
-
-              <CodeSnippetBox
-                code={product.vpsRedeploymentGuide.deployScript}
-                language="bash"
-                filename={product.vpsRedeploymentGuide.deployScriptFilename}
-              />
-            </div>
-
-            {/* Manual Redeployment Steps Grid */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Terminal className="size-4 text-emerald-400" />
-                Manual Redeployment Steps
-              </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {product.vpsRedeploymentGuide.manualSteps.map((m, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2">
-                    <span className="text-xs font-bold text-white block">{m.step}</span>
-                    {m.explanation && <p className="text-[0.72rem] text-slate-400">{m.explanation}</p>}
-                    <CodeSnippetBox code={m.command} language="bash" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Rollback Plan */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Shield className="size-4 text-rose-400" />
-                Emergency Rollback Plan (In case an update fails)
-              </h3>
-              <div className="grid md:grid-cols-3 gap-4">
-                {product.vpsRedeploymentGuide.rollbackPlan.map((r, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl bg-rose-500/[0.05] border border-rose-500/20 space-y-2">
-                    <span className="text-xs font-bold text-rose-300 block">{r.step}</span>
-                    {r.explanation && <p className="text-[0.72rem] text-slate-400">{r.explanation}</p>}
-                    <CodeSnippetBox code={r.command} language="bash" />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        </section>
-      )}
 
       {/* ─── One-Time Fixed Price Source Code Purchase Section ─── */}
       <section id="buy-source-code" className="py-16 md:py-24 bg-[#FDFDFC] border-b border-slate-200/80 scroll-mt-24">
@@ -1090,7 +856,7 @@ function ProductDetailPage() {
               Buy Complete Source Code. Own It Forever.
             </h2>
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              No recurring subscriptions, no per-seat fees, zero royalties. You get the full production codebase with complete commercial white-label license.
+              No recurring subscriptions, no per-seat fees, zero royalties. You get the full production codebase with complete ownership.
             </p>
           </div>
 
@@ -1142,17 +908,32 @@ function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Buy Button with Razorpay Integration */}
+              {/* Legal Disclaimer & Copyright Warning (Faint Red Box) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-rose-50/70 border border-rose-200/80 flex items-start gap-3.5 text-left">
+                <AlertTriangle className="size-5 text-rose-500 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-rose-800 flex items-center gap-2">
+                    Legal Notice & Copyright Disclaimer
+                  </h5>
+                  <p className="text-xs text-rose-700/90 font-normal leading-relaxed">
+                    {product.sourceCodeOffer.legalDisclaimer ||
+                      "Important: You must change the original product name, brand identity, and logos before deploying to production. Deploying or distributing using the original trademark/brand name without modification may result in copyright or trademark infringement and related legal liabilities."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Buy Button with Razorpay Integration & Live Demo Button */}
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4 text-center">
-                <div className="max-w-md mx-auto">
+                <div className="max-w-xl mx-auto grid sm:grid-cols-2 gap-3.5 items-center">
                   <RazorpayBuyButton
                     amount={product.sourceCodeOffer.fixedPrice}
                     productName={product.name}
                     productId={product.id}
                     planName="Source Code License"
-                    buttonText={`Buy Full Source Code — ₹${product.sourceCodeOffer.fixedPrice.toLocaleString("en-IN")}`}
-                    className="w-full py-4 text-base font-bold"
+                    buttonText={`Buy Source Code — ₹${product.sourceCodeOffer.fixedPrice.toLocaleString("en-IN")}`}
+                    className="w-full py-4 text-sm font-bold"
                   />
+                  <LiveDemoButton product={product} variant="pricing" className="w-full py-4 text-sm font-bold" />
                 </div>
 
                 <div className="flex items-center justify-center flex-wrap gap-4 text-xs text-slate-500 pt-1">
@@ -1385,6 +1166,7 @@ function ProductDetailPage() {
               icon={<Download className="size-4" />}
               className="px-7 py-3.5"
             />
+            <LiveDemoButton product={product} variant="dark" />
             <Link
               to="/contact"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full font-semibold text-sm bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors"

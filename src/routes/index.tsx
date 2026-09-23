@@ -90,8 +90,6 @@ export function Nav() {
     };
   }, []);
 
-  const totalProductsCount = categories.reduce((acc, cat) => acc + cat.items.length, 0);
-
   // Close mega menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -180,6 +178,9 @@ export function Nav() {
       case "greviewpilot": return <Star className="size-5" />;
       case "bookmytime": return <Calendar className="size-5" />;
       case "chatnexgen": return <MessageCircle className="size-5" />;
+      case "aihospitalerp": return <HeartPulse className="size-5" />;
+      case "mediadocks":
+      case "medicdocks": return <Video className="size-5" />;
       default: return <Sparkles className="size-5" />;
     }
   };
@@ -317,7 +318,7 @@ export function Nav() {
                               onClick={() => setProductsOpen(false)}
                               className="font-bold text-[#FF6B00] hover:text-[#E05300] flex items-center gap-1.5 transition-colors group"
                             >
-                              Explore all 6 SaaS products
+                              View All
                               <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
                             </Link>
                           </div>
@@ -393,9 +394,6 @@ export function Nav() {
                         >
                           <span className="flex items-center gap-2">
                             {label}
-                            <span className="text-[0.65rem] px-2 py-0.5 rounded-full bg-[#FF6B00]/10 text-[#FF6B00] font-bold">
-                              {totalProductsCount} Products
-                            </span>
                           </span>
                           <ChevronDown
                             className={`size-4 transition-transform ${mobileProductsOpen ? "rotate-180 text-[#FF6B00]" : ""}`}
@@ -424,7 +422,7 @@ export function Nav() {
                               onClick={() => setOpen(false)}
                               className="block text-center py-2 text-xs font-bold text-[#FF6B00] hover:underline"
                             >
-                              View All {totalProductsCount} Products →
+                              View All →
                             </Link>
                           </div>
                         )}

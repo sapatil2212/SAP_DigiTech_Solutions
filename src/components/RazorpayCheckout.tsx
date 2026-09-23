@@ -19,6 +19,7 @@ import {
   HiLockClosed,
   HiArrowRight,
   HiBuildingOffice2,
+  HiExclamationTriangle,
 } from "react-icons/hi2";
 import { Loader2 } from "lucide-react";
 
@@ -300,6 +301,14 @@ export function CustomerDetailsModal({
                 <span>Encrypted 256-bit payment gateway. Instant delivery after completion.</span>
               </div>
 
+              {/* Legal Warning Notice (Faint Red Box) */}
+              <div className="rounded-lg bg-rose-50/70 border border-rose-200/80 p-2.5 flex items-start gap-2 text-left">
+                <HiExclamationTriangle className="size-4 text-rose-500 shrink-0 mt-0.5" />
+                <p className="text-[11px] text-rose-700 font-normal leading-relaxed">
+                  <strong>Notice:</strong> Please rebrand and change the original product name, brand assets, and logos before deploying. Using the original name in production may lead to copyright or trademark infringement warnings.
+                </p>
+              </div>
+
               {/* Buttons */}
               <div className="pt-2 flex items-center justify-end gap-2.5">
                 <button
@@ -549,7 +558,7 @@ export function PaymentSuccessModal({
                   <span>Commercial License:</span>
                   <span className="text-emerald-700 font-semibold flex items-center gap-1">
                     <HiShieldCheck className="size-3.5 text-emerald-600" />
-                    <span>100% White-Label Included</span>
+                    <span>Full Commercial Rights Included</span>
                   </span>
                 </div>
               </div>

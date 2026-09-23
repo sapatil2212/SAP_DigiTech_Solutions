@@ -10,6 +10,7 @@ import {
   loadAndSyncCustomProducts,
   type ProductDetail,
 } from "@/lib/productData";
+import { LiveDemoButton } from "@/components/LiveDemoModal";
 
 export const Route = createFileRoute("/products/")({
   component: ProductsPage,
@@ -92,7 +93,7 @@ function ProductsPage() {
             <span className="size-2 rounded-full bg-[#FF6B00] animate-pulse" />
             <span>SAP DigiTech Software Suite</span>
             <span className="text-slate-300">|</span>
-            <span className="text-[#FF6B00] font-bold">100% White-Label Code</span>
+            <span className="text-[#FF6B00] font-bold">100% Commercial Source Code</span>
           </div>
 
           <h1 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#1B2240] tracking-tight leading-[1.08]">
@@ -171,8 +172,8 @@ function ProductsPage() {
                   ? prod.url
                   : `https://${prod.url}`;
                 const originalPrice = prod.sourceCodeOffer?.originalPrice || 49999;
-                const fixedPrice = prod.sourceCodeOffer?.fixedPrice || 499;
-                const discount = prod.sourceCodeOffer?.discountPercentage || 99;
+                const fixedPrice = prod.sourceCodeOffer?.fixedPrice || 1999;
+                const discount = prod.sourceCodeOffer?.discountPercentage || 96;
                 const badge = prod.badge || "PREMIUM";
                 const level = prod.categoryGroup || "ENTERPRISE SAAS";
 
@@ -263,16 +264,8 @@ function ProductsPage() {
 
                         {/* Right: Actions */}
                         <div className="flex items-center gap-2">
-                          {/* Live Website Preview Icon */}
-                          <a
-                            href={liveUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title={`Launch ${prod.name} live application`}
-                            className="size-10 rounded-xl bg-slate-100 hover:bg-[#FF6B00] text-slate-600 hover:text-white grid place-items-center transition-all duration-200 border border-slate-200"
-                          >
-                            <ExternalLink className="size-4" />
-                          </a>
+                          {/* Live Demo Trigger with Modal Credentials */}
+                          <LiveDemoButton product={prod} variant="card" buttonText="Demo" />
 
                           {/* Explore CTA Button */}
                           <Link
@@ -301,7 +294,7 @@ function ProductsPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#FF6B00]/10 via-transparent to-cyan-500/10 pointer-events-none" />
         <div className="container-1280 relative z-10 text-center max-w-3xl mx-auto px-4 space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-slate-300 font-medium">
-            <Sparkles className="size-3.5 text-[#FF6B00]" /> Custom Systems Engineering & White-Labeling
+            <Sparkles className="size-3.5 text-[#FF6B00]" /> Custom Systems Engineering & Rebranding
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
@@ -309,7 +302,7 @@ function ProductsPage() {
           </h2>
 
           <p className="text-slate-400 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
-            Our engineering studio builds white-labeled SaaS portals, custom CRM workflows, and autonomous AI integrations tailored specifically for your vertical.
+            Our engineering studio builds custom SaaS portals, specialized CRM workflows, and autonomous AI integrations tailored specifically for your vertical.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">

@@ -101,15 +101,15 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
         features: Array.isArray(features) ? features : [],
         whiteLabel: Array.isArray(whiteLabel) ? whiteLabel : [],
         sourceCodeOffer: sourceCodeOffer || {
-          fixedPrice: 1,
+          fixedPrice: 1999,
           originalPrice: 49999,
-          discountPercentage: 99,
-          licenseName: "Full Commercial & White-Label Source Code License",
+          discountPercentage: 96,
+          licenseName: "Full Commercial Source Code License",
           deliveryMethod: "Instant Encrypted Download (5-Min Expiring Session)",
           deliverables: [
             "Complete Frontend & Backend Source Code",
             "Docker Deployment & Environment Configs",
-            "Full White-Label Rights with Zero Royalties",
+            "Full Commercial Rights with Zero Royalties",
           ],
           featuresIncluded: [
             "Lifetime Commercial License",

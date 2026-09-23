@@ -163,7 +163,7 @@ function CustomerDownloadPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/30 text-[#FF6B00] text-xs font-medium">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Commercial White-Label License</span>
+                  <span>Commercial Source Code License</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono">
                   <Server className="w-3.5 h-3.5" />
@@ -315,7 +315,7 @@ function CustomerDownloadPage() {
                   </div>
                   <div>
                     <span className="text-slate-500 block uppercase font-semibold text-[10px] tracking-wider">License Type</span>
-                    <span className="text-emerald-400 font-medium">White-Label Commercial</span>
+                    <span className="text-emerald-400 font-medium">Lifetime Ownership</span>
                   </div>
                   <div>
                     <span className="text-slate-500 block uppercase font-semibold text-[10px] tracking-wider">Support</span>
@@ -359,7 +359,7 @@ function CustomerDownloadPage() {
                       icon: Terminal,
                     },
                     {
-                      title: "Commercial White-Label License",
+                      title: "Commercial Source Code License",
                       desc: "100% royalty-free rights to modify, deploy under your own company brand, and bill end clients.",
                       icon: Sparkles,
                     },
@@ -413,7 +413,7 @@ function CustomerDownloadPage() {
               {/* Support & Assistance Card */}
               <div className="p-6 rounded-3xl bg-gradient-to-r from-[#1B2240] to-[#11162A] border border-white/15 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h4 className="text-sm font-bold text-white">Need deployment assistance or white-label customization?</h4>
+                  <h4 className="text-sm font-bold text-white">Need deployment assistance or custom engineering?</h4>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Our engineering team offers turnkey VPS deployments, custom branding, and feature extensions.
                   </p>

@@ -485,12 +485,14 @@ function getPaymentLinksPath(): string {
 }
 
 export const DEFAULT_PRODUCT_PAYMENT_CONFIGS = [
-  { id: "briefvault", name: "BriefVault", amount: 1, originalPrice: 49999, notes: "100% White-Label Source Code + Gemini AI Engine" },
-  { id: "primeinbox", name: "PrimeInbox", amount: 1, originalPrice: 49999, notes: "100% White-Label Source Code + SMTP Warmup Engine" },
-  { id: "greviewpilot", name: "GReviewPilot", amount: 1, originalPrice: 39999, notes: "100% White-Label Source Code + Google Reviews Sync" },
-  { id: "bookmytime", name: "BookMyTime", amount: 1, originalPrice: 39999, notes: "100% White-Label Source Code + Multi-Calendar Sync" },
-  { id: "chatnexgen", name: "ChatNexGen", amount: 1, originalPrice: 39999, notes: "100% White-Label Source Code + WhatsApp CRM Bot" },
-  { id: "nexaleadai", name: "NexaLead AI", amount: 1, originalPrice: 49999, notes: "100% White-Label Source Code + B2B Lead Scraper Engine" },
+  { id: "briefvault", name: "BriefVault", amount: 1999, originalPrice: 24999, notes: "Source Code + Gemini AI Engine" },
+  { id: "primeinbox", name: "PrimeInbox", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + SMTP Warmup Engine" },
+  { id: "greviewpilot", name: "GReviewPilot", amount: 1999, originalPrice: 39999, notes: "Full Commercial Source Code + Google Reviews Sync" },
+  { id: "bookmytime", name: "BookMyTime", amount: 1999, originalPrice: 29999, notes: "Full Commercial Source Code + Multi-Calendar Sync" },
+  { id: "chatnexgen", name: "ChatNexGen", amount: 1999, originalPrice: 44999, notes: "Full Commercial Source Code + WhatsApp CRM Bot" },
+  { id: "nexaleadai", name: "NexaLead AI", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + B2B Lead Scraper Engine" },
+  { id: "aihospitalerp", name: "AiHospitalERP", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + Hospital Management ERP" },
+  { id: "mediadocks", name: "MediaDocks", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + Universal Media Extraction & AI Transcription Platform" },
 ];
 
 /**
@@ -579,7 +581,7 @@ export function createPaymentLink(params: {
     clientName: params.clientName?.trim() || "Private Client",
     clientEmail: params.clientEmail?.trim() || "",
     clientPhone: params.clientPhone?.trim() || "",
-    notes: params.notes?.trim() || "Full White-Label Commercial Source Code License",
+    notes: params.notes?.trim() || "Full Commercial Source Code License",
     createdAt: new Date().toISOString(),
     expiresAt,
     active: true,
@@ -718,10 +720,10 @@ export function saveCustomProduct(product: CustomProductDetail): CustomProductDe
         id: normalized.id,
         productId: normalized.id,
         productName: normalized.name,
-        amount: normalized.sourceCodeOffer?.fixedPrice || 1,
+        amount: normalized.sourceCodeOffer?.fixedPrice || 1999,
         originalPrice: normalized.sourceCodeOffer?.originalPrice || 49999,
         clientName: "Public Storefront",
-        notes: `100% White-Label Source Code — ${normalized.name}`,
+        notes: `Full Commercial Source Code — ${normalized.name}`,
         createdAt: new Date().toISOString(),
         expiresAt: null,
         active: true,
