@@ -1917,8 +1917,8 @@ pm2 status`,
     },
   },
 
-  chatnexgen: {
-    id: "chatnexgen",
+  "whatsapp-crm": {
+    id: "whatsapp-crm",
     name: "WhatsApp CRM",
     tagline: "Enterprise Multi-Tenant WhatsApp CRM & AI Automation Engine",
     url: "https://hashtagscrm.com/",
@@ -3301,6 +3301,8 @@ echo "==========================================="`,
 
 // Aliases for user convenience / alternate naming
 productDetails["medicdocks"] = productDetails["mediadocks"];
+productDetails["chatnexgen"] = productDetails["whatsapp-crm"];
+productDetails["whatsappcrm"] = productDetails["whatsapp-crm"];
 
 /* ─────────────────────── Dynamic Custom Products Registry ─────────────────────── */
 const dynamicCustomProducts: Record<string, ProductDetail> = {};
@@ -3636,7 +3638,7 @@ export function getProductDetail(id: string): ProductDetail | undefined {
   if (!id) return undefined;
   let lower = id.toLowerCase().trim();
   if (lower === "medicdocks") lower = "mediadocks";
-  if (lower === "whatsapp-crm" || lower === "whatsappcrm" || lower === "whatsapp") lower = "chatnexgen";
+  if (lower === "chatnexgen" || lower === "whatsappcrm" || lower === "whatsapp") lower = "whatsapp-crm";
   const prod = productDetails[lower] || dynamicCustomProducts[lower];
   if (!prod) return undefined;
 
@@ -3759,10 +3761,10 @@ const baseMegaMenuCategories: MegaMenuCategory[] = [
         categoryGroup: "Operations & Growth" as const,
       },
       {
-        id: "chatnexgen",
+        id: "whatsapp-crm",
         name: "WhatsApp CRM",
         tagline: "Omnichannel AI Support & WhatsApp Bot",
-        url: "/products/chatnexgen",
+        url: "/products/whatsapp-crm",
         badge: "24/7 AI",
         categoryGroup: "Operations & Growth" as const,
       },

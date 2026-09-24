@@ -489,7 +489,7 @@ export const DEFAULT_PRODUCT_PAYMENT_CONFIGS = [
   { id: "primeinbox", name: "PrimeInbox", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + SMTP Warmup Engine" },
   { id: "greviewpilot", name: "GReviewPilot", amount: 1999, originalPrice: 39999, notes: "Full Commercial Source Code + Google Reviews Sync" },
   { id: "bookmytime", name: "BookMyTime", amount: 1999, originalPrice: 29999, notes: "Full Commercial Source Code + Multi-Calendar Sync" },
-  { id: "chatnexgen", name: "WhatsApp CRM", amount: 1999, originalPrice: 44999, notes: "Full Commercial Source Code + WhatsApp CRM Bot" },
+  { id: "whatsapp-crm", name: "WhatsApp CRM", amount: 1999, originalPrice: 44999, notes: "Full Commercial Source Code + WhatsApp CRM Bot" },
   { id: "nexaleadai", name: "NexaLead AI", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + B2B Lead Scraper Engine" },
   { id: "aihospitalerp", name: "Hospital Management System", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + Hospital Management ERP" },
   { id: "mediadocks", name: "MediaDocks", amount: 1999, originalPrice: 49999, notes: "Full Commercial Source Code + Universal Media Extraction & AI Transcription Platform" },
@@ -612,7 +612,8 @@ export function createPaymentLink(params: {
 export function getPaymentLinkById(id: string): PaymentLink | null {
   const links = listPaymentLinks();
   const lower = id.toLowerCase();
-  const found = links.find((l) => l.id.toLowerCase() === lower || l.productId.toLowerCase() === lower) || null;
+  const normalized = lower === "chatnexgen" ? "whatsapp-crm" : lower;
+  const found = links.find((l) => l.id.toLowerCase() === normalized || l.productId.toLowerCase() === normalized || l.id.toLowerCase() === lower || l.productId.toLowerCase() === lower) || null;
   if (!found) return null;
 
   // If this is a canonical public storefront link, ensure it has latest price override

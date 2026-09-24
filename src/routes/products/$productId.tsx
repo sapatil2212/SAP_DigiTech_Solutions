@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Nav, Footer } from "../index";
 import { motion, AnimatePresence } from "motion/react";
@@ -24,6 +24,12 @@ import { LiveDemoButton } from "@/components/LiveDemoModal";
 export const Route = createFileRoute("/products/$productId")({
   component: ProductDetailPage,
   loader: async ({ params }) => {
+    if (params.productId.toLowerCase() === "chatnexgen") {
+      throw redirect({
+        to: "/products/$productId",
+        params: { productId: "whatsapp-crm" },
+      });
+    }
     let product = getProductDetail(params.productId);
     if (!product) {
       const all = await loadAndSyncCustomProducts();

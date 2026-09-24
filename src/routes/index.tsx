@@ -177,7 +177,8 @@ export function Nav() {
       case "nexaleadai": return <Search className="size-5" />;
       case "greviewpilot": return <Star className="size-5" />;
       case "bookmytime": return <Calendar className="size-5" />;
-      case "chatnexgen": return <MessageCircle className="size-5" />;
+      case "chatnexgen":
+      case "whatsapp-crm": return <MessageCircle className="size-5" />;
       case "aihospitalerp": return <HeartPulse className="size-5" />;
       case "mediadocks":
       case "medicdocks": return <Video className="size-5" />;
