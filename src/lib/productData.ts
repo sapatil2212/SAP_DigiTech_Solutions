@@ -1923,7 +1923,7 @@ pm2 status`,
     tagline: "Enterprise Multi-Tenant WhatsApp CRM & AI Automation Engine",
     url: "https://hashtagscrm.com/",
     demoCredentials: {
-      username: "demochatnexgen@gmail.com",
+      username: "demo@gmail.com",
       password: "Demo@2026",
       note: "Pre-configured with Meta WhatsApp Cloud API sandbox, shared team inbox, visual Kanban deals, and automated flow bot.",
     },
