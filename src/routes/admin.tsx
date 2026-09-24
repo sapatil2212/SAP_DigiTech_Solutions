@@ -154,6 +154,7 @@ function AdminStorageDashboard() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatusText, setUploadStatusText] = useState("");
 
   // Upload Form States
   const [selectedProductId, setSelectedProductId] = useState(productsList[0]?.id || "briefvault");
@@ -572,31 +573,22 @@ function AdminStorageDashboard() {
     setIsDragOver(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      if (file.name.toLowerCase().endsWith(".zip")) {
-        setSelectedFile(file);
-      } else {
-        toast.error("Please drop a valid .zip source code archive");
-      }
+      setSelectedFile(file);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      if (file.name.toLowerCase().endsWith(".zip")) {
-        setSelectedFile(file);
-      } else {
-        toast.error("Please select a valid .zip file");
-        if (fileInputRef.current) fileInputRef.current.value = "";
-      }
+      setSelectedFile(file);
     }
   };
 
-  // Upload handler
+  // Upload handler with real progress and 413 Payload Too Large handling
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) {
-      toast.error("Please select a .zip file to upload");
+      toast.error("Please select a file to upload");
       return;
     }
 
@@ -611,39 +603,70 @@ function AdminStorageDashboard() {
 
     try {
       setUploading(true);
-      setUploadProgress(20);
+      setUploadProgress(0);
+      setUploadStatusText("Starting upload...");
 
-      const interval = setInterval(() => {
-        setUploadProgress((prev) => (prev < 90 ? prev + 15 : prev));
-      }, 200);
+      const xhr = new XMLHttpRequest();
 
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
+      // Real upload progress tracking for large files (500MB+)
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.min(99, Math.round((event.loaded / event.total) * 100));
+          const loadedMb = (event.loaded / (1024 * 1024)).toFixed(1);
+          const totalMb = (event.total / (1024 * 1024)).toFixed(1);
+          setUploadProgress(percent);
+          setUploadStatusText(`${loadedMb} MB / ${totalMb} MB (${percent}%)`);
+        }
+      };
+
+      const responsePromise = new Promise<{ status: number; text: string }>((resolve, reject) => {
+        xhr.onload = () => resolve({ status: xhr.status, text: xhr.responseText });
+        xhr.onerror = () => reject(new Error("Network connection error during file upload. Check your connection or VPS status."));
+        xhr.ontimeout = () => reject(new Error("Upload timed out. Ensure proxy_read_timeout is increased on your VPS Nginx."));
       });
 
-      clearInterval(interval);
+      xhr.open("POST", "/api/admin/upload");
+      xhr.send(formData);
+
+      const result = await responsePromise;
       setUploadProgress(100);
 
-      const data = await res.json();
+      // Handle Nginx 413 Payload Too Large
+      if (result.status === 413) {
+        toast.error(
+          "Upload rejected by VPS Nginx (HTTP 413 Payload Too Large). Fix: add 'client_max_body_size 0;' inside the http { ... } block in /etc/nginx/nginx.conf on your VPS and run 'sudo nginx -s reload'.",
+          { duration: 15000 }
+        );
+        return;
+      }
 
-      if (res.ok && data.success) {
+      let data: any = {};
+      try {
+        data = JSON.parse(result.text);
+      } catch {
+        toast.error(`Server returned HTTP ${result.status}. Response: ${result.text.slice(0, 120)}`);
+        return;
+      }
+
+      if (result.status >= 200 && result.status < 300 && data.success) {
         toast.success(`Successfully uploaded ${selectedFile.name}`);
         setJustUploadedPkg(data.package);
         setSelectedFile(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
         fetchPackages();
-        // Switch to packages tab to see the table
         setActiveTab("packages");
       } else {
-        toast.error(data.error || "Upload failed");
+        toast.error(data.error || data.message || "Upload failed");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload error:", err);
-      toast.error("Error occurred while uploading package");
+      toast.error(err?.message || "Error occurred while uploading package");
     } finally {
       setUploading(false);
-      setTimeout(() => setUploadProgress(0), 1000);
+      setTimeout(() => {
+        setUploadProgress(0);
+        setUploadStatusText("");
+      }, 1500);
     }
   };
 
@@ -1567,7 +1590,6 @@ function AdminStorageDashboard() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept=".zip,application/zip,application/x-zip-compressed"
                       onChange={handleFileChange}
                       className="hidden"
                     />
@@ -1602,14 +1624,25 @@ function AdminStorageDashboard() {
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-slate-800">
-                            Drag & drop your <span className="text-orange-600">.zip</span> code archive here, or <span className="text-orange-600 underline">browse files</span>
+                            Drag & drop <span className="text-orange-600">any file or package</span> here, or <span className="text-orange-600 underline">browse files</span>
                           </p>
                           <p className="text-xs text-slate-500 mt-0.5">
-                            Strictly uncorrupted <code className="text-orange-700 font-mono">.zip</code> source code archives accepted
+                            All file formats supported (.zip, .tar.gz, binaries, archives, installers) with no size limits
                           </p>
                         </div>
                       </div>
                     )}
+                  </div>
+
+                  {/* Large File VPS Tip */}
+                  <div className="p-3.5 rounded-xl bg-orange-50/70 border border-orange-200/80 text-xs text-slate-700 flex items-start gap-2.5">
+                    <Server className="w-4 h-4 text-[#FF6B00] shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <span className="font-bold text-slate-900 block">Uploading Large Packages (&gt;100MB / 500MB+)?</span>
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        Ensure your VPS Nginx configuration has <code className="bg-white px-1.5 py-0.5 rounded font-mono text-[11px] text-orange-700 border border-orange-200 font-bold">client_max_body_size 0;</code> inside the <code className="font-mono text-[11px]">http &#123; ... &#125;</code> block in <code className="font-mono text-[11px]">/etc/nginx/nginx.conf</code> to allow files of any size without HTTP 413 (Payload Too Large) errors.
+                      </p>
+                    </div>
                   </div>
 
                   {/* Progress Bar */}
@@ -1620,7 +1653,7 @@ function AdminStorageDashboard() {
                           <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-600" />
                           <span>Streaming to VPS Storage...</span>
                         </span>
-                        <span className="font-mono font-bold text-slate-900">{uploadProgress}%</span>
+                        <span className="font-mono font-bold text-slate-900">{uploadStatusText || `${uploadProgress}%`}</span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
                         <div
@@ -1919,9 +1952,36 @@ function AdminStorageDashboard() {
                   <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
                     <span className="text-slate-400 text-[10px] uppercase font-semibold block">Accepted MIME Type</span>
                     <span className="font-mono font-bold text-slate-800 block mt-1 truncate">
-                      application/zip, application/x-zip
+                      Any File Format (*/*)
                     </span>
-                    <span className="text-[10px] text-emerald-700 mt-1 inline-block">Enforced by Server Headers</span>
+                    <span className="text-[10px] text-emerald-700 mt-1 inline-block">No Size or Extension Limits</span>
+                  </div>
+                </div>
+
+                {/* Nginx Upload Configuration Helper */}
+                <div className="p-5 rounded-2xl bg-slate-900 text-slate-100 space-y-3 font-mono text-xs">
+                  <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-slate-300">
+                    <span className="font-sans font-bold text-white flex items-center gap-2">
+                      <Terminal className="w-4 h-4 text-[#FF6B00]" />
+                      VPS Nginx Upload Configuration (Fix HTTP 413)
+                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold font-sans">
+                      client_max_body_size 0;
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-400 font-sans">
+                    To allow files of any size (500MB+, 1GB+) without HTTP 413 (Payload Too Large) errors, add these directives inside the <code className="text-orange-400">http &#123; ... &#125;</code> block in <code className="text-white">/etc/nginx/nginx.conf</code>:
+                  </p>
+                  <div className="bg-black/60 p-3 rounded-lg text-emerald-400 text-[11px] leading-relaxed select-all">
+                    client_max_body_size 0;<br />
+                    client_body_buffer_size 128k;<br />
+                    proxy_read_timeout 600s;<br />
+                    proxy_connect_timeout 600s;<br />
+                    proxy_send_timeout 600s;<br />
+                    client_body_timeout 600s;
+                  </div>
+                  <div className="text-[11px] text-slate-400 font-sans">
+                    Then test and reload Nginx: <code className="text-orange-300 font-mono select-all">sudo nginx -t && sudo systemctl reload nginx</code>
                   </div>
                 </div>
 
@@ -1931,7 +1991,7 @@ function AdminStorageDashboard() {
                     <span>Security Notice for Storage Admins</span>
                   </div>
                   <p>
-                    All zip archives stored on the VPS are served with strict streaming headers (<code className="font-mono">Content-Disposition: attachment</code>). Never place sensitive credentials or environment keys in the uploaded source code files.
+                    All packages stored on the VPS are served with strict streaming headers (<code className="font-mono">Content-Disposition: attachment</code>). Never place sensitive credentials or environment keys in uploaded production packages.
                   </p>
                 </div>
               </div>

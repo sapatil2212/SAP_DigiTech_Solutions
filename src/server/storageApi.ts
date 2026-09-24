@@ -418,18 +418,12 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
 
       if (!file || !(file instanceof File) || file.size === 0) {
         return new Response(
-          JSON.stringify({ error: "Missing or invalid zip file" }),
+          JSON.stringify({ error: "Missing or invalid file" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
-      const originalFileName = file.name || `${productId}.zip`;
-      if (!originalFileName.toLowerCase().endsWith(".zip")) {
-        return new Response(
-          JSON.stringify({ error: "Only .zip files are allowed for source code packages" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      const originalFileName = file.name || `${productId}.bin`;
 
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
