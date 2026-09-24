@@ -1919,7 +1919,7 @@ pm2 status`,
 
   chatnexgen: {
     id: "chatnexgen",
-    name: "ChatNexGen",
+    name: "WhatsApp CRM",
     tagline: "Enterprise Multi-Tenant WhatsApp CRM & AI Automation Engine",
     url: "https://chatnexgen.in/",
     demoCredentials: {
@@ -1927,12 +1927,12 @@ pm2 status`,
       password: "Demo@2026",
       note: "Pre-configured with Meta WhatsApp Cloud API sandbox, shared team inbox, visual Kanban deals, and automated flow bot.",
     },
-    localImg: "/assets/work/website-preview/chatnexgen.png",
+    localImg: "/assets/products/whatsapp-crm-dashboard.png",
     badge: "Official Meta WhatsApp CRM",
     categoryName: "Conversational AI & WhatsApp CRM",
     categoryGroup: "Operations & Growth",
     heroDesc: "Enterprise Multi-Tenant WhatsApp CRM, AI Automation Engine, and Omnichannel Communication Platform built directly on top of the Official Meta WhatsApp Cloud API for automated sales pipelines and multi-agent support.",
-    detailedDesc: "ChatNexGen (HashTags CRM) is an Enterprise Multi-Tenant WhatsApp CRM, AI Automation Engine, and Omnichannel Communication Platform built directly on top of the Official Meta WhatsApp Cloud API. It transforms standard WhatsApp Business communication into an automated sales pipeline, collaborative multi-agent support center, and intelligent scheduling system for businesses across various industries (Healthcare, Clinics, E-commerce, Hotels, Education, and Professional Services).",
+    detailedDesc: "WhatsApp CRM (HashTags CRM) is an Enterprise Multi-Tenant WhatsApp CRM, AI Automation Engine, and Omnichannel Communication Platform built directly on top of the Official Meta WhatsApp Cloud API. It transforms standard WhatsApp Business communication into an automated sales pipeline, collaborative multi-agent support center, and intelligent scheduling system for businesses across various industries (Healthcare, Clinics, E-commerce, Hotels, Education, and Professional Services).",
     techStack: [
       "Next.js 16 (App Router)",
       "React 19.2",
@@ -2121,16 +2121,16 @@ pm2 status`,
     },
     faqs: [
       {
-        q: "What is included with the ChatNexGen (HashTags CRM) source code download?",
+        q: "What is included with the WhatsApp CRM (HashTags CRM) source code download?",
         a: "You receive the complete, unminified Next.js App Router frontend, custom Node.js server.js runtime hosting Socket.io, Prisma ORM 5.22 database schemas with MySQL migrations, Meta WhatsApp Cloud API webhooks, shared team inbox, visual Kanban deals pipeline, visual no-code flow builder, Google Gemini AI clinical booking modules, plus the full step-by-step VPS deployment guide and automated deploy.sh script in the download package.",
       },
       {
-        q: "Does ChatNexGen use the official Meta WhatsApp Cloud API?",
-        a: "Yes! ChatNexGen is engineered directly on the official Meta WhatsApp Cloud API (Graph API). This guarantees high message delivery rates, official verified green badge support, and zero account ban risks compared to unofficial web-scraping libraries.",
+        q: "Does WhatsApp CRM use the official Meta WhatsApp Cloud API?",
+        a: "Yes! WhatsApp CRM is engineered directly on the official Meta WhatsApp Cloud API (Graph API). This guarantees high message delivery rates, official verified green badge support, and zero account ban risks compared to unofficial web-scraping libraries.",
       },
       {
         q: "Can multiple team members manage the same WhatsApp number simultaneously?",
-        a: "Yes. ChatNexGen is a true multi-agent shared team inbox. Multiple agents can log in from their own computers, receive incoming chats via real-time WebSockets, assign threads to specific agents, add internal private notes, and reply to customers simultaneously without session disconnects.",
+        a: "Yes. WhatsApp CRM is a true multi-agent shared team inbox. Multiple agents can log in from their own computers, receive incoming chats via real-time WebSockets, assign threads to specific agents, add internal private notes, and reply to customers simultaneously without session disconnects.",
       },
       {
         q: "How does the AI appointment booking and clinic slot calculation work?",
@@ -2141,7 +2141,7 @@ pm2 status`,
         a: "Yes! The download package includes comprehensive, step-by-step deployment instructions for clean Ubuntu 22.04 / 24.04 LTS VPS (Hostinger, AWS, DigitalOcean, Hetzner, etc.) with PM2, Nginx, MySQL, and Certbot SSL, along with an automated deploy.sh shell script for 1-command zero-downtime updates.",
       },
       {
-        q: "Can I rebrand ChatNexGen and sell it as a white-label WhatsApp SaaS to businesses?",
+        q: "Can I rebrand WhatsApp CRM and sell it as a white-label WhatsApp SaaS to businesses?",
         a: "Yes, 100%! You receive a full commercial source code license. You can rebrand the platform under your agency or company name, configure your domain, and sell it or charge monthly SaaS retainers to unlimited business clients with zero royalties back to us.",
       },
     ],
@@ -2349,7 +2349,7 @@ set -e
 PROJECT_DIR="/var/www/chatnexgen"
 APP_NAME="chatnexgen"
 echo "==========================================="
-echo "  🚀 Starting ChatNexGen Auto-Redeployment"
+echo "  🚀 Starting WhatsApp CRM Auto-Redeployment"
 echo "==========================================="
 cd "$PROJECT_DIR"
 echo "📥 [1/6] Pulling latest code changes..."
@@ -2493,7 +2493,7 @@ echo "==========================================="`,
   },
   aihospitalerp: {
     id: "aihospitalerp",
-    name: "AiHospitalERP",
+    name: "Hospital Management System",
     tagline: "AI-Powered Multi-Tenant Hospital ERP & Healthcare Operating System",
     url: "https://aihospitalerp.com",
     demoCredentials: {
@@ -2506,7 +2506,7 @@ echo "==========================================="`,
     categoryName: "Hospital ERP & Healthcare AI",
     categoryGroup: "Operations & Growth",
     heroDesc: "Enterprise-grade multi-tenant Hospital Management System (HMS) & Healthcare ERP with autonomous Google Gemini medical transcription, granular 30+ role RBAC, outpatient/inpatient management, pharmacy inventory, and automated billing.",
-    detailedDesc: "AiHospitalERP is a production-ready, multi-tenant hospital management platform designed for multi-specialty hospitals, healthcare clinics, and telemedicine providers. Features automated OPD/IPD flows, doctor appointment scheduling, smart prescription voice transcription, pharmacy inventory, lab report dispatch, and Cashfree payment integration.",
+    detailedDesc: "Hospital Management System is a production-ready, multi-tenant hospital management platform designed for multi-specialty hospitals, healthcare clinics, and telemedicine providers. Features automated OPD/IPD flows, doctor appointment scheduling, smart prescription voice transcription, pharmacy inventory, lab report dispatch, and Cashfree payment integration.",
     techStack: [
       "Next.js 14.2",
       "React 18.3",
@@ -2673,7 +2673,7 @@ echo "==========================================="`,
     ],
     faqs: [
       {
-        q: "What is included with the AiHospitalERP source code download?",
+        q: "What is included with the Hospital Management System source code download?",
         a: "You receive the complete, unminified Next.js 14.2 full-stack codebase, React 18 frontend, Prisma 5.22 database schemas with MySQL migrations, Google Gemini AI clinical modules, Cashfree and Twilio integrations, plus the full step-by-step VPS deployment guide and automated zero-downtime redeployment script (deploy.sh) in the download package.",
       },
       {
@@ -2681,12 +2681,12 @@ echo "==========================================="`,
         a: "Yes! The download package includes comprehensive, step-by-step deployment instructions for both Linux VPS (Ubuntu 22.04/24.04 with PM2, Nginx, MySQL, and Certbot SSL) and Vercel, along with an automated deploy.sh shell script for 1-command zero-downtime updates.",
       },
       {
-        q: "Can I rebrand AiHospitalERP and sell it to hospitals or clinics?",
+        q: "Can I rebrand Hospital Management System and sell it to hospitals or clinics?",
         a: "Yes, 100%! You receive a full commercial source code license. You can rebrand the platform under your agency or hospital brand name, configure your domain, and sell it or charge monthly retainers with zero royalties back to us.",
       },
       {
         q: "How does the multi-tenant architecture work?",
-        a: "AiHospitalERP is designed as a true multi-tenant hospital platform. Super Admins can onboard independent hospitals or clinics, each with their own isolated doctors, patients, billing, inventory, and staff permissions.",
+        a: "Hospital Management System is designed as a true multi-tenant hospital platform. Super Admins can onboard independent hospitals or clinics, each with their own isolated doctors, patients, billing, inventory, and staff permissions.",
       },
       {
         q: "Which AI models are used for medical voice transcription?",
@@ -3636,6 +3636,7 @@ export function getProductDetail(id: string): ProductDetail | undefined {
   if (!id) return undefined;
   let lower = id.toLowerCase().trim();
   if (lower === "medicdocks") lower = "mediadocks";
+  if (lower === "whatsapp-crm" || lower === "whatsappcrm" || lower === "whatsapp") lower = "chatnexgen";
   const prod = productDetails[lower] || dynamicCustomProducts[lower];
   if (!prod) return undefined;
 
@@ -3759,7 +3760,7 @@ const baseMegaMenuCategories: MegaMenuCategory[] = [
       },
       {
         id: "chatnexgen",
-        name: "ChatNexGen",
+        name: "WhatsApp CRM",
         tagline: "Omnichannel AI Support & WhatsApp Bot",
         url: "/products/chatnexgen",
         badge: "24/7 AI",
@@ -3767,7 +3768,7 @@ const baseMegaMenuCategories: MegaMenuCategory[] = [
       },
       {
         id: "aihospitalerp",
-        name: "AiHospitalERP",
+        name: "Hospital Management System",
         tagline: "AI Multi-Tenant Hospital & Clinic ERP System",
         url: "/products/aihospitalerp",
         badge: "Healthcare AI",

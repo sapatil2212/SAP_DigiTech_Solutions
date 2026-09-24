@@ -1024,7 +1024,7 @@ const initialProjects = [
     )
   },
   {
-    t: "ChatNexGen",
+    t: "WhatsApp CRM",
     category: "WhatsApp Automation",
     ind: "AI WhatsApp Automation",
     tag: "AI WhatsApp Automation Platform",
@@ -1032,7 +1032,7 @@ const initialProjects = [
     noEmbed: true,
     localImg: "/assets/work/website-preview/whatsapp-automation.png",
     ch: "Businesses losing high-intent leads due to manual WhatsApp response bottlenecks and slow intake workflows.",
-    sol: "Deployed ChatNexGen's AI WhatsApp automation engine featuring instant intent resolution, interactive scheduling canvas, and automated CRM sync.",
+    sol: "Deployed WhatsApp CRM's AI automation engine featuring instant intent resolution, interactive scheduling canvas, and automated CRM sync.",
     r: "Live WhatsApp Automation",
     metrics: ["Instant WhatsApp Bot Engine", "Interactive Customer Intake", "Automated Lead Routing & Broadcasts", "Real-time Analytics Dashboard"],
     g: "from-emerald-600 to-teal-700",
@@ -1040,7 +1040,7 @@ const initialProjects = [
     bg: "#F0FDF4",
     border: "border-emerald-100",
     badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-100/50",
-    mock: <WebsiteMockup title="ChatNexGen" ind="WhatsApp Automation" url="https://chatnexgen.online/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
+    mock: <WebsiteMockup title="WhatsApp CRM" ind="WhatsApp Automation" url="https://chatnexgen.online/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
   },
   {
     t: "BrightRetail",
@@ -1459,7 +1459,7 @@ const initialProjects = [
   },
   /* -------------------- SaaS Projects -------------------- */
   {
-    t: "ChatNexGen",
+    t: "WhatsApp CRM",
     category: "SaaS Projects",
     ind: "SaaS",
     tag: "Next-Gen Chatbot Builder",
@@ -1475,7 +1475,7 @@ const initialProjects = [
     bg: "#F5F3FF",
     border: "border-purple-100",
     badgeBg: "bg-purple-50 text-purple-700 border-purple-100/50",
-    mock: <WebsiteMockup title="ChatNexGen" ind="SaaS" url="https://chatnexgen.online/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
+    mock: <WebsiteMockup title="WhatsApp CRM" ind="SaaS" url="https://chatnexgen.online/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
   },
   {
     t: "PrimeInbox",
