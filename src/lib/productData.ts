@@ -1921,7 +1921,7 @@ pm2 status`,
     id: "chatnexgen",
     name: "WhatsApp CRM",
     tagline: "Enterprise Multi-Tenant WhatsApp CRM & AI Automation Engine",
-    url: "https://chatnexgen.in/",
+    url: "https://hashtagscrm.com/",
     demoCredentials: {
       username: "demochatnexgen@gmail.com",
       password: "Demo@2026",

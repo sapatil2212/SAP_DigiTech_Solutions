@@ -1028,7 +1028,7 @@ const initialProjects = [
     category: "WhatsApp Automation",
     ind: "AI WhatsApp Automation",
     tag: "AI WhatsApp Automation Platform",
-    url: "https://chatnexgen.online/",
+    url: "https://hashtagscrm.com/",
     noEmbed: true,
     localImg: "/assets/work/website-preview/whatsapp-automation.png",
     ch: "Businesses losing high-intent leads due to manual WhatsApp response bottlenecks and slow intake workflows.",
@@ -1040,7 +1040,7 @@ const initialProjects = [
     bg: "#F0FDF4",
     border: "border-emerald-100",
     badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-100/50",
-    mock: <WebsiteMockup title="WhatsApp CRM" ind="WhatsApp Automation" url="https://chatnexgen.online/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
+    mock: <WebsiteMockup title="WhatsApp CRM" ind="WhatsApp Automation" url="https://hashtagscrm.com/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
   },
   {
     t: "BrightRetail",
@@ -1463,7 +1463,7 @@ const initialProjects = [
     category: "SaaS Projects",
     ind: "SaaS",
     tag: "Next-Gen Chatbot Builder",
-    url: "https://chatnexgen.online/",
+    url: "https://hashtagscrm.com/",
     noEmbed: true,
     localImg: "/assets/work/website-preview/whatsapp-automation.png",
     ch: "SaaS builders struggle to configure NLU bots with zero-code interfaces.",
@@ -1475,7 +1475,7 @@ const initialProjects = [
     bg: "#F5F3FF",
     border: "border-purple-100",
     badgeBg: "bg-purple-50 text-purple-700 border-purple-100/50",
-    mock: <WebsiteMockup title="WhatsApp CRM" ind="SaaS" url="https://chatnexgen.online/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
+    mock: <WebsiteMockup title="WhatsApp CRM" ind="SaaS" url="https://hashtagscrm.com/" localImg="/assets/work/website-preview/whatsapp-automation.png" />
   },
   {
     t: "PrimeInbox",
