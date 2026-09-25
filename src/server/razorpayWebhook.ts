@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { resolve } from "path";
 import nodemailer from "nodemailer";
 
@@ -92,52 +92,76 @@ async function sendPaymentNotificationEmail(details: {
     },
   });
 
+  const logoPath = resolve(process.cwd(), "public/logo/sap_logo.png");
+  const attachments = [];
+  if (existsSync(logoPath)) {
+    attachments.push({
+      filename: "sap_logo.png",
+      path: logoPath,
+      cid: "sap_logo",
+    });
+  }
+
   const mailOptions = {
     from: `"SAP DigiTech Payments" <${smtpUser}>`,
     to: adminEmail,
     subject: `💰 New Source Code Purchase: ${details.productName || "Product"} (₹${details.amount.toLocaleString("en-IN")})`,
     html: `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;">
-        <div style="background: linear-gradient(135deg, #1B2240, #0B0F19); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #FF6B00; margin: 0; font-size: 24px; font-weight: 800;">SAP DigiTech Solutions</h1>
-          <p style="color: #94A3B8; margin: 4px 0 0; font-size: 14px;">Source Code Purchase Confirmation</p>
-        </div>
-        
-        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 18px; margin-bottom: 20px;">
-          <h2 style="color: #0F172A; font-size: 18px; margin-top: 0; margin-bottom: 14px;">Payment Summary</h2>
-          <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #334155;">
-            <tr>
-              <td style="padding: 6px 0; font-weight: 600;">Product:</td>
-              <td style="padding: 6px 0; color: #FF6B00; font-weight: 700;">${details.productName || "Commercial Source Code"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; font-weight: 600;">Amount Paid:</td>
-              <td style="padding: 6px 0; font-weight: 700;">₹${details.amount.toLocaleString("en-IN")} ${details.currency}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; font-weight: 600;">Payment ID:</td>
-              <td style="padding: 6px 0; font-family: monospace; color: #0284C7;">${details.paymentId}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; font-weight: 600;">Customer Email:</td>
-              <td style="padding: 6px 0;">${details.customerEmail || "Not provided"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; font-weight: 600;">Customer Contact:</td>
-              <td style="padding: 6px 0;">${details.customerContact || "Not provided"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 6px 0; font-weight: 600;">Timestamp:</td>
-              <td style="padding: 6px 0;">${details.createdAt || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</td>
-            </tr>
-          </table>
-        </div>
+      <div style="margin: 0; padding: 32px 16px; background-color: #f8fafc; font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; color: #1e293b;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+          
+          <div style="padding: 24px 28px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+            <img src="cid:sap_logo" alt="SAP DigiTech Solutions" height="34" style="height: 34px; max-height: 34px; width: auto; display: block; border: 0;" />
+          </div>
 
-        <p style="font-size: 13px; color: #64748B; margin-bottom: 0;">
-          Please provision GitHub repository access and send the commercial license package to <strong>${details.customerEmail || "the customer"}</strong>.
-        </p>
+          <div style="padding: 20px 28px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+            <p style="margin: 0; font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b; letter-spacing: 0.8px;">Source Code Purchase Confirmation</p>
+            <h1 style="color: #0f172a; margin: 4px 0 0 0; font-size: 20px; font-weight: 800;">₹${details.amount.toLocaleString("en-IN")} ${details.currency} • ${details.productName || "Commercial Source Code"}</h1>
+          </div>
+          
+          <div style="padding: 28px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+              <h2 style="color: #0f172a; font-size: 14px; font-weight: 700; text-transform: uppercase; margin-top: 0; margin-bottom: 14px; letter-spacing: 0.5px;">Payment Summary</h2>
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: #334155;">
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-weight: 600; width: 40%;">Product:</td>
+                  <td style="padding: 6px 0; color: #0f172a; font-weight: 700;">${details.productName || "Commercial Source Code"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Amount Paid:</td>
+                  <td style="padding: 6px 0; color: #16a34a; font-weight: 700;">₹${details.amount.toLocaleString("en-IN")} ${details.currency}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Payment ID:</td>
+                  <td style="padding: 6px 0; font-family: monospace, monospace; color: #0284c7; font-weight: 700;">${details.paymentId}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Customer Email:</td>
+                  <td style="padding: 6px 0; font-family: monospace, monospace; color: #0f172a;">${details.customerEmail || "Not provided"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Customer Contact:</td>
+                  <td style="padding: 6px 0; color: #0f172a;">${details.customerContact || "Not provided"}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; color: #64748b; font-weight: 600;">Timestamp:</td>
+                  <td style="padding: 6px 0; color: #334155;">${details.createdAt || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}</td>
+                </tr>
+              </table>
+            </div>
+
+            <p style="font-size: 12px; color: #64748b; line-height: 1.5; margin: 0;">
+              Automated delivery was initialized for <strong>${details.customerEmail || "the customer"}</strong>.
+            </p>
+          </div>
+
+          <div style="padding: 16px 28px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center; font-size: 11px; color: #64748b;">
+            SAP DigiTech Solutions Admin Payment Notification
+          </div>
+        </div>
       </div>
     `,
+    attachments,
   };
 
   await transporter.sendMail(mailOptions);

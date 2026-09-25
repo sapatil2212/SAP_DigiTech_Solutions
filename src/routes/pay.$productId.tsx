@@ -235,6 +235,7 @@ function ShareableCheckoutPage() {
               customerPhone: formData.phone,
               customerAddress: formData.address,
               linkId: linkInfo.id,
+              amount: linkInfo.amount,
             }),
           });
 
@@ -462,33 +463,33 @@ function ShareableCheckoutPage() {
                     e.preventDefault();
                     handlePay();
                   }}
-                  className="space-y-3"
+                  className="space-y-2"
                 >
                   {/* Full Name */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                      <User className="size-3 text-slate-400" />
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                      <User className="size-2.5 text-slate-400" />
                       <span>Full Name / Entity Name <span className="text-rose-500">*</span></span>
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g. Swapnil Patil / Blue Intellect Agency"
-                      className={`w-full h-9 bg-white border rounded-lg px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+                      placeholder="Enter your name"
+                      className={`w-full h-8 bg-white border rounded-lg px-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1.5 ${
                         errors.name
                           ? "border-rose-300 focus:ring-rose-200"
                           : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                       }`}
                     />
-                    {errors.name && <p className="text-[10px] text-rose-500 mt-0.5">{errors.name}</p>}
+                    {errors.name && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.name}</p>}
                   </div>
 
                   {/* Email & Phone Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                        <Mail className="size-3 text-slate-400" />
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                        <Mail className="size-2.5 text-slate-400" />
                         <span>Email Address <span className="text-rose-500">*</span></span>
                       </label>
                       <input
@@ -496,18 +497,18 @@ function ShareableCheckoutPage() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="name@company.com"
-                        className={`w-full h-9 bg-white border rounded-lg px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+                        className={`w-full h-8 bg-white border rounded-lg px-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1.5 ${
                           errors.email
                             ? "border-rose-300 focus:ring-rose-200"
                             : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                         }`}
                       />
-                      {errors.email && <p className="text-[10px] text-rose-500 mt-0.5">{errors.email}</p>}
+                      {errors.email && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.email}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                        <Phone className="size-3 text-slate-400" />
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                        <Phone className="size-2.5 text-slate-400" />
                         <span>Phone / WhatsApp <span className="text-rose-500">*</span></span>
                       </label>
                       <input
@@ -515,20 +516,20 @@ function ShareableCheckoutPage() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 98765 43210"
-                        className={`w-full h-9 bg-white border rounded-lg px-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+                        className={`w-full h-8 bg-white border rounded-lg px-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1.5 ${
                           errors.phone
                             ? "border-rose-300 focus:ring-rose-200"
                             : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                         }`}
                       />
-                      {errors.phone && <p className="text-[10px] text-rose-500 mt-0.5">{errors.phone}</p>}
+                      {errors.phone && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.phone}</p>}
                     </div>
                   </div>
 
                   {/* Billing Address */}
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                      <MapPin className="size-3 text-slate-400" />
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                      <MapPin className="size-2.5 text-slate-400" />
                       <span>Registered Address / City <span className="text-rose-500">*</span></span>
                     </label>
                     <textarea
@@ -536,34 +537,29 @@ function ShareableCheckoutPage() {
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       placeholder="Street, City, State, PIN code"
-                      className={`w-full bg-white border rounded-lg p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 resize-none leading-relaxed ${
+                      className={`w-full bg-white border rounded-lg p-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1.5 resize-none leading-relaxed ${
                         errors.address
                           ? "border-rose-300 focus:ring-rose-200"
                           : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                       }`}
                     />
-                    {errors.address && <p className="text-[10px] text-rose-500 mt-0.5">{errors.address}</p>}
+                    {errors.address && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.address}</p>}
                   </div>
 
                   {/* Security Assurance Card */}
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2.5 text-[11px] text-slate-600">
-                    <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
+                  <div className="p-1.5 px-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2 text-[10px] text-slate-600">
+                    <ShieldCheck className="size-3.5 text-emerald-600 shrink-0" />
                     <span>
                       256-bit encrypted gateway. Supports UPI, Cards, NetBanking, and Wallets.
                     </span>
                   </div>
 
                   {/* Legal Disclaimer & Copyright Notice */}
-                  <div className="p-3 rounded-xl bg-rose-50/70 border border-rose-200/80 flex items-start gap-2.5 text-left">
-                    <AlertTriangle className="size-4 text-rose-500 shrink-0 mt-0.5" />
-                    <div className="space-y-0.5">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-rose-800 block">
-                        Legal Warning & Trademark Notice
-                      </span>
-                      <p className="text-[10px] text-rose-700/90 font-normal leading-relaxed">
-                        Please change the original product name, brand assets, and logo before deploying. Operating under the original name may result in copyright or trademark infringement.
-                      </p>
-                    </div>
+                  <div className="p-1.5 px-2.5 rounded-lg bg-rose-50/70 border border-rose-200/80 flex items-start gap-1.5 text-left">
+                    <AlertTriangle className="size-3 text-rose-500 shrink-0 mt-0.5" />
+                    <p className="text-[9.5px] text-rose-700 font-normal leading-relaxed">
+                      <strong>Notice:</strong> Please change original product name, brand assets, and logo before deploying.
+                    </p>
                   </div>
 
                   {/* Submit Button */}
@@ -621,29 +617,21 @@ function ShareableCheckoutPage() {
                   </p>
                 </div>
 
-                {/* Primary Download Actions */}
-                <div className="space-y-3 pt-1">
-                  {fulfillment?.downloadUrl && remainingSeconds > 0 && (
+                {/* Primary Download Action */}
+                <div className="pt-1">
+                  {fulfillment?.downloadUrl && remainingSeconds > 0 ? (
                     <a
                       href={fulfillment.downloadUrl}
-                      download
+                      download={`${(linkInfo.productId || "chatnexgen").toLowerCase()}-source-code.zip`}
                       className="w-full py-4 px-6 rounded-2xl font-extrabold text-sm bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2.5 transition-all shadow-md shadow-emerald-600/25 active:scale-[0.99] cursor-pointer"
                     >
                       <Download className="size-5" />
                       <span>Download Full Source Code (.ZIP)</span>
                     </a>
-                  )}
-
-                  {fulfillment?.portalUrl && (
-                    <a
-                      href={fulfillment.portalUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-full py-3 px-6 rounded-2xl font-bold text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center gap-2 transition-colors"
-                    >
-                      <ExternalLink className="size-4" />
-                      <span>Open Dedicated Customer Download Portal</span>
-                    </a>
+                  ) : (
+                    <div className="w-full py-3.5 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-center text-xs font-semibold">
+                      Link expired. Please contact support via WhatsApp below for instant renewal.
+                    </div>
                   )}
                 </div>
 
@@ -677,10 +665,6 @@ function ShareableCheckoutPage() {
                         {copiedPayId ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
                       </button>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Commercial Rights:</span>
-                    <span className="font-semibold text-emerald-700">Full Commercial Rights Included</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Customer:</span>

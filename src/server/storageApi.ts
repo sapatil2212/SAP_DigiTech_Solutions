@@ -3,6 +3,7 @@ import {
   savePackage,
   listPackages,
   deletePackage,
+  listSessions,
   createDownloadSession,
   inspectToken,
   refreshDownloadSession,
@@ -22,7 +23,7 @@ import {
   deleteProductPriceOverride,
   type ProductPriceOverride,
 } from "./storageManager";
-import { sendCustomerDownloadEmail } from "./emailService";
+import { sendCustomerDownloadEmail, sendAdminPurchaseNotificationEmail } from "./emailService";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -236,6 +237,7 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
         customerPhone,
         customerAddress,
         linkId,
+        amount,
       } = body;
 
       if (!customerName || !customerEmail || !customerPhone || !customerAddress) {
@@ -256,6 +258,7 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
         customerPhone: customerPhone.trim(),
         customerAddress: customerAddress.trim(),
         paymentId: paymentId || "manual_test",
+        amount: amount ? Number(amount) : undefined,
         validityMinutes: 5,
       });
 
@@ -273,7 +276,24 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
         directDownloadUrl,
         expiresInMinutes: 5,
       }).catch((emailErr) => {
-        console.error("Async email error:", emailErr);
+        console.error("Async customer email error:", emailErr);
+      });
+
+      // Asynchronously trigger comprehensive admin purchase alert with full lead dossier
+      sendAdminPurchaseNotificationEmail({
+        customerName: session.customerName,
+        customerEmail: session.customerEmail,
+        customerPhone: session.customerPhone,
+        customerAddress: session.customerAddress,
+        productName: session.productName,
+        productId: session.productId,
+        paymentId: session.paymentId || "N/A",
+        amount: amount ? Number(amount) : undefined,
+        downloadPortalUrl,
+        directDownloadUrl,
+        createdAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+      }).catch((adminEmailErr) => {
+        console.error("Async admin purchase email alert error:", adminEmailErr);
       });
 
       // Record payment usage against unique payment link if present
@@ -301,6 +321,23 @@ export async function handleStorageApi(request: Request): Promise<Response | nul
         JSON.stringify({ error: "Failed to complete payment fulfillment" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+  }
+
+  // 1a. Admin Customer Purchases / Sessions List: GET /api/admin/sessions or GET /api/admin/orders
+  if ((pathname === "/api/admin/sessions" || pathname === "/api/admin/orders") && request.method === "GET") {
+    try {
+      const sessions = listSessions();
+      return new Response(JSON.stringify({ success: true, sessions }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    } catch (err) {
+      console.error("Failed to list purchase sessions:", err);
+      return new Response(JSON.stringify({ error: "Failed to list customer orders" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
   }
 

@@ -96,6 +96,14 @@ export default defineConfig({
     preset: process.env.NITRO_PRESET || (process.env.VERCEL ? "vercel" : "node-server"),
     compatibilityDate: "2025-01-01",
     node: true,
+    // Allow large file uploads (up to 2GB) — prevents h3/Nitro 413 errors
+    maxRequestBodySize: 2 * 1024 * 1024 * 1024, // 2 GB
+    routeRules: {
+      "/api/admin/upload": {
+        // Disable body size limit for file uploads
+        maxRequestBodySize: 2 * 1024 * 1024 * 1024, // 2 GB
+      },
+    },
     // Disable code-splitting to fix Rolldown __commonJSMin helper bug
     // where CJS interop helpers are not properly exported across chunks
     rollupConfig: {

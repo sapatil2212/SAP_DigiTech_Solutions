@@ -452,7 +452,7 @@ function CareersPage() {
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="e.g. Rahul Patil"
+                        placeholder="Enter your name"
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 focus:outline-hidden focus:border-slate-900 transition-colors"
                       />
                     </div>
@@ -465,7 +465,7 @@ function CareersPage() {
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="rahul@example.com"
+                          placeholder="name@company.com"
                           className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs text-slate-900 focus:outline-hidden focus:border-slate-900 transition-colors"
                         />
                       </div>

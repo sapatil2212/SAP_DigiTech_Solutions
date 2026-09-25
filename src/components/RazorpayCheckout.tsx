@@ -182,63 +182,62 @@ export function CustomerDetailsModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 8 }}
             transition={{ duration: 0.2 }}
-            className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 text-slate-900 shadow-2xl z-10"
+            className="relative w-full max-w-[410px] bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 text-slate-900 shadow-2xl z-10"
           >
             {/* Close Button */}
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 size-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+              className="absolute top-3 right-3 size-6.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
               aria-label="Close dialog"
             >
-              <HiXMark className="size-5" />
+              <HiXMark className="size-3.5" />
             </button>
 
             {/* Header */}
-            <div className="border-b border-slate-100 pb-4 pr-8">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-orange-50 border border-orange-200 text-[#FF6B00] text-xs font-semibold">
-                  <HiBuildingOffice2 className="size-3.5" />
-                  <span>Commercial License Checkout</span>
+            <div className="border-b border-slate-100 pb-2.5 pr-7">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-50 border border-orange-200 text-[#FF6B00] text-[10px] font-semibold">
+                  <HiShieldCheck className="size-2.5" />
+                  <span>Checkout</span>
                 </span>
-                <span className="text-xs font-medium text-slate-500">• ₹{amount.toLocaleString("en-IN")}</span>
               </div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                Licensee Information
+              <h2 className="text-[15px] font-bold text-slate-900 tracking-tight">
+                Customer Information
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Enter your details to generate the commercial license and download link for{" "}
+              <p className="text-[10.5px] text-slate-500 mt-0.5 leading-relaxed">
+                Enter your details to receive the download link and access for{" "}
                 <strong className="text-slate-800 font-semibold">{productName}</strong>.
               </p>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="mt-5 space-y-3.5 text-left">
+            <form onSubmit={handleSubmit} className="mt-2.5 space-y-2 text-left">
               {/* Full Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                  <HiUser className="size-3.5 text-slate-400" />
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                  <HiUser className="size-2.5 text-slate-400" />
                   <span>Full Name <span className="text-rose-500">*</span></span>
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Swapnil Patil"
-                  className={`w-full h-10 bg-white border rounded-lg px-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 ${
+                  placeholder="Enter your name"
+                  className={`w-full h-8 bg-white border rounded-lg px-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1.5 ${
                     errors.name
                       ? "border-rose-300 focus:ring-rose-200"
                       : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                   }`}
                 />
-                {errors.name && <p className="text-[11px] text-rose-500 mt-1">{errors.name}</p>}
+                {errors.name && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.name}</p>}
               </div>
 
               {/* Email & Phone Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                    <HiEnvelope className="size-3.5 text-slate-400" />
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                    <HiEnvelope className="size-2.5 text-slate-400" />
                     <span>Email Address <span className="text-rose-500">*</span></span>
                   </label>
                   <input
@@ -246,18 +245,18 @@ export function CustomerDetailsModal({
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="name@company.com"
-                    className={`w-full h-10 bg-white border rounded-lg px-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 ${
+                    className={`w-full h-8 bg-white border rounded-lg px-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1.5 ${
                       errors.email
                         ? "border-rose-300 focus:ring-rose-200"
                         : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                     }`}
                   />
-                  {errors.email && <p className="text-[11px] text-rose-500 mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.email}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                    <HiPhone className="size-3.5 text-slate-400" />
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                    <HiPhone className="size-2.5 text-slate-400" />
                     <span>Phone Number <span className="text-rose-500">*</span></span>
                   </label>
                   <input
@@ -265,20 +264,20 @@ export function CustomerDetailsModal({
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+91 98765 43210"
-                    className={`w-full h-10 bg-white border rounded-lg px-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 ${
+                    className={`w-full h-8 bg-white border rounded-lg px-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1.5 ${
                       errors.phone
                         ? "border-rose-300 focus:ring-rose-200"
                         : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                     }`}
                   />
-                  {errors.phone && <p className="text-[11px] text-rose-500 mt-1">{errors.phone}</p>}
+                  {errors.phone && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.phone}</p>}
                 </div>
               </div>
 
               {/* Billing Address */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5">
-                  <HiMapPin className="size-3.5 text-slate-400" />
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-0.5 flex items-center gap-1">
+                  <HiMapPin className="size-2.5 text-slate-400" />
                   <span>Billing Address <span className="text-rose-500">*</span></span>
                 </label>
                 <textarea
@@ -286,45 +285,45 @@ export function CustomerDetailsModal({
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   placeholder="Street address, city, state, postal code"
-                  className={`w-full bg-white border rounded-lg p-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 resize-none ${
+                  className={`w-full bg-white border rounded-lg p-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1.5 resize-none leading-relaxed ${
                     errors.address
                       ? "border-rose-300 focus:ring-rose-200"
                       : "border-slate-300 focus:border-[#FF6B00] focus:ring-[#FF6B00]/15"
                   }`}
                 />
-                {errors.address && <p className="text-[11px] text-rose-500 mt-1">{errors.address}</p>}
+                {errors.address && <p className="text-[9.5px] text-rose-500 mt-0.5">{errors.address}</p>}
               </div>
 
               {/* Security Banner */}
-              <div className="rounded-lg bg-slate-50 border border-slate-200 p-2.5 flex items-center gap-2 text-xs text-slate-600">
-                <HiLockClosed className="size-4 text-emerald-600 shrink-0" />
+              <div className="rounded-lg bg-slate-50 border border-slate-200 p-1.5 px-2.5 flex items-center gap-2 text-[10px] text-slate-600">
+                <HiLockClosed className="size-3 text-emerald-600 shrink-0" />
                 <span>Encrypted 256-bit payment gateway. Instant delivery after completion.</span>
               </div>
 
               {/* Legal Warning Notice (Faint Red Box) */}
-              <div className="rounded-lg bg-rose-50/70 border border-rose-200/80 p-2.5 flex items-start gap-2 text-left">
-                <HiExclamationTriangle className="size-4 text-rose-500 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-rose-700 font-normal leading-relaxed">
+              <div className="rounded-lg bg-rose-50/70 border border-rose-200/80 p-1.5 px-2.5 flex items-start gap-1.5 text-left">
+                <HiExclamationTriangle className="size-3 text-rose-500 shrink-0 mt-0.5" />
+                <p className="text-[9.5px] text-rose-700 font-normal leading-relaxed">
                   <strong>Notice:</strong> Please rebrand and change the original product name, brand assets, and logos before deploying. Using the original name in production may lead to copyright or trademark infringement warnings.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="pt-2 flex items-center justify-end gap-2.5">
+              <div className="pt-1 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-lg font-bold text-xs bg-[#FF6B00] hover:bg-[#E05300] text-white flex items-center gap-2 transition-colors cursor-pointer shadow-sm active:scale-98"
+                  className="px-3.5 py-1.5 rounded-lg font-bold text-xs bg-[#FF6B00] hover:bg-[#E05300] text-white flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm active:scale-98"
                 >
-                  <span>Continue to Payment (₹{amount.toLocaleString("en-IN")})</span>
-                  <HiArrowRight className="size-3.5" />
+                  <span>Continue to Payment</span>
+                  <HiArrowRight className="size-3" />
                 </button>
               </div>
             </form>
@@ -446,9 +445,9 @@ export function PaymentSuccessModal({
                 <strong className="text-slate-800 font-semibold">{productName}</strong> is generated and ready for direct download.
               </p>
 
-              {/* ⚠️ 5-MINUTE COUNTDOWN TIMER (Light Modern Card) */}
+              {/* 5-MINUTE COUNTDOWN TIMER (Single Horizontal Line) */}
               <div
-                className={`mt-4 p-3.5 rounded-xl border text-left transition-colors ${
+                className={`mt-4 p-2.5 px-3 rounded-xl border flex items-center justify-between gap-2.5 text-left transition-colors ${
                   isExpired
                     ? "bg-rose-50 border-rose-200"
                     : remainingSeconds < 60
@@ -456,30 +455,25 @@ export function PaymentSuccessModal({
                     : "bg-slate-50 border-slate-200"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <HiClock className={`size-4 ${isExpired ? "text-rose-600" : "text-[#FF6B00]"}`} />
-                    <span className="text-xs font-semibold text-slate-700">
-                      {isExpired ? "Download Link Expired" : "Secure Download Window"}
-                    </span>
-                  </div>
-                  <span
-                    className={`font-mono text-xs font-bold px-2 py-0.5 rounded border ${
-                      isExpired
-                        ? "bg-rose-100 border-rose-300 text-rose-700"
-                        : remainingSeconds < 60
-                        ? "bg-orange-100 border-orange-300 text-orange-700"
-                        : "bg-white border-slate-300 text-slate-800"
-                    }`}
-                  >
-                    {isExpired ? "00:00 EXPIRED" : timeFormatted}
+                <div className="flex items-center gap-2 min-w-0">
+                  <HiClock className={`size-4 shrink-0 ${isExpired ? "text-rose-600" : "text-[#FF6B00]"}`} />
+                  <span className="text-[11px] text-slate-600 truncate sm:overflow-visible sm:whitespace-normal">
+                    {isExpired
+                      ? "Download link expired after 5 minutes."
+                      : "This link is valid for 5 minutes only. Download your archive now."}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  {isExpired
-                    ? "For software security and license protection, this download link expired after 5 minutes."
-                    : "⚠️ For maximum security, this link is valid for 5 minutes only. Download your archive now."}
-                </p>
+                <span
+                  className={`font-mono text-xs font-bold px-2 py-0.5 rounded border shrink-0 ${
+                    isExpired
+                      ? "bg-rose-100 border-rose-300 text-rose-700"
+                      : remainingSeconds < 60
+                      ? "bg-orange-100 border-orange-300 text-orange-700"
+                      : "bg-white border-slate-300 text-slate-800"
+                  }`}
+                >
+                  {isExpired ? "00:00 EXPIRED" : timeFormatted}
+                </span>
               </div>
 
               {/* ACTION BUTTONS */}
@@ -500,27 +494,15 @@ export function PaymentSuccessModal({
                     </a>
                   </div>
                 ) : (
-                  <div className="flex flex-col sm:flex-row items-center gap-2">
+                  <div>
                     {fulfillmentData?.downloadUrl && (
                       <a
                         href={fulfillmentData.downloadUrl}
                         download
-                        className="w-full sm:flex-1 py-3 px-4 rounded-xl font-bold text-xs bg-[#FF6B00] hover:bg-[#E05300] text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm active:scale-98"
+                        className="w-full py-3 px-4 rounded-xl font-bold text-xs bg-[#FF6B00] hover:bg-[#E05300] text-white flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-sm active:scale-98"
                       >
                         <HiArrowDownTray className="size-4" />
                         <span>Download Full Source Code (.ZIP)</span>
-                      </a>
-                    )}
-
-                    {fulfillmentData?.portalUrl && (
-                      <a
-                        href={fulfillmentData.portalUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full sm:w-auto py-3 px-4 rounded-xl font-semibold text-xs border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center gap-1.5 transition-colors"
-                      >
-                        <HiArrowTopRightOnSquare className="size-3.5" />
-                        <span>Open Portal</span>
                       </a>
                     )}
                   </div>
@@ -553,13 +535,6 @@ export function PaymentSuccessModal({
                       {copied ? <HiCheck className="size-3.5 text-emerald-600" /> : <HiDocumentDuplicate className="size-3.5" />}
                     </button>
                   </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Commercial License:</span>
-                  <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                    <HiShieldCheck className="size-3.5 text-emerald-600" />
-                    <span>Full Commercial Rights Included</span>
-                  </span>
                 </div>
               </div>
 

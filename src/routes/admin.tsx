@@ -7,7 +7,8 @@ import {
   Menu, X, Filter, ArrowUpDown, Calendar, Activity,
   ChevronRight, ChevronLeft, Eye, Shield, Terminal,
   CheckCircle, AlertCircle, CreditCard, Link as LinkIcon, Share2, Plus, Clock, MessageSquare,
-  Sparkles, Globe, Tag, Code, HelpCircle, Info, List, DollarSign, Wrench, FileText
+  Sparkles, Globe, Tag, Code, HelpCircle, Info, List, DollarSign, Wrench, FileText,
+  Users, Phone, Mail, MapPin, Receipt, ShoppingBag
 } from "lucide-react";
 import {
   productDetails,
@@ -71,6 +72,23 @@ export interface PaymentLinkItem {
   isCustom?: boolean;
 }
 
+export interface AdminOrderSession {
+  sessionToken: string;
+  packageToken: string;
+  productId: string;
+  productName: string;
+  version: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  paymentId?: string;
+  amount?: number;
+  createdAt: string;
+  expiresAt: number;
+  downloadCount: number;
+}
+
 export interface AdminProductItem {
   id: string;
   name: string;
@@ -103,7 +121,7 @@ const getInitialProducts = (): AdminProductItem[] => {
   }));
 };
 
-type NavigationTab = "overview" | "packages" | "upload" | "products" | "telemetry" | "server" | "payment-links";
+type NavigationTab = "overview" | "orders" | "packages" | "payment-links" | "upload" | "products" | "telemetry" | "server";
 type SortField = "uploadedAt" | "productName" | "fileSizeBytes" | "downloadCount" | "version";
 type SortOrder = "asc" | "desc";
 
@@ -172,6 +190,12 @@ function AdminStorageDashboard() {
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [justUploadedPkg, setJustUploadedPkg] = useState<StoredPackage | null>(null);
 
+  // Customer Orders / Purchase Sessions States
+  const [orderSessions, setOrderSessions] = useState<AdminOrderSession[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [orderSearchTerm, setOrderSearchTerm] = useState("");
+  const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
+
   // Payment Links States
   const [paymentLinks, setPaymentLinks] = useState<PaymentLinkItem[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(false);
@@ -202,6 +226,24 @@ function AdminStorageDashboard() {
   const [deleteTarget, setDeleteTarget] = useState<StoredPackage | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch customer purchase orders from VPS API
+  const fetchOrders = async () => {
+    try {
+      setLoadingOrders(true);
+      const res = await fetch("/api/admin/sessions");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.sessions)) {
+          setOrderSessions(data.sessions);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
 
   // Fetch stored packages from VPS API
   const fetchPackages = async () => {
@@ -555,6 +597,7 @@ function AdminStorageDashboard() {
     fetchPackages();
     fetchPaymentLinks();
     fetchCustomProducts();
+    fetchOrders();
   }, []);
 
   // Handle Drag & Drop
@@ -631,10 +674,13 @@ function AdminStorageDashboard() {
       const result = await responsePromise;
       setUploadProgress(100);
 
-      // Handle Nginx 413 Payload Too Large
-      if (result.status === 413) {
+      // Handle Nginx 413 Payload Too Large — also catch HTML error pages containing '413'
+      const isPayloadTooLarge =
+        result.status === 413 ||
+        (result.text.includes("<html") && result.text.includes("413"));
+      if (isPayloadTooLarge) {
         toast.error(
-          "Upload rejected by VPS Nginx (HTTP 413 Payload Too Large). Fix: add 'client_max_body_size 0;' inside the http { ... } block in /etc/nginx/nginx.conf on your VPS and run 'sudo nginx -s reload'.",
+          "Upload rejected (HTTP 413 Payload Too Large). If using Nginx: add 'client_max_body_size 0;' inside the http { ... } block in /etc/nginx/nginx.conf and run 'sudo nginx -s reload'.",
           { duration: 15000 }
         );
         return;
@@ -644,7 +690,9 @@ function AdminStorageDashboard() {
       try {
         data = JSON.parse(result.text);
       } catch {
-        toast.error(`Server returned HTTP ${result.status}. Response: ${result.text.slice(0, 120)}`);
+        // Server returned non-JSON (likely an HTML error page from a reverse proxy)
+        const statusHint = result.status >= 400 ? ` (HTTP ${result.status})` : "";
+        toast.error(`Server returned an unexpected response${statusHint}. Check server/proxy logs. Preview: ${result.text.slice(0, 100)}`, { duration: 10000 });
         return;
       }
 
@@ -765,6 +813,7 @@ function AdminStorageDashboard() {
   // Sidebar navigation configuration
   const navItems = [
     { id: "overview", label: "Dashboard", icon: LayoutDashboard },
+    { id: "orders", label: "Customer Orders", icon: Users, badge: orderSessions.length > 0 ? String(orderSessions.length) : undefined },
     { id: "packages", label: "Code Packages", icon: FolderArchive },
     { id: "payment-links", label: "Payment Links", icon: CreditCard },
     { id: "upload", label: "Upload Release", icon: Upload },
@@ -864,7 +913,14 @@ function AdminStorageDashboard() {
                     }`}
                   />
                   {!sidebarCollapsed && (
-                    <span className="truncate flex-1">{item.label}</span>
+                    <>
+                      <span className="truncate flex-1">{item.label}</span>
+                      {"badge" in item && item.badge && (
+                        <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-orange-100 text-[#FF6B00]">
+                          {item.badge}
+                        </span>
+                      )}
+                    </>
                   )}
                 </button>
               );
@@ -960,6 +1016,7 @@ function AdminStorageDashboard() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
                 {activeTab === "overview" && "Dashboard Overview"}
+                {activeTab === "orders" && "Customer Orders & Commercial Licenses"}
                 {activeTab === "packages" && "Code Packages & Storage"}
                 {activeTab === "payment-links" && "Shareable Payment Links Generator"}
                 {activeTab === "upload" && "Upload New Release Archive"}
@@ -968,7 +1025,8 @@ function AdminStorageDashboard() {
                 {activeTab === "server" && "VPS Infrastructure & Health"}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                {activeTab === "overview" && "High-level metrics, storage footprint, and quick package operations."}
+                {activeTab === "overview" && "High-level metrics, storage footprint, customer purchase leads, and quick package operations."}
+                {activeTab === "orders" && "Live customer leads, phone numbers, registered billing addresses, and verified source code licenses."}
                 {activeTab === "packages" && "Browse, filter, test, and manage all production source code zips."}
                 {activeTab === "payment-links" && "Create unique payment links for any SaaS product. Share with clients to pay securely via Razorpay and immediately download source code."}
                 {activeTab === "upload" && "Deploy verified .zip packages to VPS root with token-protected links."}
@@ -1211,6 +1269,343 @@ function AdminStorageDashboard() {
                     <span>Open Upload Center</span>
                   </button>
                 </div>
+              </div>
+
+              {/* Customer Purchases & Leads Section on Overview */}
+              <div className="rounded-2xl bg-white border border-slate-200/80 p-5 sm:p-6 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-orange-100 text-[#FF6B00] flex items-center justify-center font-bold">
+                      <Users className="size-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900">Recent Customer Purchases & Leads</h2>
+                      <p className="text-xs text-slate-500">Clients who completed direct source code checkout and received verified licenses.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchOrders}
+                      className="p-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Refresh orders"
+                    >
+                      <RefreshCw className={`size-3.5 ${loadingOrders ? "animate-spin text-[#FF6B00]" : ""}`} />
+                      <span>Sync</span>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab("orders")}
+                      className="px-3.5 py-2 rounded-xl bg-orange-50 border border-orange-200 text-[#FF6B00] hover:bg-orange-100 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      View All Orders ({orderSessions.length})
+                    </button>
+                  </div>
+                </div>
+
+                {orderSessions.length === 0 ? (
+                  <div className="py-8 text-center text-slate-400 text-xs">
+                    No customer purchases recorded yet. Once clients complete checkout on <code className="font-mono text-slate-600">/pay/:product</code>, their contact details and address will appear here.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table className="w-full">
+                      <TableHeader className="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <TableRow>
+                          <TableHead className="py-2.5 px-3 text-left">Customer / Entity</TableHead>
+                          <TableHead className="py-2.5 px-3 text-left">Contact & WhatsApp</TableHead>
+                          <TableHead className="py-2.5 px-3 text-left">Billing Address</TableHead>
+                          <TableHead className="py-2.5 px-3 text-left">Product License</TableHead>
+                          <TableHead className="py-2.5 px-3 text-left">Payment ID</TableHead>
+                          <TableHead className="py-2.5 px-3 text-right">Date</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody className="divide-y divide-slate-100 text-xs">
+                        {orderSessions.slice(0, 5).map((s) => (
+                          <TableRow key={s.sessionToken} className="hover:bg-slate-50/70">
+                            <TableCell className="py-3 px-3 font-semibold text-slate-900">{s.customerName}</TableCell>
+                            <TableCell className="py-3 px-3">
+                              <div className="space-y-0.5 font-mono text-[11px]">
+                                <a href={`mailto:${s.customerEmail}`} className="text-sky-600 hover:underline block">{s.customerEmail}</a>
+                                {s.customerPhone && (
+                                  <a
+                                    href={`https://wa.me/${s.customerPhone.replace(/[^0-9]/g, "")}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-emerald-600 hover:underline flex items-center gap-1 font-sans font-medium"
+                                  >
+                                    <Phone className="size-3" /> {s.customerPhone}
+                                  </a>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="py-3 px-3 text-slate-600 max-w-[220px] truncate" title={s.customerAddress}>
+                              {s.customerAddress || "—"}
+                            </TableCell>
+                            <TableCell className="py-3 px-3 font-medium text-slate-800">
+                              <span className="font-semibold text-[#FF6B00]">{s.productName}</span>
+                            </TableCell>
+                            <TableCell className="py-3 px-3 font-mono text-[11px] text-slate-600">
+                              {s.paymentId || "—"}
+                            </TableCell>
+                            <TableCell className="py-3 px-3 text-right text-slate-500 whitespace-nowrap">
+                              {new Date(s.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ───────────────────── TAB: CUSTOMER ORDERS & LICENSES ───────────────────── */}
+          {activeTab === "orders" && (
+            <div className="space-y-6">
+              {/* Order KPI Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Licenses Sold</span>
+                    <div className="size-9 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center text-[#FF6B00]">
+                      <Users className="size-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-slate-900">{orderSessions.length}</div>
+                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+                    <CheckCircle2 className="size-3.5 text-emerald-600" />
+                    <span>Verified customer checkouts</span>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Gross Sales Volume</span>
+                    <div className="size-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+                      <CreditCard className="size-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-slate-900">
+                    ₹{orderSessions.reduce((acc, s) => acc + (s.amount || 1999), 0).toLocaleString("en-IN")}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+                    <Activity className="size-3.5 text-emerald-600" />
+                    <span>Razorpay captured payments</span>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Code Downloads</span>
+                    <div className="size-9 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-600">
+                      <Download className="size-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {orderSessions.reduce((acc, s) => acc + (s.downloadCount || 0), 0)}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                    <ShieldCheck className="size-3.5 text-sky-600" />
+                    <span>Fulfilled source code archives</span>
+                  </div>
+                </div>
+
+                <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+                  <div className="flex items-center justify-between text-slate-500 mb-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">WhatsApp Leads</span>
+                    <div className="size-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+                      <Phone className="size-4" />
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-slate-900">
+                    {orderSessions.filter((s) => s.customerPhone).length}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                    <CheckCircle2 className="size-3.5 text-emerald-600" />
+                    <span>With verified phone numbers</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Table & Search Toolbar */}
+              <div className="rounded-2xl bg-white border border-slate-200/80 p-5 sm:p-6 shadow-xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Search orders by customer, email, phone, address, product, payment ID..."
+                      value={orderSearchTerm}
+                      onChange={(e) => setOrderSearchTerm(e.target.value)}
+                      className="w-full h-10 pl-9 pr-8 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white focus:ring-1 focus:ring-orange-500 transition-all"
+                    />
+                    {orderSearchTerm && (
+                      <button
+                        onClick={() => setOrderSearchTerm("")}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchOrders}
+                      className="px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <RefreshCw className={`size-3.5 ${loadingOrders ? "animate-spin text-[#FF6B00]" : ""}`} />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
+                </div>
+
+                {orderSessions.length === 0 ? (
+                  <div className="py-16 text-center space-y-3">
+                    <div className="size-12 rounded-2xl bg-orange-50 text-[#FF6B00] mx-auto grid place-items-center">
+                      <Users className="size-6" />
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900">No Customer Purchases Yet</h3>
+                    <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                      Whenever a customer enters their billing details (name, email, phone, address) and completes checkout on any <code className="font-mono text-slate-700 font-semibold">/pay/:product</code> page, their complete dossier and payment reference will appear here.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table className="w-full">
+                      <TableHeader className="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <TableRow>
+                          <TableHead className="py-3 px-3 text-left">Licensee / Entity</TableHead>
+                          <TableHead className="py-3 px-3 text-left">Contact Details</TableHead>
+                          <TableHead className="py-3 px-3 text-left">Registered Address</TableHead>
+                          <TableHead className="py-3 px-3 text-left">Product License</TableHead>
+                          <TableHead className="py-3 px-3 text-left">Payment ID</TableHead>
+                          <TableHead className="py-3 px-3 text-center">Downloads</TableHead>
+                          <TableHead className="py-3 px-3 text-left">Date</TableHead>
+                          <TableHead className="py-3 px-3 text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody className="divide-y divide-slate-100 text-xs">
+                        {orderSessions
+                          .filter((s) => {
+                            const q = orderSearchTerm.toLowerCase().trim();
+                            if (!q) return true;
+                            return (
+                              s.customerName.toLowerCase().includes(q) ||
+                              s.customerEmail.toLowerCase().includes(q) ||
+                              (s.customerPhone && s.customerPhone.toLowerCase().includes(q)) ||
+                              (s.customerAddress && s.customerAddress.toLowerCase().includes(q)) ||
+                              s.productName.toLowerCase().includes(q) ||
+                              s.productId.toLowerCase().includes(q) ||
+                              (s.paymentId && s.paymentId.toLowerCase().includes(q))
+                            );
+                          })
+                          .map((s) => {
+                            const cleanPhone = (s.customerPhone || "").replace(/[^0-9]/g, "");
+                            const isCopied = copiedOrderId === s.sessionToken;
+                            return (
+                              <TableRow key={s.sessionToken} className="hover:bg-orange-50/20 transition-colors">
+                                <TableCell className="py-3.5 px-3">
+                                  <div className="font-bold text-slate-900">{s.customerName}</div>
+                                  <div className="text-[10px] text-slate-400 font-mono mt-0.5">Token: {s.sessionToken.slice(0, 10)}…</div>
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3">
+                                  <div className="space-y-1 font-mono text-[11px]">
+                                    <a href={`mailto:${s.customerEmail}`} className="text-sky-600 hover:underline block truncate max-w-[160px]" title={s.customerEmail}>
+                                      {s.customerEmail}
+                                    </a>
+                                    {s.customerPhone ? (
+                                      <a
+                                        href={`https://wa.me/${cleanPhone}?text=Hello%20${encodeURIComponent(s.customerName)},%20thank%20you%20for%20purchasing%20the%20source%20code%20license%20for%20${encodeURIComponent(s.productName)}%20from%20SAP%20DigiTech%20Solutions.`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-emerald-700 font-bold hover:underline flex items-center gap-1 font-sans text-xs"
+                                        title="Chat on WhatsApp"
+                                      >
+                                        <Phone className="size-3 text-emerald-600" />
+                                        <span>{s.customerPhone}</span>
+                                      </a>
+                                    ) : (
+                                      <span className="text-slate-400">—</span>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3 text-slate-700 max-w-[200px]" title={s.customerAddress}>
+                                  <div className="line-clamp-2 leading-relaxed text-[11px]">
+                                    {s.customerAddress || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3">
+                                  <div className="font-bold text-slate-900">{s.productName}</div>
+                                  <div className="text-[10px] text-slate-500 font-mono">{s.productId}</div>
+                                  <span className="inline-block px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold mt-1">
+                                    Commercial License
+                                  </span>
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3 font-mono text-[11px] text-slate-700">
+                                  <div className="flex items-center gap-1.5">
+                                    <span>{s.paymentId || "manual"}</span>
+                                    {s.paymentId && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(s.paymentId!);
+                                          setCopiedOrderId(s.sessionToken);
+                                          toast.success("Payment ID copied!");
+                                          setTimeout(() => setCopiedOrderId(null), 2000);
+                                        }}
+                                        className="text-slate-400 hover:text-slate-700 cursor-pointer p-0.5"
+                                        title="Copy Payment ID"
+                                      >
+                                        {isCopied ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                                      </button>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3 text-center">
+                                  <span className="inline-block px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-bold text-xs">
+                                    {s.downloadCount || 0}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3 text-slate-500 whitespace-nowrap text-[11px]">
+                                  {new Date(s.createdAt).toLocaleString("en-IN", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </TableCell>
+                                <TableCell className="py-3.5 px-3 text-right">
+                                  <div className="flex items-center justify-end gap-1.5">
+                                    {cleanPhone && (
+                                      <a
+                                        href={`https://wa.me/${cleanPhone}?text=Hello%20${encodeURIComponent(s.customerName)},%20thank%20you%20for%20purchasing%20the%20${encodeURIComponent(s.productName)}%20source%20code%20license.`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                                        title="WhatsApp Customer"
+                                      >
+                                        <Phone className="size-3.5" />
+                                      </a>
+                                    )}
+                                    <a
+                                      href={`/api/download/${s.sessionToken}`}
+                                      download
+                                      className="p-1.5 rounded-lg bg-orange-50 text-[#FF6B00] hover:bg-orange-100 transition-colors"
+                                      title="Download ZIP File"
+                                    >
+                                      <Download className="size-3.5" />
+                                    </a>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2578,7 +2973,7 @@ function AdminStorageDashboard() {
                   type="text"
                   value={newLinkClientName}
                   onChange={(e) => setNewLinkClientName(e.target.value)}
-                  placeholder="e.g. Apex Media Agency / Advocate Sharma"
+                  placeholder="Enter client or company name"
                   className="w-full h-10 bg-white border border-slate-300 rounded-xl px-3 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-[#FF6B00]"
                 />
                 <span className="text-[10px] text-slate-400 mt-0.5 block">
