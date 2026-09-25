@@ -7,18 +7,19 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
-import { getProductDetail, loadAndSyncCustomProducts, type ProductDetail } from "@/lib/productData";
+import { getProductDetail, getPricingOverride, loadAndSyncCustomProducts, type ProductDetail } from "@/lib/productData";
 
 export const Route = createFileRoute("/pay/$productId")({
   component: ShareableCheckoutPage,
   loader: async ({ params }) => {
-    let prod = getProductDetail(params.productId);
-    if (!prod) {
-      const all = await loadAndSyncCustomProducts();
-      prod = all.find((p) => p.id.toLowerCase() === params.productId.toLowerCase()) || getProductDetail(params.productId);
+    let cleanId = params.productId.toLowerCase().trim();
+    if (cleanId === "chatnexgen" || cleanId === "whatsappcrm" || cleanId === "whatsapp") {
+      cleanId = "whatsapp-crm";
     }
+    await loadAndSyncCustomProducts().catch(() => {});
+    const prod = getProductDetail(cleanId) || getProductDetail(params.productId);
     return {
-      productId: params.productId,
+      productId: cleanId,
       productName: prod?.name || "Product",
     };
   },
@@ -43,6 +44,9 @@ interface PaymentLinkInfo {
   createdAt?: string;
   expiresAt?: number | null;
   active?: boolean;
+  totalPaidCount?: number;
+  isCustom?: boolean;
+  url?: string;
 }
 
 interface FulfillmentData {
@@ -95,6 +99,37 @@ function ShareableCheckoutPage() {
   const [remainingSeconds, setRemainingSeconds] = useState(300);
   const [copiedPayId, setCopiedPayId] = useState(false);
 
+  // Listen for real-time pricing updates
+  useEffect(() => {
+    const handleUpdate = () => {
+      const currentProd = getProductDetail(rawId);
+      if (currentProd) {
+        setProduct(currentProd);
+        setLinkInfo((prev) => {
+          if (!prev || !prev.isCustom || prev.clientName === "Public Storefront") {
+            return {
+              ...(prev || {}),
+              id: currentProd.id,
+              productId: currentProd.id,
+              productName: currentProd.name,
+              amount: currentProd.sourceCodeOffer.fixedPrice,
+              originalPrice: currentProd.sourceCodeOffer.originalPrice,
+              notes: currentProd.tagline || "Full Commercial Source Code License",
+              clientName: prev?.clientName || "Public Storefront",
+              url: `/pay/${currentProd.id}`,
+              active: true,
+              totalPaidCount: prev?.totalPaidCount || 0,
+            };
+          }
+          return prev;
+        });
+      }
+    };
+
+    window.addEventListener("sap_products_updated", handleUpdate);
+    return () => window.removeEventListener("sap_products_updated", handleUpdate);
+  }, [rawId]);
+
   // Load Razorpay checkout.js
   useEffect(() => {
     if (!document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]')) {
@@ -105,18 +140,29 @@ function ShareableCheckoutPage() {
     }
   }, []);
 
-  // Fetch link or product metadata
+  // Fetch link or product metadata with latest price override
   useEffect(() => {
     async function loadData() {
-      if (!initialProduct) setLoading(true);
+      // 1. First ensure client pricing registry is fully synchronized
+      await loadAndSyncCustomProducts().catch(() => {});
+
       try {
-        // 1. Try public payment link endpoint
-        const res = await fetch(`/api/payment-link/${encodeURIComponent(rawId)}`);
+        // 2. Try public payment link endpoint
+        const res = await fetch(`/api/payment-link/${encodeURIComponent(rawId)}?_t=${Date.now()}`, { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data.success && data.link) {
-            setLinkInfo(data.link);
-            const prod = getProductDetail(data.link.productId);
+            const currentOverride = getPricingOverride(data.link.productId) || getPricingOverride(rawId);
+            const isPublic = !data.link.isCustom || data.link.clientName === "Public Storefront";
+            const effectiveAmount = isPublic && currentOverride ? currentOverride.fixedPrice : data.link.amount;
+            const effectiveOriginal = isPublic && currentOverride ? currentOverride.originalPrice : data.link.originalPrice;
+
+            setLinkInfo({
+              ...data.link,
+              amount: effectiveAmount,
+              originalPrice: effectiveOriginal,
+            });
+            const prod = getProductDetail(data.link.productId) || getProductDetail(rawId);
             if (prod) setProduct(prod);
             if (data.link.clientName && data.link.clientName !== "Public Storefront") {
               setFormData((prev) => ({
@@ -134,7 +180,7 @@ function ShareableCheckoutPage() {
         console.warn("Payment link fetch fallback:", err);
       }
 
-      // 2. Fallback to direct product lookup
+      // 3. Fallback to direct product lookup
       const prod = getProductDetail(rawId);
       if (prod) {
         setProduct(prod);
@@ -144,7 +190,11 @@ function ShareableCheckoutPage() {
           productName: prod.name,
           amount: prod.sourceCodeOffer.fixedPrice,
           originalPrice: prod.sourceCodeOffer.originalPrice,
-          notes: "Full Commercial Source Code License",
+          notes: prod.tagline || "Full Commercial Source Code License",
+          clientName: "Public Storefront",
+          url: `/pay/${prod.id}`,
+          active: true,
+          totalPaidCount: 0,
         });
       }
       setLoading(false);

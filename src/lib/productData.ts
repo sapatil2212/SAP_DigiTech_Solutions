@@ -3471,7 +3471,9 @@ export function registerPricingOverrides(
 
   for (const [id, ov] of Object.entries(overrides)) {
     if (!id || !ov) continue;
-    const lower = id.toLowerCase().trim();
+    let lower = id.toLowerCase().trim();
+    if (lower === "medicdocks") lower = "mediadocks";
+    if (lower === "chatnexgen" || lower === "whatsappcrm" || lower === "whatsapp") lower = "whatsapp-crm";
     const fixed = Number(ov.fixedPrice);
     if (isNaN(fixed) || fixed <= 0) continue;
     const original = Number(ov.originalPrice) || Math.max(fixed * 10, 49999);
@@ -3479,38 +3481,54 @@ export function registerPricingOverrides(
       ? Number(ov.discountPercentage)
       : Math.max(1, Math.min(99, Math.round(((original - fixed) / original) * 100)));
 
-    dynamicPricingOverrides[lower] = {
+    const overrideObj = {
       productId: lower,
       fixedPrice: fixed,
       originalPrice: original,
       discountPercentage: discount,
     };
 
-    if (productDetails[lower]?.sourceCodeOffer) {
-      productDetails[lower].sourceCodeOffer.fixedPrice = fixed;
-      productDetails[lower].sourceCodeOffer.originalPrice = original;
-      productDetails[lower].sourceCodeOffer.discountPercentage = discount;
+    dynamicPricingOverrides[lower] = overrideObj;
+    dynamicPricingOverrides[id.toLowerCase().trim()] = overrideObj;
+    if (lower === "whatsapp-crm") {
+      dynamicPricingOverrides["chatnexgen"] = overrideObj;
+      dynamicPricingOverrides["whatsappcrm"] = overrideObj;
+      dynamicPricingOverrides["whatsapp"] = overrideObj;
     }
-    if (dynamicCustomProducts[lower]?.sourceCodeOffer) {
-      dynamicCustomProducts[lower].sourceCodeOffer.fixedPrice = fixed;
-      dynamicCustomProducts[lower].sourceCodeOffer.originalPrice = original;
-      dynamicCustomProducts[lower].sourceCodeOffer.discountPercentage = discount;
+
+    const targets = lower === "whatsapp-crm" ? ["whatsapp-crm", "chatnexgen", "whatsappcrm", "whatsapp"] : [lower, id.toLowerCase().trim()];
+    for (const t of targets) {
+      if (productDetails[t]?.sourceCodeOffer) {
+        productDetails[t].sourceCodeOffer.fixedPrice = fixed;
+        productDetails[t].sourceCodeOffer.originalPrice = original;
+        productDetails[t].sourceCodeOffer.discountPercentage = discount;
+      }
+      if (dynamicCustomProducts[t]?.sourceCodeOffer) {
+        dynamicCustomProducts[t].sourceCodeOffer.fixedPrice = fixed;
+        dynamicCustomProducts[t].sourceCodeOffer.originalPrice = original;
+        dynamicCustomProducts[t].sourceCodeOffer.discountPercentage = discount;
+      }
     }
     modified = true;
   }
 
-  if (modified && typeof window !== "undefined" && saveStorage) {
-    try {
-      localStorage.setItem("sap_pricing_overrides", JSON.stringify(dynamicPricingOverrides));
-      window.dispatchEvent(new CustomEvent("sap_products_updated", { detail: dynamicPricingOverrides }));
-    } catch {
-      // Ignore
+  if (modified && typeof window !== "undefined") {
+    if (saveStorage) {
+      try {
+        localStorage.setItem("sap_pricing_overrides", JSON.stringify(dynamicPricingOverrides));
+      } catch {
+        // Ignore
+      }
     }
+    window.dispatchEvent(new CustomEvent("sap_products_updated", { detail: dynamicPricingOverrides }));
   }
 }
 
 export function getPricingOverride(productId: string): ProductPriceOverride | undefined {
-  return dynamicPricingOverrides[productId.toLowerCase().trim()];
+  if (!productId) return undefined;
+  const lower = productId.toLowerCase().trim();
+  const canonical = (lower === "chatnexgen" || lower === "whatsappcrm" || lower === "whatsapp") ? "whatsapp-crm" : lower;
+  return dynamicPricingOverrides[canonical] || dynamicPricingOverrides[lower];
 }
 
 export function getAllPricingOverrides(): Record<string, ProductPriceOverride> {
@@ -3530,6 +3548,30 @@ if (typeof window !== "undefined") {
   } catch (e) {
     // Ignore parse error
   }
+
+  // Cross-tab synchronization: Listen for storage changes from admin portal in other tabs
+  window.addEventListener("storage", (e) => {
+    if (e.key === "sap_pricing_overrides" && e.newValue) {
+      try {
+        const parsed = JSON.parse(e.newValue);
+        if (parsed && typeof parsed === "object") {
+          registerPricingOverrides(parsed, false);
+        }
+      } catch {}
+    } else if (e.key === "sap_custom_products" && e.newValue) {
+      try {
+        const parsed = JSON.parse(e.newValue);
+        if (Array.isArray(parsed)) {
+          registerCustomProducts(parsed);
+        }
+      } catch {}
+    }
+  });
+
+  // Eagerly sync pricing overrides and custom products on browser startup
+  setTimeout(() => {
+    loadAndSyncCustomProducts().catch(() => {});
+  }, 10);
 }
 
 export function registerCustomProducts(products: (ProductDetail | any)[]): void {
@@ -3612,7 +3654,7 @@ export async function loadAndSyncCustomProducts(): Promise<ProductDetail[]> {
 
   syncPromise = (async () => {
     try {
-      const res = await fetch("/api/products");
+      const res = await fetch(`/api/products?_t=${Date.now()}`, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         if (data.pricingOverrides && typeof data.pricingOverrides === "object") {

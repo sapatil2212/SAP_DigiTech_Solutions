@@ -399,22 +399,21 @@ function AdminStorageDashboard() {
       const data = await res.json();
       if (res.ok && data.success) {
         // Register client-side override so everywhere updates immediately
-        registerPricingOverrides({
-          [editingProduct.id]: {
-            fixedPrice: fixed,
-            originalPrice: original,
-            discountPercentage: discount,
-          },
-        });
+        if (data.pricingOverrides && typeof data.pricingOverrides === "object") {
+          registerPricingOverrides(data.pricingOverrides);
+        } else {
+          registerPricingOverrides({
+            [editingProduct.id]: {
+              fixedPrice: fixed,
+              originalPrice: original,
+              discountPercentage: discount,
+            },
+          });
+        }
 
-        // Update local products list in admin view
-        setProductsList((prev) =>
-          prev.map((item) =>
-            item.id === editingProduct.id
-              ? { ...item, fixedPrice: fixed, originalPrice: original }
-              : item
-          )
-        );
+        // Re-sync payment links and local product list so admin view reflects new pricing immediately
+        await fetchPaymentLinks();
+        setProductsList(getInitialProducts());
 
         toast.success(`Pricing updated for ${editingProduct.name} (₹${fixed.toLocaleString("en-IN")})!`);
         setPriceModalOpen(false);

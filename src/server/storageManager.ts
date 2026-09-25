@@ -1136,8 +1136,9 @@ export function listPaymentLinks(): PaymentLink[] {
     const overrides = getProductPricingOverrides();
 
     for (const def of DEFAULT_PRODUCT_PAYMENT_CONFIGS) {
-      const existing = links.find((l) => l.id === def.id && !l.isCustom);
-      const override = overrides[def.id.toLowerCase()];
+      const canonicalDefId = normalizeProductId(def.id);
+      const existing = links.find((l) => (!l.isCustom || l.clientName === "Public Storefront") && (l.id.toLowerCase() === def.id.toLowerCase() || normalizeProductId(l.id) === canonicalDefId));
+      const override = overrides[canonicalDefId] || overrides[def.id.toLowerCase()];
       const targetAmount = override ? override.fixedPrice : def.amount;
       const targetOriginalPrice = override ? override.originalPrice : def.originalPrice;
 
@@ -1162,6 +1163,21 @@ export function listPaymentLinks(): PaymentLink[] {
         existing.amount = override.fixedPrice;
         existing.originalPrice = override.originalPrice;
         modified = true;
+      }
+    }
+
+    // Also synchronize ANY public storefront link with its matching override
+    for (const link of links) {
+      if (!link.isCustom || link.clientName === "Public Storefront") {
+        const canonicalId = normalizeProductId(link.productId || link.id);
+        const override = overrides[canonicalId] || overrides[(link.productId || link.id).toLowerCase()];
+        if (override) {
+          if (link.amount !== override.fixedPrice || link.originalPrice !== override.originalPrice) {
+            link.amount = override.fixedPrice;
+            link.originalPrice = override.originalPrice;
+            modified = true;
+          }
+        }
       }
     }
 
@@ -1234,15 +1250,65 @@ export function createPaymentLink(params: {
  */
 export function getPaymentLinkById(id: string): PaymentLink | null {
   const links = listPaymentLinks();
-  const lower = id.toLowerCase();
-  const normalized = lower === "chatnexgen" ? "whatsapp-crm" : lower;
-  const found = links.find((l) => l.id.toLowerCase() === normalized || l.productId.toLowerCase() === normalized || l.id.toLowerCase() === lower || l.productId.toLowerCase() === lower) || null;
-  if (!found) return null;
+  const lower = id.toLowerCase().trim();
+  const normalized = normalizeProductId(lower);
+  // 1. First priority: Exact match by link id
+  let found = links.find(
+    (l) =>
+      l.id.toLowerCase() === lower ||
+      l.id.toLowerCase() === normalized ||
+      normalizeProductId(l.id) === normalized
+  ) || null;
 
-  // If this is a canonical public storefront link, ensure it has latest price override
+  // 2. Second priority: Match public storefront link by product id
+  if (!found) {
+    found = links.find(
+      (l) =>
+        (!l.isCustom || l.clientName === "Public Storefront") &&
+        (normalizeProductId(l.productId) === normalized || l.productId.toLowerCase() === lower)
+    ) || null;
+  }
+
+  // 3. Third priority: Any link matching productId
+  if (!found) {
+    found = links.find(
+      (l) =>
+        normalizeProductId(l.productId) === normalized ||
+        l.productId.toLowerCase() === lower
+    ) || null;
+  }
+
+  const overrides = getProductPricingOverrides();
+  const targetId = found ? normalizeProductId(found.productId) : normalized;
+  const ov = overrides[targetId] || overrides[lower] || (found ? overrides[found.productId.toLowerCase()] : undefined);
+
+  if (!found) {
+    const defaultDef = DEFAULT_PRODUCT_PAYMENT_CONFIGS.find(
+      (d) => normalizeProductId(d.id) === normalized || d.id.toLowerCase() === lower
+    );
+    const amount = ov ? ov.fixedPrice : (defaultDef ? defaultDef.amount : 1999);
+    const orig = ov ? ov.originalPrice : (defaultDef ? defaultDef.originalPrice : 49999);
+    const name = defaultDef ? defaultDef.name : (normalized === "whatsapp-crm" ? "WhatsApp CRM" : normalized);
+
+    return {
+      id: normalized,
+      productId: normalized,
+      productName: name,
+      amount,
+      originalPrice: orig,
+      clientName: "Public Storefront",
+      notes: defaultDef?.notes || "Full Commercial Source Code License",
+      createdAt: new Date().toISOString(),
+      expiresAt: null,
+      active: true,
+      totalPaidCount: 0,
+      url: `/pay/${normalized}`,
+      isCustom: false,
+    };
+  }
+
+  // Ensure public storefront links always reflect latest price override
   if (!found.isCustom || found.clientName === "Public Storefront") {
-    const overrides = getProductPricingOverrides();
-    const ov = overrides[found.productId.toLowerCase()];
     if (ov) {
       return {
         ...found,
@@ -1441,7 +1507,8 @@ export function saveProductPriceOverride(params: {
   discountPercentage?: number;
 }): ProductPriceOverride {
   const overrides = getProductPricingOverrides();
-  const lowerId = params.productId.toLowerCase().trim();
+  const rawId = params.productId.toLowerCase().trim();
+  const canonicalId = normalizeProductId(rawId);
   const fixed = Math.max(1, Math.round(Number(params.fixedPrice) || 1999));
   const original = Math.max(fixed, Math.round(Number(params.originalPrice) || Math.max(fixed * 10, 49999)));
   const discount = params.discountPercentage !== undefined
@@ -1449,27 +1516,63 @@ export function saveProductPriceOverride(params: {
     : Math.max(1, Math.min(99, Math.round(((original - fixed) / original) * 100)));
 
   const override: ProductPriceOverride = {
-    productId: lowerId,
+    productId: canonicalId,
     fixedPrice: fixed,
     originalPrice: original,
     discountPercentage: discount,
     updatedAt: new Date().toISOString(),
   };
 
-  overrides[lowerId] = override;
+  overrides[canonicalId] = override;
+  overrides[rawId] = { ...override, productId: rawId };
+  if (canonicalId === "whatsapp-crm") {
+    overrides["chatnexgen"] = { ...override, productId: "chatnexgen" };
+    overrides["whatsappcrm"] = { ...override, productId: "whatsappcrm" };
+    overrides["whatsapp"] = { ...override, productId: "whatsapp" };
+  }
   writeFileSync(getProductPricingPath(), JSON.stringify(overrides, null, 2), "utf-8");
 
   // 1. Synchronize public payment links in payment_links.json
   try {
     const links = listPaymentLinks();
     let linkModified = false;
+    let foundCanonicalLink = false;
+
     for (const link of links) {
-      if (link.productId.toLowerCase() === lowerId && (!link.isCustom || link.clientName === "Public Storefront")) {
+      const linkNormId = normalizeProductId(link.productId);
+      const linkIdNorm = normalizeProductId(link.id);
+      if (
+        (linkNormId === canonicalId || linkIdNorm === canonicalId || link.productId.toLowerCase() === rawId || link.id.toLowerCase() === rawId) &&
+        (!link.isCustom || link.clientName === "Public Storefront")
+      ) {
         link.amount = fixed;
         link.originalPrice = original;
         linkModified = true;
+        if (link.id.toLowerCase() === canonicalId) {
+          foundCanonicalLink = true;
+        }
       }
     }
+
+    if (!foundCanonicalLink) {
+      links.unshift({
+        id: canonicalId,
+        productId: canonicalId,
+        productName: canonicalId === "whatsapp-crm" ? "WhatsApp CRM" : canonicalId,
+        amount: fixed,
+        originalPrice: original,
+        clientName: "Public Storefront",
+        notes: "Full Commercial Source Code License",
+        createdAt: new Date().toISOString(),
+        expiresAt: null,
+        active: true,
+        totalPaidCount: 0,
+        url: `/pay/${canonicalId}`,
+        isCustom: false,
+      });
+      linkModified = true;
+    }
+
     if (linkModified) {
       savePaymentLinks(links);
     }
@@ -1480,16 +1583,15 @@ export function saveProductPriceOverride(params: {
   // 2. If it is a custom product, also update custom_products.json
   try {
     const customProds = getCustomProducts();
-    const customIdx = customProds.findIndex((p) => p.id.toLowerCase() === lowerId);
-    if (customIdx >= 0) {
-      if (!customProds[customIdx].sourceCodeOffer) {
-        customProds[customIdx].sourceCodeOffer = {} as any;
+    for (const cp of customProds) {
+      if (normalizeProductId(cp.id) === canonicalId || cp.id.toLowerCase() === rawId) {
+        if (!cp.sourceCodeOffer) cp.sourceCodeOffer = {} as any;
+        cp.sourceCodeOffer.fixedPrice = fixed;
+        cp.sourceCodeOffer.originalPrice = original;
+        cp.sourceCodeOffer.discountPercentage = discount;
       }
-      customProds[customIdx].sourceCodeOffer.fixedPrice = fixed;
-      customProds[customIdx].sourceCodeOffer.originalPrice = original;
-      customProds[customIdx].sourceCodeOffer.discountPercentage = discount;
-      writeFileSync(getCustomProductsPath(), JSON.stringify(customProds, null, 2), "utf-8");
     }
+    writeFileSync(getCustomProductsPath(), JSON.stringify(customProds, null, 2), "utf-8");
   } catch (custErr) {
     console.warn("Failed to synchronize custom product with price override:", custErr);
   }
@@ -1502,9 +1604,35 @@ export function saveProductPriceOverride(params: {
  */
 export function deleteProductPriceOverride(productId: string): boolean {
   const overrides = getProductPricingOverrides();
-  const lowerId = productId.toLowerCase().trim();
-  if (!overrides[lowerId]) return false;
-  delete overrides[lowerId];
+  const rawId = productId.toLowerCase().trim();
+  const canonicalId = normalizeProductId(rawId);
+  const targets = canonicalId === "whatsapp-crm" ? ["whatsapp-crm", "chatnexgen", "whatsappcrm", "whatsapp"] : [canonicalId, rawId];
+  let deleted = false;
+  for (const t of targets) {
+    if (overrides[t]) {
+      delete overrides[t];
+      deleted = true;
+    }
+  }
+  if (!deleted) return false;
   writeFileSync(getProductPricingPath(), JSON.stringify(overrides, null, 2), "utf-8");
+
+  // Revert public links to default configs
+  try {
+    const defaultDef = DEFAULT_PRODUCT_PAYMENT_CONFIGS.find(d => normalizeProductId(d.id) === canonicalId);
+    if (defaultDef) {
+      const links = listPaymentLinks();
+      let modified = false;
+      for (const link of links) {
+        if ((normalizeProductId(link.productId) === canonicalId || normalizeProductId(link.id) === canonicalId) && (!link.isCustom || link.clientName === "Public Storefront")) {
+          link.amount = defaultDef.amount;
+          link.originalPrice = defaultDef.originalPrice;
+          modified = true;
+        }
+      }
+      if (modified) savePaymentLinks(links);
+    }
+  } catch {}
+
   return true;
 }

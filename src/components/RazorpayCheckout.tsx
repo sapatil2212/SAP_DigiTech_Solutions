@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
@@ -22,6 +22,7 @@ import {
   HiExclamationTriangle,
 } from "react-icons/hi2";
 import { Loader2 } from "lucide-react";
+import { getProductDetail, getPricingOverride } from "@/lib/productData";
 
 /* ─────────────────────── Types ─────────────────────── */
 export interface RazorpayCheckoutProps {
@@ -577,6 +578,37 @@ export function RazorpayCheckout({
   const [fulfillmentData, setFulfillmentData] = useState<DownloadFulfillmentData | null>(null);
   const [customerDetails, setCustomerDetails] = useState<CustomerBillingData | null>(null);
 
+  const [currentAmount, setCurrentAmount] = useState<number>(() => {
+    if (!productId) return amount;
+    const ov = getPricingOverride(productId);
+    const prod = getProductDetail(productId);
+    return ov?.fixedPrice || prod?.sourceCodeOffer?.fixedPrice || amount;
+  });
+
+  useEffect(() => {
+    if (!productId) {
+      setCurrentAmount(amount);
+      return;
+    }
+    const update = () => {
+      const ov = getPricingOverride(productId);
+      const prod = getProductDetail(productId);
+      const eff = ov?.fixedPrice || prod?.sourceCodeOffer?.fixedPrice || amount;
+      if (eff) setCurrentAmount(eff);
+    };
+    update();
+    window.addEventListener("sap_products_updated", update);
+    return () => window.removeEventListener("sap_products_updated", update);
+  }, [productId, amount]);
+
+  const formattedButtonText = useMemo(() => {
+    if (!buttonText) return `Buy Source Code — ₹${currentAmount.toLocaleString("en-IN")}`;
+    if (productId && buttonText.includes("₹")) {
+      return buttonText.replace(/₹[\d,]+/g, `₹${currentAmount.toLocaleString("en-IN")}`);
+    }
+    return buttonText;
+  }, [buttonText, currentAmount, productId]);
+
   const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   /* Load Razorpay checkout.js */
@@ -627,7 +659,7 @@ export function RazorpayCheckout({
 
       const options: RazorpayOptions = {
         key: razorpayKeyId,
-        amount: amount * 100, // in paise
+        amount: currentAmount * 100, // in paise
         currency: "INR",
         name: "SAP DigiTech Solutions",
         description: `${productName} — Full Source Code License`,
@@ -665,6 +697,7 @@ export function RazorpayCheckout({
                 customerEmail: billingData.email,
                 customerPhone: billingData.phone,
                 customerAddress: billingData.address,
+                amount: currentAmount,
               }),
             });
 
@@ -710,7 +743,7 @@ export function RazorpayCheckout({
         onFailure?.(err);
       }
     },
-    [scriptLoaded, amount, productName, productId, planName, onSuccess, onFailure]
+    [scriptLoaded, currentAmount, productName, productId, planName, onSuccess, onFailure]
   );
 
   return (
@@ -735,7 +768,7 @@ export function RazorpayCheckout({
         ) : (
           <>
             {icon ?? <HiArrowDownTray className="size-4" />}
-            <span>{buttonText || `Buy Source Code — ₹${amount.toLocaleString("en-IN")}`}</span>
+            <span>{formattedButtonText}</span>
           </>
         )}
       </button>
@@ -746,7 +779,7 @@ export function RazorpayCheckout({
         onClose={() => setCustomerModalOpen(false)}
         onSubmit={handleProceedToPayment}
         productName={productName}
-        amount={amount}
+        amount={currentAmount}
       />
 
       {/* Step 2: Payment Success Modal with 5-Min Countdown & Direct Download (Clean Light Theme) */}
@@ -756,7 +789,7 @@ export function RazorpayCheckout({
         paymentData={successData}
         fulfillmentData={fulfillmentData}
         productName={productName}
-        amount={amount}
+        amount={currentAmount}
       />
     </>
   );

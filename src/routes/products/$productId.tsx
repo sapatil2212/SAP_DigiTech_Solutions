@@ -24,17 +24,15 @@ import { LiveDemoButton } from "@/components/LiveDemoModal";
 export const Route = createFileRoute("/products/$productId")({
   component: ProductDetailPage,
   loader: async ({ params }) => {
-    if (params.productId.toLowerCase() === "chatnexgen") {
+    let cleanId = params.productId.toLowerCase().trim();
+    if (cleanId === "chatnexgen" || cleanId === "whatsappcrm" || cleanId === "whatsapp") {
       throw redirect({
         to: "/products/$productId",
         params: { productId: "whatsapp-crm" },
       });
     }
-    let product = getProductDetail(params.productId);
-    if (!product) {
-      const all = await loadAndSyncCustomProducts();
-      product = all.find((p) => p.id.toLowerCase() === params.productId.toLowerCase()) || getProductDetail(params.productId);
-    }
+    await loadAndSyncCustomProducts().catch(() => {});
+    let product = getProductDetail(cleanId) || getProductDetail(params.productId);
     if (!product) throw notFound();
     return {
       productId: product.id,
@@ -110,6 +108,11 @@ function ProductDetailPage() {
   const [copiedDiagram, setCopiedDiagram] = useState(false);
 
   useEffect(() => {
+    loadAndSyncCustomProducts().then(() => {
+      const fresh = getProductDetail(productId);
+      if (fresh) setProduct(fresh);
+    }).catch(() => {});
+
     const current = getProductDetail(productId);
     if (current) setProduct(current);
 
